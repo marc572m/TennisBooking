@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MySQL Express EJS Demo</title>
 </head>
 <body>
-
-    <h1> hello</h1>
-    
+  <h1>MySQL Data</h1>
+  <ul>
+    <% data.forEach(item => { %>
+      <li><%= item.Fornavn %> <%= item.Efternavn%> <%= item.Telefonnummer%> <%= item.Email%> <%= item.Adresse%> <%= item.Medlemstype%> <%= item.Brugertype%> <%= item.Kodeord%></li>
+    <% }); %>
+  </ul>
 </body>
 </html>
