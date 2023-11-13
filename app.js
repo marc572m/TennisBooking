@@ -23,33 +23,37 @@ db.connect(function(error){
         console.log('connected');
     }
 })
+// middleware
+/*app.use((req, res, next) => {
+    console.log('new request made:');
+    console.log('host: ', req.hostname);
+    console.log('path: ', req.path);
+    console.log('method: ', req.method);
+    console.log('ip',req.ip);
+      console.log('');
+    next();
+});*/
 
 app.listen(3000);
 
-app.get('/', (req, res) => {
+app.use(express.static('public'));
+
+app.get('/', (req,res)=>{
+    res.render('index');
+})
+
+app.get('/login', (req, res) => {
     db.query('SELECT * FROM brugere', (error, result) => {
         if(error){
             console.error('fejl med sql ' + error.message);
             res.status(500).send('server fejl');
         }
         else{
-            res.render('index', { data: result });
+            res.render('login', { data: result });
         }
     })
 })
 
-/*
-app.get('/', function(req, res){
-    db.query('SELECT * FROM brugere', function(error, rows, fields){
-        if(!!error){
-            console.log('error in query');
-        }
-        else{
-            console.log('success\n');
-            console.log(rows);
-        }
-    })
-})
-*/
+
 
 

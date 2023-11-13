@@ -1,0 +1,40 @@
+/*CSS reset */
+*   {
+        margin: 0;
+        padding: 0;
+        font-family: Lato;
+    }
+    
+    body {
+      height: 100%;
+      position: relative;
+    }
+
+
+    
+    /*NavBar*/
+    nav{
+      background-color: #078211;
+      padding: 20px;
+      position: sticky;
+      top: 0;
+      width: 100%;
+      left: 0;
+    }
+    
+    nav ul{
+      white-space: nowrap;
+      max-width: 1200px;
+      margin:0 auto;
+    }
+    nav li{
+      width: 18%;
+      display: inline-block;
+      font-size: auto;
+    }
+    
+    nav li a{
+      text-decoration: none;
+      color: black;
+      text-decoration: underline;
+    }

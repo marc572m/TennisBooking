@@ -4,14 +4,12 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MySQL Express EJS Demo</title>
+  <link rel="stylesheet" href="style.css"/>
+  <title>Netbooker</title>
 </head>
 <body>
-  <h1>MySQL Data</h1>
-  <ul>
-    <% data.forEach(item => { %>
-      <li><%= item.Fornavn %> <%= item.Efternavn%> <%= item.Telefonnummer%> <%= item.Email%> <%= item.Adresse%> <%= item.Medlemstype%> <%= item.Brugertype%> <%= item.Kodeord%></li>
-    <% }); %>
-  </ul>
+    <%- include('partials/navbar.ejs') %>
+    <h1>Forside</h1>
+    <%- include('partials/footer.ejs') %>
 </body>
 </html>
