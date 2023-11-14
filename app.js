@@ -34,8 +34,9 @@ db.connect(function(error){
 })
 
 
-  // Post metode til login
-  app.post('/login', (req, res) => {
+// Post metode til login
+
+app.post('/login', (req, res) => {
     const { Brugernavn, Kodeord } = req.body;
   
     db.query('SELECT * FROM brugere WHERE Brugernavn = ?', [Brugernavn], (err, results) => {
@@ -48,7 +49,13 @@ db.connect(function(error){
   
           if (Kodeord === user.Kodeord) {
             req.session.user = user;
-            res.redirect('/');
+  
+            // Redirect til registreringssiden, hvis brugeren er en administrator
+            if (user.Brugertype === 'Admin') {
+              res.redirect('/registrer');
+            } else {
+              res.redirect('/'); 
+            }
           } else {
             res.render('login', { error: 'Forkert adgangskode' });
           }
@@ -58,15 +65,68 @@ db.connect(function(error){
       }
     });
   });
+
+
+//Registrer bruger
+
+app.post('/registrer', checkAdminAuth, (req, res) => {
+    const {
+      Brugernavn,
+      Kodeord,
+      Brugertype,
+      Fornavn,
+      Efternavn,
+      Telefonnummer,
+      Email,
+      Adresse,
+      PostnummerOgBy,
+      Medlemstype
+    } = req.body;
+  
+    // Tabelstrukturen
+    const query = `
+      INSERT INTO brugere (
+        Brugernavn,
+        Kodeord,
+        Brugertype,
+        Fornavn,
+        Efternavn,
+        Telefonnummer,
+        Email,
+        Adresse,
+        PostnummerogBy,
+        Medlemstype
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+  
+    db.query(query, [Brugernavn, Kodeord, Brugertype, Fornavn, Efternavn, Telefonnummer, Email, Adresse, PostnummerOgBy, Medlemstype], (err, result) => {
+      if (err) {
+        console.error('Fejl ved registrering af bruger: ' + err.message);
+        res.status(500).send('Serverfejl');
+      }
+    });
+  });
+  
   
 
-// function der tjekker om man er logget ind.
-  function checkAuth(req, res, next) {
-    if (!req.session.user) {
+//admin auth check
+
+
+function checkAdminAuth(req, res, next) {
+    const user = req.session.user;
+  
+    if (!user) {
       return res.redirect('/login');
     }
-    next();
+  
+    // Tilpas denne betingelse efter dine krav
+    if (user.Brugertype === 'Admin') {
+      return next();
+    } else {
+      res.status(403).send('Du har ikke tilladelse til at få adgang til denne side.');
+    }
   }
+
 
 app.listen(3000);
 
@@ -76,6 +136,10 @@ app.get('/', (req,res)=>{
     const user = req.session.user;
     res.render('index', { user });
 })
+
+app.get('/registrer', checkAdminAuth, (req, res) => {
+  res.render('registrer');
+});
 
 app.get('/login', (req, res) => {
     res.render('login');
