@@ -1,0 +1,125 @@
+<!-- views/register.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Tilføj Bruger</title>
+  <link rel="stylesheet" href="/styles/registrer.css">
+</head>
+<body>
+  <div class="admin-container">
+    <h2>Admin Panel - Tilføj Bruger</h2>
+    <form action="/registrer" method="POST" class="registration-form">
+      <div class="form-group">
+        <label for="Brugernavn">Brugernavn:</label>
+        <input type="text" id="Brugernavn" name="Brugernavn" required>
+      </div>
+
+      <div class="form-group">
+        <label for="Kodeord">Adgangskode:</label>
+        <input type="password" id="Kodeord" name="Kodeord" required>
+      </div>
+
+      <div class="form-group">
+        <label for="Brugertype">Brugertype:</label>
+        <select id="Brugertype" name="Brugertype" required>
+        <option value="Normal">Normal</option>   
+        <option value="Admin">Admin</option>
+         
+        </select>
+      </div>
+
+      <div class="form-group">
+        <div class="half-width">
+          <label for="Fornavn">Fornavn:</label>
+          <input type="text" id="Fornavn" name="Fornavn" required>
+        </div>
+
+        <div class="half-width">
+          <label for="Efternavn">Efternavn:</label>
+          <input type="text" id="Efternavn" name="Efternavn" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="Telefonnummer">Telefonnummer:</label>
+        <input type="text" id="Telefonnummer" name="Telefonnummer" required>
+      </div>
+
+      <div class="form-group">
+        <label for="Email">E-mail:</label>
+        <input type="text" id="Email" name="Email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="Adresse">Adresse:</label>
+        <input type="text" id="Adresse" name="Adresse" required>
+      </div>
+
+      <div class="form-group">
+        <div class="half-width">
+          <label for="PostnummerOgBy">Postnummer og By:</label>
+          <input type="text" id="PostnummerOgBy" name="PostnummerOgBy" required>
+        </div>
+
+        <div class="half-width">
+          <label for="Medlemstype">Medlemstype:</label>
+          <select id="Medlemstype" name="Medlemstype" required>
+            <option value="Paddle">Paddle Tennis</option>
+            <option value="Tennis">Tennis</option>
+            <option value="Dobbelt">Paddle og normal Tennis</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" onclick="attemptRegistration()">Tilføj Bruger</button>
+    </form>
+
+    <div id="popup" class="popup">
+      <span class="close" onclick="hidePopup()">&times;</span>
+      <p>Registrering fuldført!</p>
+    </div>
+
+    <p><a href="/">Tilbage til Forsiden</a></p>
+  </div>
+
+  <script>
+    function showPopup() {
+      document.getElementById('popup').style.display = 'block';
+    }
+
+    function hidePopup() {
+      document.getElementById('popup').style.display = 'none';
+    }
+
+    function clearFields() {
+      // Få adgang til formularelementer og tøm deres værdi
+      document.getElementById('Brugernavn').value = '';
+      document.getElementById('Kodeord').value = '';
+      document.getElementById('Brugertype').value = '';
+      document.getElementById('Fornavn').value = '';
+      document.getElementById('Efternavn').value = '';
+      document.getElementById('Telefonnummer').value = '';
+      document.getElementById('Email').value = '';
+      document.getElementById('Adresse').value = '';
+      document.getElementById('PostnummerOgBy').value = '';
+      document.getElementById('Medlemstype').value = '';
+    }
+
+    function attemptRegistration() {
+      // Tjek om alle påkrævede felter er udfyldt
+      var requiredFields = ['Brugernavn', 'Kodeord', 'Brugertype', 'Fornavn', 'Efternavn', 'Telefonnummer', 'Email', 'Adresse', 'PostnummerOgBy', 'Medlemstype'];
+      var allFieldsFilled = requiredFields.every(field => document.getElementById(field).value.trim() !== '');
+
+      if (allFieldsFilled) {
+        clearFields();
+        showPopup();
+      } else {
+        alert('Udfyld alle påkrævede felter først.');
+      }
+    }
+  </script>
+</body>
+</html>
