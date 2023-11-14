@@ -1,20 +1,28 @@
+<!-- views/login.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>MySQL Express EJS Demo</title>
+  <title>Login</title>
+  <link rel="stylesheet" href="/style.css"> <!-- Tilføj stien til din stylesheet -->
 </head>
 <body>
-    <%- include('partials/navbar.ejs') %>
-  <h1>MySQL Data</h1>
-  <ul>
-    <% data.forEach(item => { %>
-      <li>Navn:<%= item.Fornavn %> Efternavn:<%= item.Efternavn%> Tlf:<%= item.Telefonnummer%> Email:<%= item.Email%> Adresse:<%= item.Adresse%> Medlemstype:<%= item.Medlemstype%> Brugertype:<%= item.Brugertype%> Kodeord:<%= item.Kodeord%></li>
-    <% }); %>
-  </ul>
-  <%- include('partials/footer.ejs') %>
+  <div class="login-container">
+    <h2>Login</h2>
+    <% if (typeof error !== 'undefined') { %>
+      <p class="error-message"><%= error %></p>
+    <% } else { %>
+      <p class="error-message"></p>
+    <% } %>
+    <form action="/login" method="POST">
+      <label for="Brugernavn">Brugernavn:</label>
+      <input type="text" id="Brugernavn" name="Brugernavn" required>
+      <label for="Kodeord">Adgangskode:</label>
+      <input type="password" id="Kodeord" name="Kodeord" required>
+      <button type="submit">Log ind</button>
+    </form>
+  </div>
 </body>
 </html>
