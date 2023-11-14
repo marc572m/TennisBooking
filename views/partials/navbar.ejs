@@ -1,25 +1,37 @@
 <header>
-    <div class="logo">Your Logo</div>
     <nav class="navbar">
-        <ul>
-            <li>
-                <a href="/">Forsiden</a>
-                <a href="/login">Login</a>
-                <a href="/kalender">Kalender</a>
-                <a href="/bookTid">Book tid</a>
-                <a href="/indkøbskurv">Indkøbskurv</a>
-                <a href="/profile">Profile</a>
-                <a href="/minebooking">Mine Booking</a>
-                <a href="/mineTilmeldinger">Mine tilmeldinger</a>
-                <a href="/logout">Logout</a>
-                  <!-- Admin-->
-                <a href="/skabBruger">Skab Bruger</a>
-                <a href="/opretBane">Opret Bane</a>
-                <a href="/OpretHoldSide">Opret hold side</a>
-                <a href="/oversigtAfBookinger">Oversigt af bookinger</a>
-            </li> 
-          
-        </ul>
+        <div class="brand-tilte">Netbooker</div>
+        <a href="#" class="toggle-button">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </a>
+        
+        <div class="navbar-links">
+            <ul>
+                <li><a href="/">Forsiden</a></li>
+                <li><a href="/login">Login</a></li>
+                <li><a href="/kalender">Kalender</a></li>
+                <li><a href="/bookTid">Book tid</a></li>
+                <li><a href="/indkøbskurv">Indkøbskurv</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/minebooking">Mine Booking</a></li>
+                <li><a href="/mineTilmeldinger">Mine tilmeldinger</a></li>
+                <li><a href="/logout">Logout</a></li>
+                 <!-- Admin-->
+                <li><a href="/skabBruger">Skab Bruger</a></li>
+                <li><a href="/opretBane">Opret Bane</a></li>
+                <li><a href="/OpretHoldSide">Opret hold side</a></li>
+                <li><a href="/oversigtAfBookinger">Oversigt af bookinger</a></li>
+            </ul>
+        </div>
     </nav>
+    <script>
+        const toggleButton = document.getElementsByClassName('toggle-button')[0];
+        const navbarLinks = document.getElementsByClassName('navbar-links')[0];
 
+        toggleButton.addEventListener('click',()=>{
+            navbarLinks.classList.toggle('active')
+        })
+    </script>
 </header>
