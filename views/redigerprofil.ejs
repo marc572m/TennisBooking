@@ -1,0 +1,45 @@
+<!-- views/redigerprofil.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rediger Min Profil</title>
+  <link rel="stylesheet" href="/styles/redigerprofil.css">
+</head>
+<body>
+  <div class="redigerprofil-container">
+    <h2>Rediger Min Profil</h2>
+
+    <form action="/redigerprofil" method="POST" class="redigerprofil-form">
+      <label for="Brugernavn">Brugernavn:</label>
+      <input type="text" id="Brugernavn" name="Brugernavn" value="<%= user.Brugernavn %>" required>
+
+      <label for="Email">Email:</label>
+      <input type="text" id="Email" name="Email" value="<%= user.Email %>" required>
+
+      <label for="Telefonnummer">Telefonnummer:</label>
+      <input type="text" id="Telefonnummer" name="Telefonnummer" value="<%= user.Telefonnummer %>" required>
+
+      <label for="Fornavn">Fornavn:</label>
+      <input type="text" id="Fornavn" name="Fornavn" value="<%= user.Fornavn %>" required>
+
+      <label for="Efternavn">Efternavn:</label>
+      <input type="text" id="Efternavn" name="Efternavn" value="<%= user.Efternavn %>" required>
+
+      <label for="Adresse">Adresse:</label>
+      <input type="text" id="Adresse" name="Adresse" value="<%= user.Adresse %>" required>
+
+      <label for="PostnummerogBy">Postnummer og By:</label>
+      <input type="text" id="PostnummerogBy" name="PostnummerogBy" value="<%= user.PostnummerogBy %>" required>
+
+
+      <button type="submit">Gem Ændringer</button>
+    </form>
+
+    <p><a href="/minprofil">Tilbage til Profilsiden</a></p>
+  </div>
+</body>
+</html>
