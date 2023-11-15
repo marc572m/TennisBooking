@@ -49,13 +49,10 @@ app.post('/login', (req, res) => {
   
           if (Kodeord === user.Kodeord) {
             req.session.user = user;
+            res.redirect('/')
   
             // Redirect til registreringssiden, hvis brugeren er en administrator
-            if (user.Brugertype === 'Admin') {
-              res.redirect('/registrer');
-            } else {
-              res.redirect('/'); 
-            }
+           
           } else {
             res.render('login', { error: 'Forkert adgangskode' });
           }
@@ -107,7 +104,56 @@ app.post('/registrer', checkAdminAuth, (req, res) => {
     });
   });
   
+
+// opdater oplysninger via redigerprofil
+
+app.post('/redigerprofil', checkAuth, (req, res) => {
+    const {
+      Brugernavn,
+      Email,
+      Telefonnummer,
+      Fornavn,
+      Efternavn,
+      Adresse,
+      PostnummerogBy,
+    } = req.body;
   
+    const currentUser = req.session.user;
+  
+    // Opdater brugeroplysningerne i databasen
+    const query = 'UPDATE brugere SET Brugernavn = ?, Email = ?, Telefonnummer = ?, Fornavn = ?, Efternavn = ?, Adresse = ?, PostnummerogBy = ? WHERE id = ?';
+    db.query(
+    query,
+        [
+        Brugernavn,
+        Email,
+        Telefonnummer,
+        Fornavn,
+        Efternavn,
+        Adresse,
+        PostnummerogBy,
+        currentUser.id
+    ],
+  (err, results) => {
+    if (err) {
+      console.error('Fejl ved databaseforespørgsel: ' + err.message);
+      res.status(500).send('Serverfejl');
+    } else {
+      console.log('Brugeroplysninger opdateret i databasen:', results);
+          // Opdater også brugeroplysningerne i sessionen
+          req.session.user.Brugernavn = Brugernavn;
+          req.session.user.Email = Email;
+          req.session.user.Telefonnummer = Telefonnummer;
+          req.session.user.Fornavn = Fornavn;
+          req.session.user.Efternavn = Efternavn;
+          req.session.user.Adresse = Adresse;
+          req.session.user.PostnummerogBy = PostnummerogBy;
+  
+          res.redirect('/minprofil'); // Omdiriger til profilsiden eller en anden ønsket destination
+        }
+      }
+    );
+  });
 
 //admin auth check
 
@@ -124,6 +170,18 @@ function checkAdminAuth(req, res, next) {
       return next();
     } else {
       res.status(403).send('Du har ikke tilladelse til at få adgang til denne side.');
+    }
+  }
+
+
+// check user auth
+
+function checkAuth(req, res, next) {
+    if (req.session && req.session.user) {
+      // Hvis der er en aktiv session, og currentUser er gemt i sessionen
+      return next(); // Brugeren er godkendt, fortsæt med anmodningen
+    } else {
+      res.redirect('/login'); // Hvis ikke, omdirigér til login-siden
     }
   }
 
@@ -150,3 +208,18 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 });
+
+app.get('/minprofil', checkAuth, (req, res) => {
+    // checkAuth middleware sikrer, at brugeren er logget ind
+    // Du kan hente brugeroplysninger fra sessionen eller databasen
+    const currentUser = req.session.user; // Antager, at brugeroplysninger gemmes i sessionen
+  
+    res.render('minprofil', { user: currentUser });
+  });
+
+  app.get('/redigerprofil', checkAuth, (req, res) => {
+    // Hent brugeroplysninger fra sessionen
+    const currentUser = req.session.user;
+  
+    res.render('redigerprofil', { user: currentUser });
+  });
