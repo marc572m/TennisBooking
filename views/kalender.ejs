@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalender</title>
+    <style>
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .time-column {
+            text-align: right;
+            width: 12.5%; /* Juster dette for at få det ønskede forhold mellem tidsintervallerne og cellerne */
+        }
+
+        .date-info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%; /* Gør tabellen fylder hele skærmens bredde */
+            border-collapse: collapse; /* Fjern mellemrum mellem celler */
+        }
+    </style>
+</head>
+<body>
+    <%
+    const currentDate = new Date();
+    let currentMonth = currentDate.getMonth(); // Justering af månedsindeks
+    let currentYear = currentDate.getFullYear();
+    const currentDay = currentDate.getDate();
+    
+    function getDataFromDatabase(year, month, day, hour, court) {
+        // Hent data fra databasen baseret på år, måned, dag, time og bane
+        // Eksempel: DatabaseQuery.getByDateAndHourAndCourt(year, month, day, hour, court)
+        // Returner data, eller returner falsk værdi (ledig)
+    }
+    
+    function formatDate(year, month, day) {
+        const months = [
+            "Januar", "Februar", "Marts", "April", "Maj", "Juni",
+            "Juli", "August", "September", "Oktober", "November", "December"
+        ];
+        return `${day}. ${months[(month + 12) % 12]}`;
+    }
+    
+    const numberOfCourts = 3; // Ændre dette til det ønskede antal baner
+    let startDay, endDay;
+    let dayCount; // Declare dayCount here
+    %>
+    
+    <div class="date-info">
+        <!-- Placer dato- og anden information her -->
+        <p>Dato: <%= formatDate(currentYear, currentMonth, currentDay) %></p>
+        <p>Anden Information: ...</p>
+        <label for="courtSelector">Vælg bane:</label>
+        <select id="courtSelector" onchange="changeCourt()">
+            <% for (let i = 1; i <= numberOfCourts; i++) { %>
+                <option value="<%= i %>">Bane <%= i %></option>
+            <% } %>
+        </select>
+        <button onclick="prevWeek()">Forrige Uge</button>
+        <button onclick="nextWeek()">Næste Uge</button>
+    </div>
+
+    <% function getWeekNumber(date) {
+        // Copy date so don't modify original
+        date = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+        // Set to nearest Thursday: current date + 4 - current day number
+        // Make Sunday's day number 7
+        date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+        // Get first day of year
+        var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+        // Calculate full weeks to nearest Thursday
+        var weekNumber = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
+        // Return the week number
+        return weekNumber;
+    }
+    
+    // Example usage:
+    var weekNumber = getWeekNumber(currentDate);
+    console.log("Week number:", weekNumber);
+    %>    
+    
+    <h1>Min Kalender</h1>
+    <table border="1">
+        <tr>
+            <th class="time-column">
+                <%= 'Uge ' + getWeekNumber(new Date()) %>
+            </th>
+            <% for (let i = 1; i <= 7; i++) { %>
+                <th><%= formatDate(currentYear, currentMonth, currentDay + i - 1) %></th>
+            <% } %>
+        </tr>
+        <% 
+            for (let hour = 8; hour < 21; hour++) { 
+                startDay = undefined; // Move the declaration here if it's needed
+                dayCount = 1; // Initialize dayCount for each hour
+        %>
+            <tr>
+                <td class="time-column">
+                    <%= `${hour}:00 - ${hour + 1}:00` %>
+                </td>
+                <% for (let day = 0; day < 7; day++) { %>
+                    <% if (hour === 8 && day === 0) { %>
+                        <% startDay = dayCount; %>
+                    <% } %>
+                    <td>
+                        <%= getDataFromDatabase(currentYear, currentMonth, currentDay + day, hour, 1) || 'Ledig' %>
+                    </td>
+                    <% dayCount++; %>
+                <% } %>
+            </tr>
+        <% } %>
+    </table>
+    
+    <%
+    function getDataFromDatabase(year, month, day, hour, court) {
+        // Hent data fra databasen baseret på år, måned, dag, time og bane
+        // Eksempel: DatabaseQuery.getByDateAndHourAndCourt(year, month, day, hour, court)
+        // Returner data, eller returner falsk værdi (ledig)
+    }
+    
+    function formatDate(year, month, day) {
+        const months = [
+            "Januar", "Februar", "Marts", "April", "Maj", "Juni",
+            "Juli", "August", "September", "Oktober", "November", "December"
+        ];
+        return `${day}. ${months[(month + 12) % 12]}`;
+    }
+
+    function opdaterKalender() {
+        console.log("Opdater kalender med datoer for ugen startende fra " + formatDate(currentYear, currentMonth, currentDay));
+        // Tilføj logik til at opdatere kalenderen baseret på de nye datoer
+    }
+
+    %>
+    
+    <script>
+        function changeCourt() {
+            var selectedCourt = document.getElementById("courtSelector").value;
+            // Opdater data eller udfør handlinger baseret på den valgte bane
+            console.log("Skift til bane " + selectedCourt);
+        }
+    
+        function prevWeek() {
+            // Opdater data eller udfør handlinger for at gå til forrige uge
+            currentDay -= 7;
+            opdaterKalender();
+            console.log("Forrige uge");
+        }
+    
+        function nextWeek() {
+            // Opdater data eller udfør handlinger for at gå til næste uge
+            currentDay += 7;
+            opdaterKalender();
+            console.log("Næste uge");
+        }
+    </script>
+    
+    </body>
+</html>
+    

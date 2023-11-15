@@ -54,6 +54,33 @@ app.get('/login', (req, res) => {
     })
 })
 
+app.get('/kalender', (req, res) => {
+    db.query('SELECT * FROM kalender', (error, result) => {
+        if(error){
+            console.error('ingen bookinger fundet ' + error.message);
+            res.status(204).send('ingen data returneret');
+        }
+        else{
+            res.render('kalender', { data: result });
+        }
+    })
+})
+
+app.get('/getCalendarData', (req, res) => {
+    const query = 'SELECT * FROM kalender'; // Tilpas til din database
+
+    db.query(query, (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af kalenderdata: ' + error.message);
+            res.status(500).send('Serverfejl');
+        } else {
+            res.json(result);
+        }
+    });
+});
+
+
+
 
 
 
