@@ -30,6 +30,7 @@
                                 <li><a href="/oversigtAfBookinger">Oversigt af bookinger</a></li>
                                 <li><a href="/logout">Logout</a></li>
                             </ul>
+                            <%console.log('login ===Admin'); %>
                         <% } else if (user.Brugertype === 'Normal') { %>
                             <ul>
                                 <li><a href="/minprofil">Profile</a></li>
@@ -37,6 +38,7 @@
                                 <li><a href="/mineTilmeldinger">Mine tilmeldinger</a></li>
                                 <li><a href="/logout">Logout</a></li>
                             </ul>
+                            <%console.log('login ===Normal'); %>
                         <% } else { console.log('unexpected Brugertype'); } %>
                     <% } else { console.log('not login'); } %>
                 </div>
