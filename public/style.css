@@ -19,7 +19,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #333;
+    background-color: #4caf70;
     color: white;
   }
   .brand-tilte{
@@ -45,7 +45,7 @@ body {
   }
 
   .navbar-links li:hover {
-    background-color: #555;
+    background-color: #1caf60;
   }
 
   .toggle-button{
@@ -92,6 +92,7 @@ body {
     .navbar-links.active{
       display: flex;
     }
+    
   }
 
 /*--------------------------------dropdown----------------------------*/
@@ -103,8 +104,8 @@ body {
 
 .dropdown-content {
   display: none;
-  position: absolute;
-  top: 100%;
+  position: fixed;
+  top: 7.9%;
   right: 0;
   background-color: #f9f9f9;
   min-width: 160px;
@@ -131,5 +132,11 @@ body {
 
 .show {
   display: block;
+}
+@media(max-width: 920px) {
+  .dropdown-content { 
+    top: 0;
+    position: relative;
+  }
 }
 /*-----------------------------------------------------------------*/
