@@ -218,6 +218,13 @@ function checkAdminAuth(req, res, next) {
     }
   }
 
+  function checkNotAuthenticated(req, res, next) {
+    if (!req.session.user) {
+      return next(); // Brugeren er ikke logget ind, fortsæt med anmodningen
+    } else {
+      res.redirect('/'); // Hvis brugeren allerede er logget ind, omdirigér til hjemmesiden
+    }
+  }
 
 // check user auth
 
@@ -254,7 +261,7 @@ app.get('/logout', (req, res) => {
 });
 });
 
-app.get('/minprofil', checkAuth, (req, res) => {
+app.get('/minprofil', checkAuth, checkNotAuthenticated, (req, res) => {
     // checkAuth middleware sikrer, at brugeren er logget ind
     // Du kan hente brugeroplysninger fra sessionen eller databasen
     const currentUser = req.session.user; // Antager, at brugeroplysninger gemmes i sessionen

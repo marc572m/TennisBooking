@@ -106,27 +106,35 @@
     }
 
     function attemptRegistration() {
-      // Tjek om alle påkrævede felter er udfyldt
-      var requiredFields = ['Brugernavn', 'Kodeord', 'Brugertype', 'Fornavn', 'Efternavn', 'Telefonnummer', 'Email', 'Adresse', 'PostnummerogBy', 'Medlemstype'];
-      var allFieldsFilled = requiredFields.every(field => document.getElementById(field).value.trim() !== '');
-
-      // Tjek om brugernavn og kodeord er mindst 6 tegn lange
-      var usernameLength = document.getElementById('Brugernavn').value.trim().length;
-      var passwordLength = document.getElementById('Kodeord').value.trim().length;
+      // Hent værdier fra inputfelter
+      var brugernavn = document.getElementById('Brugernavn').value.trim();
+      var kodeord = document.getElementById('Kodeord').value.trim();
       var email = document.getElementById('Email').value.trim();
 
+      // Tjek brugernavnslængde
+      if (brugernavn.length < 6) {
+        alert('Brugernavnet skal være mindst 6 tegn langt.');
+        return;
+      }
+
+      // Tjek om e-mail indeholder mindst ét '@'-tegn
       if (!email.includes('@')) {
         alert('Ugyldig e-mailadresse. Indtast venligst en gyldig e-mailadresse.');
         return;
       }
 
-      if (allFieldsFilled && usernameLength >= 6 && passwordLength >= 6) {
+      // Tjek om alle påkrævede felter er udfyldt
+      var requiredFields = ['Brugernavn', 'Kodeord', 'Brugertype', 'Fornavn', 'Efternavn', 'Telefonnummer', 'Email', 'Adresse', 'PostnummerogBy', 'Medlemstype'];
+      var allFieldsFilled = requiredFields.every(field => document.getElementById(field).value.trim() !== '');
+
+      if (allFieldsFilled) {
+        // Send registreringsforespørgsel til serveren
+        document.getElementById('registrationForm').submit();
         showPopup();
-        clearFields(); // Tøm felterne efter vellykket registrering
+        hidePopup();
+        clearFields();
       } else {
-        alert('Udfyld alle påkrævede felter og sørg for, at brugernavn og kodeord er mindst 6 tegn lange.');
-        // Forhindrer formularen i at blive sendt, hvis ikke alle krav er opfyldt
-        event.preventDefault();
+        alert('Udfyld alle påkrævede felter først.');
       }
     }
   </script>
