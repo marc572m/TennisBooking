@@ -57,7 +57,7 @@ body {
   }
   
   button {
-    background-color: #4caf50;
+    background-color: #4caf70;
     color: #fff;
     padding: 10px;
     border: none;
@@ -68,7 +68,7 @@ body {
   }
   
   button:hover {
-    background-color: #45a049;
+    background-color: #1caf60;
   }
   
   p {
@@ -107,4 +107,10 @@ body {
     right: 10px;
     font-size: 20px;
     cursor: pointer;
+  }
+  @media(max-width: 920px) {
+    body {
+      margin: 10px 10px;
+      height: unset;
+    }
   }

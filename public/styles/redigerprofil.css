@@ -63,4 +63,11 @@ body {
   a:hover {
     text-decoration: underline;
   }
-  
+  @media(max-width: 920px) {
+    .redigerprofil-container {
+      width: 300px;
+    }
+    label {
+      margin-bottom: 9px;
+    }
+  }
