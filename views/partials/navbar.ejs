@@ -23,8 +23,8 @@
                     <% if (user) { %>
                         <% if (user.Brugertype === 'Admin') { %>
                             <ul>
-                                <li><a href="/profile">Profile</a></li>
-                                <li><a href="/skabBruger">Skab Bruger</a></li>
+                                <li><a href="/minprofil">Profile</a></li>
+                                <li><a href="/registrer">Tilføj Bruger</a></li>
                                 <li><a href="/opretBane">Opret Bane</a></li>
                                 <li><a href="/OpretHoldSide">Opret hold side</a></li>
                                 <li><a href="/oversigtAfBookinger">Oversigt af bookinger</a></li>
@@ -32,7 +32,7 @@
                             </ul>
                         <% } else if (user.Brugertype === 'Normal') { %>
                             <ul>
-                                <li><a href="/profile">Profile</a></li>
+                                <li><a href="/minprofil">Profile</a></li>
                                 <li><a href="/minebooking">Mine Booking</a></li>
                                 <li><a href="/mineTilmeldinger">Mine tilmeldinger</a></li>
                                 <li><a href="/logout">Logout</a></li>
