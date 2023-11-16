@@ -66,7 +66,9 @@ app.post('/login', (req, res) => {
 
 //Registrer bruger
 
-app.post('/registrer', checkAdminAuth, (req, res) => {
+app.post('/registrer', checkAdminAuth, async (req, res) => {
+    console.log('Forespørgsel modtaget på /registrer', req.body);
+  
     const {
       Brugernavn,
       Kodeord,
@@ -76,9 +78,21 @@ app.post('/registrer', checkAdminAuth, (req, res) => {
       Telefonnummer,
       Email,
       Adresse,
-      PostnummerOgBy,
+      PostnummerogBy,
       Medlemstype
     } = req.body;
+  
+    // Tjek om brugernavn allerede eksisterer
+    const usernameExists = await checkIfUsernameExists(Brugernavn);
+    if (usernameExists) {
+      return res.status(400).send('Brugernavnet eksisterer allerede. Vælg venligst et andet.');
+    }
+  
+    // Tjek om e-mail allerede eksisterer
+    const emailExists = await checkIfEmailExists(Email);
+    if (emailExists) {
+      return res.status(400).send('E-mailen eksisterer allerede. Vælg venligst en anden.');
+    }
   
     // Tabelstrukturen
     const query = `
@@ -96,13 +110,44 @@ app.post('/registrer', checkAdminAuth, (req, res) => {
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
   
-    db.query(query, [Brugernavn, Kodeord, Brugertype, Fornavn, Efternavn, Telefonnummer, Email, Adresse, PostnummerOgBy, Medlemstype], (err, result) => {
+    db.query(query, [Brugernavn, Kodeord, Brugertype, Fornavn, Efternavn, Telefonnummer, Email, Adresse, PostnummerogBy, Medlemstype], (err, result) => {
       if (err) {
         console.error('Fejl ved registrering af bruger: ' + err.message);
         res.status(500).send('Serverfejl');
+      } else {
+        console.log('Bruger registreret:', result);
+        res.status(200).send('Bruger registreret succesfuldt'); // Send en respons til klienten
       }
     });
   });
+  
+  // Funktion til at tjekke om brugernavnet allerede eksisterer
+  function checkIfUsernameExists(username) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM brugere WHERE Brugernavn = ?';
+      db.query(query, [username], (err, results) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results.length > 0);
+        }
+      });
+    });
+  }
+  
+  // Funktion til at tjekke om e-mailen allerede eksisterer
+  function checkIfEmailExists(email) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM brugere WHERE Email = ?';
+      db.query(query, [email], (err, results) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(results.length > 0);
+        }
+      });
+    });
+  }
   
 
 // opdater oplysninger via redigerprofil
