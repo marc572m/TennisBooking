@@ -12,9 +12,63 @@ body {
 }
     
 
+/*---------------------forsiden-------------------------- */
+.forside-conten{
+  font-family: 'Arial', sans-serif;
+  margin: 20px;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+/*.overskrift {
+  max-width: 800px;
+  margin: 20px auto;
+}*/
+.overskrift {
+  max-width: 800px;
+  margin: 20px auto;
+  position: relative;
+  text-align: center;
+  color: #f4f4f4; /* Tekstfarven skal være kontrastfuld mod baggrunden */
+  padding: 20px;
+  background: url('https://www.globaltennisnetwork.com/images/easyblog_articles/120/tennisballs.png') center/cover no-repeat;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Juster skyggen efter dine præferencer */
+  margin-bottom: 1px;
+  margin-bottom: -29px;
+  border-radius: 8px 8px 0px 0px;
+}
 
+section {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-/*---------------NavBar*/
+h1, h2 {
+  color: #333;
+}
+
+ul, ol {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+strong {
+  color: #008cba;
+}
+
+p:last-child {
+  margin-top: 20px;
+}
+/*------------------------------------------------------*/
+
+/*---------------NavBar-----------------------------*/
   .navbar {
     display: flex;
     justify-content: space-between;
@@ -140,3 +194,15 @@ body {
   }
 }
 /*-----------------------------------------------------------------*/
+/*---------------------------------------footer---------------------------------------------*/
+footer {
+  background-color: #4caf70;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 64px;
+}
+/*------------------------------------------------------------------------------------------*/
