@@ -11,7 +11,7 @@
 <body>
   <div class="admin-container">
     <h2>Admin Panel - Tilføj Bruger</h2>
-    <form action="/registrer" method="POST" class="registration-form">
+    <form id="registrationForm" action="#" method="POST" class="registration-form">
       <div class="form-group">
         <label for="Brugernavn">Brugernavn:</label>
         <input type="text" id="Brugernavn" name="Brugernavn" required>
@@ -25,9 +25,8 @@
       <div class="form-group">
         <label for="Brugertype">Brugertype:</label>
         <select id="Brugertype" name="Brugertype" required>
-        <option value="Normal">Normal</option>   
-        <option value="Admin">Admin</option>
-         
+          <option value="Normal">Normal</option>   
+          <option value="Admin">Admin</option>
         </select>
       </div>
 
@@ -60,8 +59,8 @@
 
       <div class="form-group">
         <div class="half-width">
-          <label for="PostnummerOgBy">Postnummer og By:</label>
-          <input type="text" id="PostnummerOgBy" name="PostnummerOgBy" required>
+          <label for="PostnummerogBy">Postnummer og By:</label>
+          <input type="text" id="PostnummerogBy" name="PostnummerogBy" required>
         </div>
 
         <div class="half-width">
@@ -98,24 +97,42 @@
       // Få adgang til formularelementer og tøm deres værdi
       document.getElementById('Brugernavn').value = '';
       document.getElementById('Kodeord').value = '';
-      document.getElementById('Brugertype').value = '';
       document.getElementById('Fornavn').value = '';
       document.getElementById('Efternavn').value = '';
       document.getElementById('Telefonnummer').value = '';
       document.getElementById('Email').value = '';
       document.getElementById('Adresse').value = '';
-      document.getElementById('PostnummerOgBy').value = '';
-      document.getElementById('Medlemstype').value = '';
+      document.getElementById('PostnummerogBy').value = '';
     }
 
     function attemptRegistration() {
+      // Hent værdier fra inputfelter
+      var brugernavn = document.getElementById('Brugernavn').value.trim();
+      var kodeord = document.getElementById('Kodeord').value.trim();
+      var email = document.getElementById('Email').value.trim();
+
+      // Tjek brugernavnslængde
+      if (brugernavn.length < 6) {
+        alert('Brugernavnet skal være mindst 6 tegn langt.');
+        return;
+      }
+
+      // Tjek om e-mail indeholder mindst ét '@'-tegn
+      if (!email.includes('@')) {
+        alert('Ugyldig e-mailadresse. Indtast venligst en gyldig e-mailadresse.');
+        return;
+      }
+
       // Tjek om alle påkrævede felter er udfyldt
-      var requiredFields = ['Brugernavn', 'Kodeord', 'Brugertype', 'Fornavn', 'Efternavn', 'Telefonnummer', 'Email', 'Adresse', 'PostnummerOgBy', 'Medlemstype'];
+      var requiredFields = ['Brugernavn', 'Kodeord', 'Brugertype', 'Fornavn', 'Efternavn', 'Telefonnummer', 'Email', 'Adresse', 'PostnummerogBy', 'Medlemstype'];
       var allFieldsFilled = requiredFields.every(field => document.getElementById(field).value.trim() !== '');
 
       if (allFieldsFilled) {
-        clearFields();
+        // Send registreringsforespørgsel til serveren
+        document.getElementById('registrationForm').submit();
         showPopup();
+        hidePopup();
+        clearFields();
       } else {
         alert('Udfyld alle påkrævede felter først.');
       }
