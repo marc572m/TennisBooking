@@ -62,22 +62,12 @@ app.get('/kalender', (req, res) => {
         }
         else{
             res.render('kalender', { data: result });
+            console.log(result);
         }
     })
 })
 
-app.get('/getCalendarData', (req, res) => {
-    const query = 'SELECT * FROM kalender'; // Tilpas til din database
 
-    db.query(query, (error, result) => {
-        if (error) {
-            console.error('Fejl ved hentning af kalenderdata: ' + error.message);
-            res.status(500).send('Serverfejl');
-        } else {
-            res.json(result);
-        }
-    });
-});
 
 
 
