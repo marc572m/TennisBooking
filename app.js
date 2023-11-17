@@ -116,7 +116,7 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
         res.status(500).send('Serverfejl');
       } else {
         console.log('Bruger registreret:', result);
-        res.status(200).send('Bruger registreret succesfuldt'); // Send en respons til klienten
+        
       }
     });
   });
