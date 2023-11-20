@@ -147,6 +147,12 @@ p:last-child {
       display: flex;
     }
     
+    nav li a{
+      text-decoration: none;
+      color: black;
+      text-decoration: underline;
+    }
+    
   }
 
 /*--------------------------------dropdown----------------------------*/

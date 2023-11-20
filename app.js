@@ -247,9 +247,6 @@ app.get('/', (req,res)=>{
     res.render('index', { user });
 })
 
-app.get('/registrer', checkAdminAuth, (req, res) => {
-  res.render('registrer');
-});
 
 app.get('/login', (req, res) => {
     res.render('login');

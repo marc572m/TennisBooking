@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css"/>
+  <title>Netbooker</title>
+</head>
+<body>
+    <%- include('partials/navbar.ejs') %>
+    <h1>Kalender</h1>
+    <div style="display:none;" class="mobilelink"></div>
+      <div class="km-card-inner km-card-bg" style="visibility: visible;">
+          
+    
+        <!--<script type="text/javascript" src="http://code.jquery.com/jquery-latest.pack.js"></script>-->
+        <style>
+        /*------------NEW-----------------*/
+        body #kalender tr td:nth-child(7), body #kalender tr td:nth-child(8) {
+          background-color:rgba(55,55,55,0.1) !important;
+        }
+        @media (max-width: 769px) {
+          .mobilelink {
+            display:block;
+          }
+        #kalender .km-td-cal-event {
+           padding: 5px 0px !important;
+        }
+        .mobile-date {
+          padding:3px;
+        }
+        #mobileloadwrap {
+          display:none;
+          height:100vh;
+          width:100vw;
+          position:fixed;
+          top:0;
+          left:0;
+          z-index:1000000001;
+          background-color:rgba(0,0,0,0.8);
+        }
+        #mobileload {
+          z-index:2;
+          position:relative;
+        }
+        #mobileloadclose {
+          z-index:3;
+          position:absolute;
+          top:5px;
+          right:5px;
+        }
+        #mobileloadclose .fa {
+          font-size:2.5em;
+          
+        }
+        #mobileloadbg {
+          width:100%;
+          height:100%;
+          position:absolute;
+          top:0;
+          left:0;
+          z-index:1;
+        }
+        }
+        @media (min-width: 770px){
+         #arrowAnim {
+           margin-left:-10000px !important;
+           display:none !important;
+         }
+        }
+        /*----------NEW END---------------*/
+        .tdCalendar {
+          text-decoration:none;
+          border-right:1px solid lightgrey;
+          border-left:0px solid #CCCCCC;
+          border-bottom:1px solid lightgrey;
+          border-top:0px solid lightgrey;
+          width: 100px;
+          Height: 2em;
+          font-size:x-small;
+          padding-left:0px;
+          padding-top:2px;
+        }
+        .tdCalendartop {
+          text-decoration:none;
+          border-right:1px solid lightgrey;
+          border-left:0px solid #CCCCCC;
+          border-bottom:1px solid #cccccc;
+          border-top:0px solid #CCCCCC;
+          width: 100px;
+          Height: 2em;
+          font-size:small;
+          padding-left:0px;
+          padding-top:2px;
+          background-color: #f1f1f1;
+          text-align: center;
+        }
+        #kalender p {
+          width:7.6em;
+          margin:0px 0px 0px 2px;
+          word-wrap:break-word;
+          font-size:small;
+        }
+        a.tooltip span {
+          display:none;
+          padding:2px 3px;
+          margin-left:8px;
+          width:130px;
+        }
+        a.tooltip:hover span {
+          display:inline;
+          position:absolute;
+          border:1px solid #cccccc;
+          background:#ffffff;
+          color:#6c6c6c;
+        }
+        .button {
+          display: inline-block;
+          outline: none;
+          cursor: cursor;
+          text-align: center;
+          text-decoration: none;
+          font: 14px/100% Arial, Helvetica, sans-serif;
+          padding: .1em 1.0em .2em;
+          text-shadow: 0 1px 1px rgba(0,0,0,.3);
+          -webkit-border-radius: .5em;
+          -moz-border-radius: .5em;
+          border-radius: .5em;
+          -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+          -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+          box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        }
+        .button:hover {
+          text-decoration: none;
+        }
+        .button:active {
+          position: relative;
+          top: 1px;
+        }
+        .white {
+          color: #606060;
+          border: solid 1px #b7b7b7;
+          background: #fff;
+          background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+          background: -moz-linear-gradient(top, #fff, #ededed);
+         filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed');
+        }
+        .white:hover {
+          background: #ededed;
+          background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
+          background: -moz-linear-gradient(top, #fff, #dcdcdc);
+         filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dcdcdc');
+        }
+        .white:active {
+          color: #999;
+          background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#fff));
+          background: -moz-linear-gradient(top, #ededed, #fff);
+         filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#ffffff');
+        }
+        </style>
+        <script type="text/javascript" src="../cms/js/jquery.offscreen.js"></script>
+        <script type="text/javascript" src="../cms/js/pages/CMS/lightordark.min.js"></script>
+        <div id="mobileloadwrap" style="display:none;">
+        <div id="mobileloadbg"></div>
+        <span id="mobileloadclose"><i class="fa fa-times-circle km-red" aria-hidden="true"></i></span>
+        <div id="mobileload"></div>
+        </div>
+        <div id="kalender">
+          <div class="km-card-header km-bg-blue h1">
+            <a id="ctl00_ContentPlaceHolderBody_ctl00_lnkBack" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ContentPlaceHolderBody$ctl00$lnkBack&quot;, &quot;&quot;, false, &quot;&quot;, &quot;activity.aspx?CalendarType=Month&amp;Month=-1&quot;, false, true))"><i class="fa fa-arrow-circle-o-left" title="Gå en måned tilbage" aria-hidden="true"></i><span class="sr-only">Gå en måned tilbage</span></a>
+            <span id="ctl00_ContentPlaceHolderBody_ctl00_lblStartDate">01.11.2023</span>
+            -
+            <span id="ctl00_ContentPlaceHolderBody_ctl00_lblEndDate">30.11.2023</span>
+            <a id="ctl00_ContentPlaceHolderBody_ctl00_lnkForward" href="javascript:WebForm_DoPostBackWithOptions(new WebForm_PostBackOptions(&quot;ctl00$ContentPlaceHolderBody$ctl00$lnkForward&quot;, &quot;&quot;, false, &quot;&quot;, &quot;activity.aspx?CalendarType=Month&amp;Month=1&quot;, false, true))"><i class="fa fa-arrow-circle-o-right" title="Gå en måned frem" aria-hidden="true"></i><span class="sr-only">Gå en måned frem</span></a>
+            <br>
+
+        <br>
+        <div id="arrowAnim">
+          <div class="arrowSliding">
+            <div class="arrow"></div>
+          </div>
+          <div class="arrowSliding delay1">
+            <div class="arrow"></div>
+          </div>
+          <div class="arrowSliding delay2">
+            <div class="arrow"></div>
+          </div>
+          <div class="arrowSliding delay3">
+            <div class="arrow"></div>
+          </div>
+        </div>
+        <div style="display:none;" class="mobilelink"></div>
+        <div id="mscroll">
+          <table width="100%" cellspacing="0" cellpadding="0" align="left">
+            
+                <tbody><tr>
+                  <td style="width: 20px; border-bottom:1px solid lightgrey;"></td>
+                  <td style="color:#000;" class="tdCalendartop"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl00_Label1" class="deskonly">Mandag</span></td>
+                  <td style="color:#000;" class="tdCalendartop"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl00_Label2" class="deskonly">Tirsdag</span></td>
+                  <td style="color:#000;" class="tdCalendartop"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl00_Label3" class="deskonly">Onsdag</span></td>
+                  <td style="color:#000;" class="tdCalendartop"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl00_Label4" class="deskonly">Torsdag</span></td>
+                  <td style="color:#000;" class="tdCalendartop"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl00_Label5" class="deskonly">Fredag</span></td>
+                  <td style="color:#000;" class="tdCalendartop"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl00_Label6" class="deskonly">Lørdag</span></td>
+                  <td style="color:#000;" class="tdCalendartop"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl00_Label7" class="deskonly">Søndag</span></td>
+        
+                </tr>
+              
+                <tr>
+                  <td class="tdCalendar" valign="middle" align="center" style="width: 20px; border-bottom:1px solid lightgrey;"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl01_Label8" class="km-activity-week">44</span></td>
+                  
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>30</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>31</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>1</b></span>
+                                  <span>. November</span>
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>2</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>3</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>4</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>5</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                </tr>
+              
+                <tr>
+                  <td class="tdCalendar" valign="middle" align="center" style="width: 20px; border-bottom:1px solid lightgrey;"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl02_Label8" class="km-activity-week">45</span></td>
+                  
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>6</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>7</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>8</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>9</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>10</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>11</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>12</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                </tr>
+              
+                <tr>
+                  <td class="tdCalendar" valign="middle" align="center" style="width: 20px; border-bottom:1px solid lightgrey;"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl03_Label8" class="km-activity-week">46</span></td>
+                  
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>13</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>14</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>15</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>16</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>17</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>18</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>19</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                </tr>
+              
+                <tr>
+                  <td class="tdCalendar" valign="middle" align="center" style="width: 20px; border-bottom:1px solid lightgrey;"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl04_Label8" class="km-activity-week">47</span></td>
+                  
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>20</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>21</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>22</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>23</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>24</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>25</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>26</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                </tr>
+              
+                <tr>
+                  <td class="tdCalendar" valign="middle" align="center" style="width: 20px; border-bottom:1px solid lightgrey;"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl05_Label8" class="km-activity-week">48</span></td>
+                  
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>27</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>28</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>29</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>30</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>1</b></span>
+                                  <span>. December</span>
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>2</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>3</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                </tr>
+              
+                <tr>
+                  <td class="tdCalendar" valign="middle" align="center" style="width: 20px; border-bottom:1px solid lightgrey;"><span id="ctl00_ContentPlaceHolderBody_ctl00_repWeek_ctl06_Label8" class="km-activity-week">49</span></td>
+                  
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>4</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>5</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>6</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>7</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>8</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>9</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                      <td class="tdCalendar" style="vertical-align:top;width: 14%; max-width:18%; height: 90px"><table style="vertical-align:top; width:100%;">
+                          <tbody><tr>
+                            <td style="vertical-align:top;"><div>
+                                
+                                <div>
+          
+                                  <span><b>10</b></span>
+                                  
+                                  
+        </div>
+                                <table style="width:100%;">
+                                  
+                                </table>
+                              </div></td>
+                          </tr>
+                        </tbody></table></td>
+                    
+                </tr>
+              
+          </tbody></table>
+          </div>
+        </div>
+        <style>
+        #hovershow {
+        position:absolute;
+          z-index:10001;
+          -webkit-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.20);
+            -moz-box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.20);
+            box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.20);
+            padding: 10px;
+            border: 1px solid #d6d6d6;
+          opacity:1;
+          transition:opacity 0.3s linear;
+          max-width:250px;
+        }
+        #hovershow i {
+          width:15px;
+        }
+        .remove {
+          
+          opacity:0 !important;
+        }
+        #sc {
+          font-size:0.8em;
+          white-space:nowrap;
+        }
+        #kalender .km-td-cal-event {
+           cursor:pointer;
+        }
+        #cd {
+          font-size:0.8em;
+        }
+        </style>
+        
+        <div id="hover" style="height:0;width:0;display:block;overflow:hidden;"></div>
+        <script>
+        $(window).load(function() {	
+        setTimeout(function(){
+          var position = $("#mscroll > table").position();
+          if (position.left == 10) {	
+          setTimeout(function(){
+            $("#arrowAnim").fadeToggle();	
+          }, 4000); 
+            $("#arrowAnim").css("margin-top", "157px");
+          }
+        }, 4000); 
+        if (document.location.href.toLowerCase().indexOf('cms') > -1 && !$(".mobilelink").is(":visible")) {
+        $( ".km-td-cal-event" ).click(function(e) {
+          e.preventDefault();
+          href = $(this).find("a.openevent").attr("href");
+          window.open(href, 'popupwindow', 'width=' + (parseInt(window.innerWidth) * 0.6) + ',height=' + (parseInt(window.innerHeight) * 0.8) + ',left=' + (parseInt(window.innerWidth) * 0.2) + ',top=' + (parseInt(window.innerHeight) * 0.1) + ',scrollbars=yes');
+        });
+        
+        
+        $( ".km-td-cal-event" ).hover(
+          function(event) {
+            if (!$("#hovershow").length) {
+            $("body").append("<div id='hovershow' class='km-card-bg remove'></div>");
+          var load_url = $(this).find("a").attr("href") + " .km-fullcard";
+          var py = event.pageY + 5;
+          var px = event.pageX + 5;
+         $("#hovershow").attr("style", "position:absolute; top:" + py + "px; left:" + px + "px;");
+            $("#hover").load(load_url, function() {
+            
+          var or = "false";
+          var ob = "false";
+        var n = $(this).find("#lblEventname").text();	
+          
+          
+             
+          var ts = $(this).find("#lblStartDate").text(); 
+          var tst = $(this).find("#lblStartHour").text();
+          var te = $(this).find("#lblEndDate").text();
+          var tet = $(this).find("#lblEndHour").text() + "<br />";
+          var br = "";
+          
+          if (ts == te) {
+            te = "&nbsp;-&nbsp;&nbsp;<i class='fa fa-clock-o'></i>";
+          }
+          else {
+            te = "<i class='fa fa-calendar'></i>&nbsp;&nbsp;" + te + "&nbsp;&nbsp;&nbsp;<i class='fa fa-clock-o'></i>"; 
+            br = "<br />";
+          }
+          if ($(this).find("#lblLocation").html()) { 
+          var s = "<i class='fa fa-map-marker'></i>&nbsp;&nbsp;" + $(this).find("#lblLocation").text() + "<br />";
+          }
+          else {
+          var s = "";	
+          }
+          if ($(this).find("#panelMeetingPlace").length) { 
+          var m = "<i class='fa fa-car'></i>&nbsp;&nbsp;" + $(this).find("#lblMeetingPlace").text() + "&nbsp;&nbsp;&nbsp;<i class='fa fa-clock-o'></i>" + $(this).find("#lblMeetingHour").text() + "<br />"; 
+          }
+          else {
+            var m = "";
+          }
+          if (!$(this).find("#lblDescription").text() == " " && $(this).find("#lblDescription").length) {
+          var d = "<i class='fa fa-info'></i>&nbsp;&nbsp;" + $(this).find("#lblDescription").text();
+          if (d.length > 138) {
+            var q = 'Læs mere';
+            d = d.slice(0,138) + '... ' + q;
+          }
+          }
+          else {
+            var d = ""; 
+          }
+          if ($("#panelEventEnrollment").length) {
+            if (d.length > 138) {
+              var ev = ' og tilmeld event'
+            }
+            else {
+              var ev = '<br/><i class="fa fa-plus"></i>&nbsp;&nbsp;Tilmeld event';
+            }		
+          }
+          else {
+            var ev = "";
+          }
+          $("#hovershow").html("<div style='margin-bottom:10px;'>" +n + "</div><div id='sc'><i class='fa fa-calendar'></i>&nbsp;&nbsp;" + ts + "&nbsp;&nbsp;&nbsp;<i class='fa fa-clock-o'></i>" + tst + br + te + tet + s + m + "</div><span id='cd'>" + d + ev + "</span>"); 
+            if ($("#hovershow").is(':off-bottom') || ob == "true") {	
+            ob = "true";
+            py = event.pageY - $("#hovershow").outerHeight() - 5;
+            }
+            
+           
+          if ($("#hovershow").is(':off-right') || or == "true") {		
+            or = "true";
+            px = event.pageX - $("#hovershow").outerWidth() - 5;
+            }
+            
+            $("#hovershow").attr("style", "position:absolute; top:" + py + "px; left:" + px + "px;");
+            
+          
+          
+          $("#hovershow").removeClass("remove");	
+          $(window).mousemove(function(event) {	
+          
+          if ($("#hovershow").is(':off-bottom') || ob == "true") {	
+            ob = "true";
+            py = event.pageY - $("#hovershow").outerHeight() - 5;
+            }
+            else {
+              var py = event.pageY + 5;
+            }
+          
+          if ($("#hovershow").is(':off-right') || or == "true") {		
+            or = "true";
+            px = event.pageX - $("#hovershow").outerWidth() - 5;
+            }
+            
+            else {
+              var px = event.pageX + 5;
+            }
+            $("#hovershow").attr("style", "position:absolute; top:" + py + "px; left:" + px + "px;");
+            });
+          
+              });
+            }
+          }, function() { 
+        
+        $(window).unbind('mousemove');
+        or = "false";
+        ob = "false";
+        
+          $("#hovershow").remove();
+        
+          }
+        );
+        
+        }
+            
+        
+        $(".mobilelink").on("click", function (e) {
+                        e.preventDefault();
+                var load_url = $(this).attr("href") + " #km-calendareventshowpopup";
+                     $("#mobileload").load(load_url, function() { 
+                 $("#mobileloadwrap").show();       
+                    });
+        });
+        $("#mobileloadclose, #mobileloadbg").on("click", function (e) {
+                        e.preventDefault();
+                $("#mobileloadwrap").hide();
+        });
+        
+        
+          $(".km-colorlink").each(function() {
+            
+            if ($(this).parent().attr("bgcolor").indexOf('#') < 0) {
+              var bgcol = $(this).parent().attr("bgcolor");
+              $(this).css("background-color", "#" + bgcol)
+            }
+            $(this).lightOrDark();
+            if ($(this).hasClass("light")) {
+              $(this).parent().addClass("light");
+            }
+            if ($(this).hasClass("dark")) {
+              $(this).parent().addClass("dark");
+            }
+          });
+        });
+        </script>
+            <div style="clear:both;"></div>
+            </div>
+    <%- include('partials/footer.ejs') %>
+</body>
+</html>
