@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Min Profil</title>
+  <link rel="stylesheet" href="/styles/minprofil.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<%- include('partials/navbar.ejs') %>
+  <div class="profil-container">
+    <h2>Min Profil</h2>
+    <p>Brugernavn: <%= user.Brugernavn %></p>
+    <p>Email: <%= user.Email %></p>
+    <p>Telefonnummer: <%= user.Telefonnummer %></p>
+    <p>Fornavn: <%= user.Fornavn %></p>
+    <p>Efternavn: <%= user.Efternavn %></p>
+    <p>Adresse: <%= user.Adresse %></p>
+    <p>Postnummer og By: <%= user.PostnummerogBy %></p>
+    <p>Medlemstype: <%= user.Medlemstype %></p>
+    
+    <a href="/redigerprofil" class="edit-profile-btn">Rediger Min Profil</a>
+
+  </div>
+</body>
+</html>

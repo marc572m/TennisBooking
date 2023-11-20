@@ -1,36 +1,150 @@
 /*CSS reset */
-*   {
-        margin: 0;
-        padding: 0;
-        font-family: Lato;
-    }
-    
-    body {
-      height: 100%;
-      position: relative;
-    }
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Lato;
+}
 
-
+body {
+  height: 100%;
+  position: relative;
+}
     
-    /*NavBar*/
-    nav{
-      background-color: #078211;
-      padding: 20px;
-      position: sticky;
-      top: 0;
+
+/*---------------------forsiden-------------------------- */
+.forside-conten{
+  font-family: 'Arial', sans-serif;
+  margin: 20px;
+  padding: 0;
+  background-color: #f4f4f4;
+}
+/*.overskrift {
+  max-width: 800px;
+  margin: 20px auto;
+}*/
+.overskrift {
+  max-width: 800px;
+  margin: 20px auto;
+  position: relative;
+  text-align: center;
+  color: #f4f4f4; /* Tekstfarven skal være kontrastfuld mod baggrunden */
+  padding: 20px;
+  background: url('https://www.globaltennisnetwork.com/images/easyblog_articles/120/tennisballs.png') center/cover no-repeat;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Juster skyggen efter dine præferencer */
+  margin-bottom: 1px;
+  margin-bottom: -29px;
+  border-radius: 8px 8px 0px 0px;
+}
+
+section {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  color: #333;
+}
+
+ul, ol {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+strong {
+  color: #008cba;
+}
+
+p:last-child {
+  margin-top: 20px;
+}
+/*------------------------------------------------------*/
+
+/*---------------NavBar-----------------------------*/
+  .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #4caf70;
+    color: white;
+  }
+  .brand-tilte{
+    font-size: 1.5rem;
+    margin: .5rem;
+  }
+
+  .navbar-links ul{
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  
+  .navbar-links li{
+    list-style: none;
+  }
+
+  .navbar-links li a{
+    text-decoration: none;
+    color: white;
+    padding: 1rem;
+    display: block;
+  }
+
+  .navbar-links li:hover {
+    background-color: #1caf60;
+  }
+
+  .toggle-button{
+    margin-top: .5rem;
+    position: absolute;
+    position: .75rem;
+    right: 1rem;
+    display: none;
+    flex-direction: column; 
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+  }
+
+  .toggle-button .bar {
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 10px; 
+  }
+
+  @media(max-width: 920px) {
+    .toggle-button{
+      display: flex;
+    }
+    .navbar-links{
+      display: none;
       width: 100%;
-      left: 0;
     }
-    
-    nav ul{
-      white-space: nowrap;
-      max-width: 1200px;
-      margin:0 auto;
+    .navbar{
+      flex-direction: column;
+      align-items: flex-start;
     }
-    nav li{
-      width: 18%;
-      display: inline-block;
-      font-size: auto;
+    .navbar-links ul {
+      width: 100%;
+      flex-direction: column; 
+    }
+    .navbar-links li{
+      text-align: center;
+    }
+    .navbar-links li a{
+      padding: .5rem 1rem;
+    } 
+    .navbar-links.active{
+      display: flex;
     }
     
     nav li a{
@@ -39,3 +153,62 @@
       text-decoration: underline;
     }
     
+  }
+
+/*--------------------------------dropdown----------------------------*/
+.profile-icon {
+  position: relative;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.dropdown-content {
+  display: none;
+  position: fixed;
+  top: 7.9%;
+  right: 0;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown-content li a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.show {
+  display: block;
+}
+@media(max-width: 920px) {
+  .dropdown-content { 
+    top: 0;
+    position: relative;
+  }
+}
+/*-----------------------------------------------------------------*/
+/*---------------------------------------footer---------------------------------------------*/
+footer {
+  background-color: #4caf70;
+  color: white;
+  text-align: center;
+  padding: 10px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 64px;
+}
+/*------------------------------------------------------------------------------------------*/
