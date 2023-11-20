@@ -266,6 +266,10 @@ app.get('/minprofil', checkAuth, checkNotAuthenticated, (req, res) => {
     res.render('minprofil', { user: currentUser });
   });
 
+  app.get('/registrer', checkAdminAuth, (req, res) => {
+    res.render('registrer');
+  });
+
   app.get('/redigerprofil', checkAuth, (req, res) => {
     // Hent brugeroplysninger fra sessionen
     const currentUser = req.session.user;
