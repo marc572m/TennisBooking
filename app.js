@@ -276,3 +276,18 @@ app.get('/minprofil', checkAuth, checkNotAuthenticated, (req, res) => {
   
     res.render('redigerprofil', { user: currentUser });
   });
+
+  app.get('/kalender', (req, res) => {
+    const user = req.session.user;
+    db.query('SELECT * FROM kalender', (error, result) => {
+        if(error){
+            console.error('ingen bookinger fundet ' + error.message);
+            res.status(204).send('ingen data returneret');
+        }
+        else{
+            res.render('kalender', { data: result,
+            user: user });
+            console.log(result);
+        }
+    })
+  })

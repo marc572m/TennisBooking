@@ -1,233 +1,220 @@
+<%
+// EJS-kode her
+function formatDate(year, month, day) {
+    const months = [
+        "Januar", "Februar", "Marts", "April", "Maj", "Juni",
+        "Juli", "August", "September", "Oktober", "November", "December"
+    ];
+    return `${day}. ${months[(month + 12) % 12]}`;
+}
+
+function getWeekNumber(date) {
+    // Copy date so don't modify the original
+    date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    // Set to the nearest Thursday: current date + 4 - current day number
+    // Make Sunday's day number 7
+    date.setDate(date.getDate() + 4 - (date.getDay() || 7));
+    // Get the first day of the year
+    var yearStart = new Date(date.getFullYear(), 0, 1);
+    // Calculate full weeks to the nearest Thursday
+    var weekNumber = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
+    // Return the week number
+    return weekNumber;
+}
+
+function formatDateWithWeekday(year, month, day) {
+    const weekdays = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
+    const months = [
+        "Januar", "Februar", "Marts", "April", "Maj", "Juni",
+        "Juli", "August", "September", "Oktober", "November", "December"
+    ];
+
+    const date = new Date(year, month, day);
+    const weekday = weekdays[date.getDay()];
+    const dayNumber = date.getDate();
+    const monthName = months[(month + 12) % 12];
+
+    return { weekday, formattedDate: `${dayNumber}. ${monthName}` };
+}
+
+const currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
+const currentDay = currentDate.getDate();
+
+function convertUTCToLocal(utcDate) {
+    const options = { timeZone: 'Europe/Copenhagen', hour12: false };
+    return utcDate.toLocaleString('da-DK', options);
+}
+
+const numberOfCourts = 3;
+let startDay, endDay;
+let dayCount;
+let firstDayOfWeek = currentDay - currentDate.getDay() + (currentDate.getDay() === 0 ? -6 : 1);
+
+const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Convert dates to ISO format
+%>
+
 <!DOCTYPE html>
 <html lang="da">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalender</title>
-    <style>
-        th, td {
-            padding: 10px;
-            text-align: center;
-            cursor: pointer; /* Add cursor style for clickable cells */
-        }
-
-        .time-column {
-            text-align: right;
-            width: 12.5%;
-        }
-
-        .date-info {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        /* Hidden modal initially */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            z-index: 1;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .modal-close {
-            cursor: pointer;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        #overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7); /* Adjust the alpha (fourth parameter) to control transparency */
-        z-index: 1;
-    }
-
-    .popup {
-        /* Add styles for your popup here */
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: #fff;
-        padding: 20px;
-        z-index: 2;
-    }
-    .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 5px 10px;
-    font-size: 16px;
-    background-color: red;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-
-    </style>
+    <link rel="stylesheet" href="/styles/kalender.css">
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <div id="overlay"></div>
-    <%
-    function formatDate(year, month, day) {
-        const months = [
-            "Januar", "Februar", "Marts", "April", "Maj", "Juni",
-            "Juli", "August", "September", "Oktober", "November", "December"
-        ];
-        return `${day}. ${months[(month + 12) % 12]}`;
-}
+    <script>
 
-        function getWeekNumber(date) {
-            // Copy date so don't modify the original
-            date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-            // Set to the nearest Thursday: current date + 4 - current day number
-            // Make Sunday's day number 7
-            date.setDate(date.getDate() + 4 - (date.getDay() || 7));
-            // Get the first day of the year
-            var yearStart = new Date(date.getFullYear(), 0, 1);
-            // Calculate full weeks to the nearest Thursday
-            var weekNumber = Math.ceil(((date - yearStart) / 86400000 + 1) / 7);
-            // Return the week number
-            return weekNumber;
+    // JavaScript-funktionerne
+    function prevWeek() {
+        currentDay -= 7;
+        updateCalendar();
+    }
+
+    function nextWeek() {
+        currentDay += 7;
+        updateCalendar();
+    }
+
+    function updateCalendar() {
+        const updatedDate = new Date(currentYear, currentMonth, currentDay);
+        currentMonth = updatedDate.getMonth();
+        currentYear = updatedDate.getFullYear();
+
+        const table = document.querySelector('table');
+        table.innerHTML = ''; // Ryd indholdet af tabellen
+        generateCalendar(table);
+    }
+
+    function generateCalendar(table) {
+        // Ny funktion: Generer kalendertabellen igen
+
+        // Eksisterende generering af overskriftsrad
+        const headerRow = document.createElement('tr');
+        headerRow.innerHTML = `<th class="time-column">Uge ${getWeekNumber(currentDate)}</th>`;
+        for (let i = 1; i <= 7; i++) {
+            headerRow.innerHTML += `<th>${formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).weekday}<br>${formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).formattedDate}</th>`;
         }
-        const currentDate = new Date();
-        let currentMonth = currentDate.getMonth();
-        let currentYear = currentDate.getFullYear();
-        const currentDay = currentDate.getDate();
-    
-        function convertUTCToLocal(utcDate) {
-            const options = { timeZone: 'Europe/Copenhagen', hour12: false };
-            return utcDate.toLocaleString('da-DK', options);
+        table.appendChild(headerRow);
+
+        // Eksisterende generering af kalenderrækker
+        for (let hour = 8; hour < 21; hour++) {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td class="time-column">${hour}:00 - ${hour + 1}:00</td>`;
+            
+            for (let day = 0; day < 7; day++) {
+                // Eksisterende kode for hver celle
+
+                // ...
+
+                table.appendChild(row);
+            }
         }
+    }
     
-        const numberOfCourts = 3;
-        let startDay, endDay;
-        let dayCount;
-        let firstDayOfWeek = currentDay - currentDate.getDay() + (currentDate.getDay() === 0 ? -6 : 1);
-        
-    
-        const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Convert dates to ISO format
-    %>
-    
-    <div class="date-info">
-        <h2>Dagens dato: <%= formatDate(currentYear, currentMonth, currentDay) %></h2>
-        <p>Anden Information:
-            <% data.forEach(item => { %>
-                <p>Booking: <%= item.Dato.toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
-                <p>Tid: <%= item.Klokkeslet %></p>
-            <% }) %>
-        </p>
-        <label for="courtSelector">Vælg bane:</label>
-        <select id="courtSelector" onchange="changeCourt()">
-            <% for (let i = 1; i <= numberOfCourts; i++) { %>
-                <option value="<%= i %>">Bane <%= i %></option>
-            <% } %>
-        </select>
-        <button onclick="prevWeek()">Forrige Uge</button>
-        <button onclick="nextWeek()">Næste Uge</button>
-    </div>
-    
-    <h1>Min Kalender</h1>
-    <table border="1">
-        <tr>
-            <th class="time-column">
-                <%= 'Uge ' + getWeekNumber(currentDate) %>
-            </th>
-            <% for (let i = 1; i <= 7; i++) { %>
-                <th><%= formatDate(currentYear, currentMonth, currentDay + i - currentDate.getDay()) %></th>
-            <% } %>
-        </tr>
-        <% 
-    for (let hour = 8; hour < 21; hour++) { 
-        startDay = undefined;
-        dayCount = 1;
-%>
+    function showModal(formattedCellDate, cellHour, bookingID) {
+        const overlay = document.getElementById('overlay');
+        const popup = document.getElementById('popup');
+        const popupContent = document.getElementById('popup-content');
+
+        // Set the content of the popup
+        popupContent.innerHTML = `
+            <p>Date: ${formattedCellDate}</p>
+            <p>Time: ${cellHour}:00</p>
+            <p>Booking ID: ${bookingID}</p>
+        `;
+
+        overlay.style.display = 'block';
+        popup.style.display = 'block';
+    }
+
+    function hideModal() {
+        const overlay = document.getElementById('overlay');
+        const popup = document.getElementById('popup');
+
+        overlay.style.display = 'none';
+        popup.style.display = 'none';
+    }
+</script>
+
+<%- include('partials/navbar.ejs') %>
+<div id="overlay"></div>
+
+<div class="date-info">
+    <h2>Dagens dato: <%= formatDate(currentYear, currentMonth, currentDay) %> </h2>
+    <label for="courtSelector">Vælg bane:</label>
+    <select id="courtSelector" onchange="changeCourt()">
+        <% for (let i = 1; i <= numberOfCourts; i++) { %>
+            <option value="<%= i %>">Bane <%= i %></option>
+        <% } %>
+    </select>
+    <button onclick="prevWeek()">Forrige Uge</button>
+    <button onclick="nextWeek()">Næste Uge</button>%>
+</div>
+
+<h1>Min Kalender</h1>
+<table border="1">
     <tr>
-        <td class="time-column">
-            <%= `${hour}:00 - ${hour + 1}:00` %>
-        </td>
-        <% for (let day = 0; day < 7; day++) { %>
-            <% if (hour === 8 && day === 0) { %>
-                <% startDay = dayCount; %>
-            <% } %>
-            <% const cellDate = new Date(currentYear, currentMonth, firstDayOfWeek + day, hour); %>
-            <% const formattedCellDate = cellDate.toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }); %>
-            <% const cellHour = cellDate.getHours(); %>
-            <td data-day="<%= dayCount %>" data-hour="<%= hour %>" data-court="1" onclick="showModal('<%= formattedCellDate %>', <%= cellHour %>)">
-                <!-- Loop through the 'data' array to check for bookings -->
-                <% const isBooked = data.some(item => {
-                    const itemHour = parseInt(item.Klokkeslet.split(':')[0], 10);
-                    const itemDate = new Date(item.Dato);
-                    return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour;
-                }); %>
-                <%= isBooked ? 'Booket' : 'Ledig ' + formattedCellDate + ' ' + hour %>
-            </td>
-            <% dayCount++; %>
+        <th class="time-column">
+            <%= 'Uge ' + getWeekNumber(currentDate) %>
+        </th>
+        <% for (let i = 1; i <= 7; i++) { %>
+            <th>
+                <%= formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).weekday %>
+                <br>
+                <%= formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).formattedDate %>
+            </th>
         <% } %>
     </tr>
+    <% 
+for (let hour = 8; hour < 21; hour++) { 
+    startDay = undefined;
+    dayCount = 1;
+%>
+<tr>
+    <td class="time-column">
+        <%= `${hour}:00 - ${hour + 1}:00` %>
+    </td>
+    <% for (let day = 0; day < 7; day++) { %>
+        <% if (hour === 8 && day === 0) { %>
+            <% startDay = dayCount; %>
+        <% } %>
+        <% const cellDate = new Date(currentYear, currentMonth, firstDayOfWeek + day, hour); %>
+        <% const formattedCellDate = cellDate.toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }); %>
+        <% const cellHour = cellDate.getHours(); %>
+        <td data-day="<%= dayCount %>" data-hour="<%= hour %>" data-court="1" onclick="showModal('<%= formattedCellDate %>', <%= cellHour %>)">
+            <!-- Loop through the 'data' array to check for bookings -->
+            <% const isBooked = data.some(item => {
+                const itemHour = parseInt(item.Klokkeslet.split(':')[0], 10);
+                const itemDate = new Date(item.Dato);
+                return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour;
+            }); %>
+            <%= isBooked ? 'Booket' : 'Ledig ' + formattedCellDate + ' ' + hour %>
+        </td>
+        <% dayCount++; %>
+    <% } %>
+</tr>
 <% } %>
-    </table>
+</table>
 
-    <!-- Modal -->
-    <div id="myModal" class="modal">
-        <span class="modal-close" onclick="closeModal()">&times;</span>
-        <p id="modal-date"></p>
-        <p id="modal-time"></p>
-        <p id="modal-booking-id"></p>
+<!-- Modal -->
+<div id="myModal" class="modal">
+    <span class="modal-close" onclick="closeModal()">&times;</span>
+    <p id="modal-date"></p>
+    <p id="modal-time"></p>
+    <p id="modal-booking-id"></p>
+</div> 
+
+<!-- Modal -->
+<div id="popup" class="modal">
+    <span class="modal-close" onclick="hideModal()">&times;</span>
+    <div id="popup-content" class="popup-content">
+        <!-- Popup content goes here -->
     </div>
-
-    <script>
-        function showModal(formattedCellDate, cellHour, bookingID) {
-            const overlay = document.getElementById('overlay');
-            const popup = document.getElementById('popup');
-            const popupContent = document.getElementById('popup-content');
-    
-            // Set the content of the popup
-            popupContent.innerHTML = `
-                <p>Date: ${formattedCellDate}</p>
-                <p>Time: ${cellHour}:00</p>
-                <p>Booking ID: ${bookingID}</p>
-            `;
-    
-            overlay.style.display = 'block';
-            popup.style.display = 'block';
-        }
-    
-        function hideModal() {
-            const overlay = document.getElementById('overlay');
-            const popup = document.getElementById('popup');
-    
-            overlay.style.display = 'none';
-            popup.style.display = 'none';
-        }
-    </script>
-    
-    
-    
-    <!-- Modal -->
-    <div id="popup" class="modal">
-        <span class="modal-close" onclick="hideModal()">&times;</span>
-        <div id="popup-content" class="popup-content">
-            <!-- Popup content goes here -->
-        </div>
-    </div>
-
-    
-    
+</div>
+<%- include('partials/footer.ejs') %>
 </body>
 </html>
+
