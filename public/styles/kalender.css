@@ -5,6 +5,11 @@ th, td {
     width: 12.5%; /* Set a fixed width for all cells */
     height: 50px; /* Set a fixed height for all cells */
 }
+ th{
+    background-color: #4caf70;
+    color: white;
+    text-align: center;
+}
 
 .time-column {
     text-align: right;
@@ -73,4 +78,27 @@ table {
     color: white;
     border: none;
     cursor: pointer;
+}
+@media (max-width: 920px) {
+    table {
+        width: 100%;
+        font-size: 9px;
+        margin-bottom: 10%;
+    }
+
+    th, td {
+        width: auto;
+        text-align: center;
+        padding: 5px;
+        height: 40px;
+    }
+
+    .time-column {
+        width: auto;
+        text-align: left;
+    }
+
+    .date-info {
+        margin-bottom: 10px;
+    }
 }

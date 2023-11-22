@@ -82,12 +82,14 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Opret overskriftsrad
         const headerRow = document.createElement('tr');
+        headerRow.classList.add('header-row');
         headerRow.innerHTML = `<th class="time-column">Uge ${getWeekNumber(currentWeekStart)}</th>`;
 
         // Opret kolonner for hver dag i ugen
         for (let i = 1; i <= 7; i++) {
             const currentDateInfo = formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay());
-            headerRow.innerHTML += `<th>${currentDateInfo.weekday}<br>${currentDateInfo.formattedDate}</th>`;
+            headerRow.innerHTML += `<th >${currentDateInfo.weekday}<br>${currentDateInfo.formattedDate}</th>`;
+            
         }
     
         // Tilføj overskriftsrad til tabellen
