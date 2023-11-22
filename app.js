@@ -237,6 +237,21 @@ function checkAuth(req, res, next) {
     }
   }
 
+  app.get('/search', (req, res) => {
+    const query = req.query.query.toLowerCase();
+    const searchQuery = '%' + query + '%'; // Brug wildcard-tegn for at finde delvise match
+    const searchSQL = 'SELECT Brugernavn FROM brugere WHERE Brugernavn LIKE ?';
+
+    db.query(searchSQL, [searchQuery], (err, results) => {
+        if (err) {
+            console.error('Fejl under søgning efter brugere: ' + err.message);
+            res.status(500).send('Serverfejl');
+        } else {
+            res.json(results);
+        }
+    });
+});
+
 
 app.listen(3000);
 
@@ -291,3 +306,8 @@ app.get('/minprofil', checkAuth, checkNotAuthenticated, (req, res) => {
         }
     })
   })
+
+  app.get('/lavBooking',checkAuth, (req, res) => {
+    const user = req.session.user;
+    res.render('lavBooking', { user });
+  });
