@@ -65,156 +65,57 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <script>
-
-    // JavaScript-funktionerne
-    function prevWeek() {
-        currentDay -= 7;
-        updateCalendar();
-    }
-
-    function nextWeek() {
-        currentDay += 7;
-        updateCalendar();
-    }
-
-    function updateCalendar() {
-        const updatedDate = new Date(currentYear, currentMonth, currentDay);
-        currentMonth = updatedDate.getMonth();
-        currentYear = updatedDate.getFullYear();
-
-        const table = document.querySelector('table');
-        table.innerHTML = ''; // Ryd indholdet af tabellen
-        generateCalendar(table);
-    }
-
-    function generateCalendar(table) {
-        // Ny funktion: Generer kalendertabellen igen
-
-        // Eksisterende generering af overskriftsrad
-        const headerRow = document.createElement('tr');
-        headerRow.innerHTML = `<th class="time-column">Uge ${getWeekNumber(currentDate)}</th>`;
-        for (let i = 1; i <= 7; i++) {
-            headerRow.innerHTML += `<th>${formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).weekday}<br>${formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).formattedDate}</th>`;
-        }
-        table.appendChild(headerRow);
-
-        // Eksisterende generering af kalenderrækker
-        for (let hour = 8; hour < 21; hour++) {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td class="time-column">${hour}:00 - ${hour + 1}:00</td>`;
-            
-            for (let day = 0; day < 7; day++) {
-                // Eksisterende kode for hver celle
-
-                // ...
-
-                table.appendChild(row);
-            }
-        }
-    }
     
-    function showModal(formattedCellDate, cellHour, bookingID) {
-        const overlay = document.getElementById('overlay');
-        const popup = document.getElementById('popup');
-        const popupContent = document.getElementById('popup-content');
 
-        // Set the content of the popup
-        popupContent.innerHTML = `
-            <p>Date: ${formattedCellDate}</p>
-            <p>Time: ${cellHour}:00</p>
-            <p>Booking ID: ${bookingID}</p>
-        `;
+    <%- include('partials/navbar.ejs') %>
+    <div id="overlay"></div>
 
-        overlay.style.display = 'block';
-        popup.style.display = 'block';
-    }
+    <div class="date-info">
+        <h2 data-current-day="<%= currentDay %>">Dagens dato: <%= formatDate(currentYear, currentMonth, currentDay) %></h2>
+        <label for="courtSelector">Vælg bane:</label>
+        <select id="courtSelector" onchange="changeCourt()">
+            <% for (let i = 1; i <= numberOfCourts; i++) { %>
+                <option value="<%= i %>">Bane <%= i %></option>
+            <% } %>
+        </select>
+        <button onclick="prevWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Forrige Uge</button>
+        <button onclick="nextWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Næste Uge</button>
 
-    function hideModal() {
-        const overlay = document.getElementById('overlay');
-        const popup = document.getElementById('popup');
 
-        overlay.style.display = 'none';
-        popup.style.display = 'none';
-    }
-</script>
+    </div>
+    <script>
+        // Brug af try-catch blok for at håndtere eventuelle JSON-parsing-fejl
+        var calendarData;
+        try {
+            calendarData = JSON.parse('<%- JSON.stringify(data) %>');
+        } catch (error) {
+            console.error('Fejl ved JSON-parsing:', error);
+            calendarData = null; // eller anden håndtering af fejlen
+        }
+    </script>
+    <script src="kalender.js"></script>
 
-<%- include('partials/navbar.ejs') %>
-<div id="overlay"></div>
+    <h1>Min Kalender</h1>
+    <table className="calendar-table" id="calendar-table" border="1">
+    </table>
 
-<div class="date-info">
-    <h2>Dagens dato: <%= formatDate(currentYear, currentMonth, currentDay) %> </h2>
-    <label for="courtSelector">Vælg bane:</label>
-    <select id="courtSelector" onchange="changeCourt()">
-        <% for (let i = 1; i <= numberOfCourts; i++) { %>
-            <option value="<%= i %>">Bane <%= i %></option>
-        <% } %>
-    </select>
-    <button onclick="prevWeek()">Forrige Uge</button>
-    <button onclick="nextWeek()">Næste Uge</button>%>
-</div>
-
-<h1>Min Kalender</h1>
-<table border="1">
-    <tr>
-        <th class="time-column">
-            <%= 'Uge ' + getWeekNumber(currentDate) %>
-        </th>
-        <% for (let i = 1; i <= 7; i++) { %>
-            <th>
-                <%= formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).weekday %>
-                <br>
-                <%= formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay()).formattedDate %>
-            </th>
-        <% } %>
-    </tr>
-    <% 
-for (let hour = 8; hour < 21; hour++) { 
-    startDay = undefined;
-    dayCount = 1;
-%>
-<tr>
-    <td class="time-column">
-        <%= `${hour}:00 - ${hour + 1}:00` %>
-    </td>
-    <% for (let day = 0; day < 7; day++) { %>
-        <% if (hour === 8 && day === 0) { %>
-            <% startDay = dayCount; %>
-        <% } %>
-        <% const cellDate = new Date(currentYear, currentMonth, firstDayOfWeek + day, hour); %>
-        <% const formattedCellDate = cellDate.toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' }); %>
-        <% const cellHour = cellDate.getHours(); %>
-        <td data-day="<%= dayCount %>" data-hour="<%= hour %>" data-court="1" onclick="showModal('<%= formattedCellDate %>', <%= cellHour %>)">
-            <!-- Loop through the 'data' array to check for bookings -->
-            <% const isBooked = data.some(item => {
-                const itemHour = parseInt(item.Klokkeslet.split(':')[0], 10);
-                const itemDate = new Date(item.Dato);
-                return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour;
-            }); %>
-            <%= isBooked ? 'Booket' : 'Ledig ' + formattedCellDate + ' ' + hour %>
-        </td>
-        <% dayCount++; %>
-    <% } %>
-</tr>
-<% } %>
-</table>
-
-<!-- Modal -->
-<div id="myModal" class="modal">
-    <span class="modal-close" onclick="closeModal()">&times;</span>
-    <p id="modal-date"></p>
-    <p id="modal-time"></p>
-    <p id="modal-booking-id"></p>
-</div> 
-
-<!-- Modal -->
+    <!-- Modal -->
 <div id="popup" class="modal">
-    <span class="modal-close" onclick="hideModal()">&times;</span>
+    <span class="modal-close" id="closeModalBtn">&times;</span>
     <div id="popup-content" class="popup-content">
         <!-- Popup content goes here -->
     </div>
 </div>
-<%- include('partials/footer.ejs') %>
+
+
+    <!-- Modal -->
+    <div id="popup" class="modal">
+        <span class="modal-close" onclick="hideModal()">&times;</span>
+        <div id="popup-content" class="popup-content">
+            <!-- Popup content goes here -->
+        </div>
+    </div>
+
+    <%- include('partials/footer.ejs') %>
 </body>
 </html>
-

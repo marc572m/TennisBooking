@@ -2,6 +2,13 @@ th, td {
     padding: 10px;
     text-align: center;
     cursor: pointer; /* Add cursor style for clickable cells */
+    width: 12.5%; /* Set a fixed width for all cells */
+    height: 50px; /* Set a fixed height for all cells */
+}
+ th{
+    background-color: #4caf70;
+    color: white;
+    text-align: center;
 }
 
 .time-column {
@@ -40,34 +47,58 @@ table {
 }
 
 #overlay {
-display: none;
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.7); /* Adjust the alpha (fourth parameter) to control transparency */
-z-index: 1;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Adjust the alpha (fourth parameter) to control transparency */
+    z-index: 1;
 }
 
 .popup {
-/* Add styles for your popup here */
-position: fixed;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
-background-color: #fff;
-padding: 20px;
-z-index: 2;
+    /* Add styles for your popup here */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    z-index: 2;
 }
+
 .close-btn {
-position: absolute;
-top: 10px;
-right: 10px;
-padding: 5px 10px;
-font-size: 16px;
-background-color: red;
-color: white;
-border: none;
-cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 10px;
+    font-size: 16px;
+    background-color: red;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+@media (max-width: 920px) {
+    table {
+        width: 100%;
+        font-size: 9px;
+        margin-bottom: 10%;
+    }
+
+    th, td {
+        width: auto;
+        text-align: center;
+        padding: 5px;
+        height: 40px;
+    }
+
+    .time-column {
+        width: auto;
+        text-align: left;
+    }
+
+    .date-info {
+        margin-bottom: 10px;
+    }
 }
