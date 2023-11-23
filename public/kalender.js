@@ -84,7 +84,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const headerRow = document.createElement('tr');
         headerRow.classList.add('header-row');
         headerRow.innerHTML = `<th class="time-column">Uge ${getWeekNumber(currentWeekStart)}</th>`;
-
+        const courtSelector = document.getElementById('courtSelector');
+        const selectedCourt = parseInt(courtSelector.value, 10);
         // Opret kolonner for hver dag i ugen
         for (let i = 1; i <= 7; i++) {
             const currentDateInfo = formatDateWithWeekday(currentYear, currentMonth, currentDay + i - currentDate.getDay());
@@ -114,19 +115,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 tableData.setAttribute('data-hour', hour);
                 tableData.setAttribute('data-court', 1);
                 tableData.onclick = function() {
-                    showModal(formattedCellDate, cellHour);
+                    showModal(formattedCellDate, cellHour, bookedTime ? bookedTime.BrugerID : null, bookedTime ? bookedTime.BookingType : null, bookedTime ? bookedTime.BaneID : null);
                 };
-    
+
                 const bookedTime = data.find(item => {
-                    const itemHour = parseInt(item.Klokkeslet.split(':')[0], 10);
+                    const itemHour = parseInt(item.Klokkeslæt.split(':')[0], 10);
                     const itemDate = new Date(item.Dato);
-                    return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour;
+                    const itemCourt = parseInt(item.BaneID, 10);
+                    return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour && itemCourt !== null;
                 });
     
                 // Opdateret kode for at vise korrekt dato og måned i cellen
-                if (bookedTime) {
+                if (bookedTime && bookedTime.BaneID===selectedCourt) {
                     const bookingDate = new Date(bookedTime.Dato);
-                    tableData.innerHTML = `Booket ${bookingDate.toLocaleDateString('da-DK', { day: 'numeric', month: 'long', year: 'numeric' })} ${hour}`;
+                    tableData.innerHTML = `Booket`;
                 } else {
                     tableData.innerHTML = `Ledig`;
                     //tableData.innerHTML = `Ledig ${formattedCellDate} ${hour}`;
@@ -140,19 +142,44 @@ document.addEventListener('DOMContentLoaded', function () {
             table.appendChild(row);
         }
     }
+
+    window.changeCourt = function() {
+        console.log('changeCourt called'); // Tilføjet denne linje for at kontrollere, om funktionen kaldes korrekt
+        
+        const courtSelector = document.getElementById('courtSelector');
+        const selectedCourt = parseInt(courtSelector.value, 10);
+        console.log(courtSelector.value); 
+        // Hent ugedagen og opdater kalenderen med det nye banevalg
+        const updatedDate = new Date(currentYear, currentMonth, currentDay);
+        const firstDayOfWeek = updatedDate.getDate() - updatedDate.getDay() + (updatedDate.getDay() === 0 ? -6 : 1);
+    
+        updateCalendar(table, updatedDate.getFullYear(), updatedDate.getMonth(), firstDayOfWeek, calendarData, selectedCourt);
+    }
+    // Tilknyt event listener til onchange begivenhed
+    // const courtSelector = document.getElementById('courtSelector');
+    // if (courtSelector) {
+    //     courtSelector.addEventListener('change', changeCourt);
+    // }
     
 
-    function showModal(formattedCellDate, cellHour, bookingID) {
+    function showModal(formattedCellDate, cellHour, bookingID, bookedTime, bookedCourt) {
         const overlay = document.getElementById('overlay');
         const popup = document.getElementById('popup');
         const popupContent = document.getElementById('popup-content');
     
         // Set the content of the popup
-        popupContent.innerHTML = `
-            <p>Date: ${formattedCellDate}</p>
-            <p>Time: ${cellHour}:00</p>
-            <p>Booking ID: ${bookingID}</p>
+        let contentHTML = `
+            <p>Dato: ${formattedCellDate}</p>
+            <p>Tid: ${cellHour}:00 - ${cellHour + 1}:00</p>
         `;
+    
+        if (bookingID !== null) {
+            contentHTML += `<p>Booking ID: ${bookingID}</p>`;
+            contentHTML += `<p>${bookedTime}</p>`;
+            contentHTML += `<p>Bane: ${bookedCourt}</p>`;
+        }
+    
+        popupContent.innerHTML = contentHTML;
     
         overlay.style.display = 'block';
         popup.style.display = 'block';

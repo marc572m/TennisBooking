@@ -16,6 +16,15 @@ th, td {
     width: 12.5%;
 }
 
+select, label, button {
+    text-align: center;
+    font-size:x-large;
+    margin: 5px;
+}
+option {
+    font-size: xx-large;
+}
+
 .date-info {
     text-align: center;
     margin-bottom: 20px;
@@ -24,6 +33,7 @@ th, td {
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 5%;
 }
 
 /* Hidden modal initially */
@@ -32,18 +42,58 @@ table {
     position: fixed;
     top: 50%;
     left: 50%;
+    width: 80%; /* Ændre bredden for desktop */
+    height: 60%; /* Ændre højden for desktop */
     transform: translate(-50%, -50%);
-    background-color: white;
+    background-color: #fff;
     padding: 20px;
-    z-index: 1;
+    z-index: 2;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#popup-content {
+    font-size: 40px;
+    line-height: 1.6;
+}
+
+
+/* Mobilformat */
+@media (max-width: 920px) {
+    .modal {
+        width: 90%; /* Ændre bredden for mobil */
+        height: 70%; /* Ændre højden for mobil */
+    }
+    #popup-content {
+        font-size: 25px;
+    }
 }
 
 .modal-close {
     cursor: pointer;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
+    width: 40px; /* Øg bredden for at gøre knappen mere iøjnefaldende */
+    height: 40px; /* Øg højden for at gøre knappen mere iøjnefaldende */
+    color: red;
+    font-size: 40px;
+    background-color: #ffffffe8;
+    border: 2px solid red; /* Tilføj en kant for at adskille knappen fra baggrunden */
+    border-radius: 50%; /* Giv knappen en rund form */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tilpasninger til mobilvisning */
+@media (max-width: 920px) {
+    .modal-close {
+        top: 10px;
+        right: 10px;
+        font-size: 18px; /* Juster fontstørrelsen til mobilvisning */
+        width: 30px; /* Juster bredden til mobilvisning */
+        height: 30px; /* Juster højden til mobilvisning */
+    }
 }
 
 #overlay {
@@ -73,7 +123,7 @@ table {
     top: 10px;
     right: 10px;
     padding: 5px 10px;
-    font-size: 16px;
+    font-size: 30px;
     background-color: red;
     color: white;
     border: none;
@@ -101,4 +151,11 @@ table {
     .date-info {
         margin-bottom: 10px;
     }
+
+    select, label, button {
+        text-align: center;
+        font-size: medium;
+        margin: 5px;
+    }
+
 }

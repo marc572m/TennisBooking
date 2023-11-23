@@ -279,7 +279,7 @@ app.get('/minprofil', checkAuth, checkNotAuthenticated, (req, res) => {
 
   app.get('/kalender', (req, res) => {
     const user = req.session.user;
-    db.query('SELECT * FROM kalender', (error, result) => {
+    db.query('SELECT * FROM booking', (error, result) => {
         if(error){
             console.error('ingen bookinger fundet ' + error.message);
             res.status(204).send('ingen data returneret');

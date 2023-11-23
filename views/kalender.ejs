@@ -71,9 +71,11 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
     <div id="overlay"></div>
 
     <div class="date-info">
-        <h2 data-current-day="<%= currentDay %>">Dagens dato: <%= formatDate(currentYear, currentMonth, currentDay) %></h2>
+        <br>
+        <h1 data-current-day="<%= currentDay %>">Dagens dato: <%= formatDate(currentYear, currentMonth, currentDay) %></h1>
+        <br>
         <label for="courtSelector">Vælg bane:</label>
-        <select id="courtSelector" onchange="changeCourt()">
+        <select id="courtSelector" onchange="window.changeCourt()">
             <% for (let i = 1; i <= numberOfCourts; i++) { %>
                 <option value="<%= i %>">Bane <%= i %></option>
             <% } %>
