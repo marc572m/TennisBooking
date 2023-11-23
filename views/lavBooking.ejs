@@ -11,10 +11,10 @@
     <%- include('partials/navbar.ejs') %>
 
     <div class="container">
-        <form>
+        <form action="/lavBooking" method="POST" class="lavBooking-form">
             
-            <label for="sport">Tennis type:</label>
-            <select id="sport" name="sport" required>
+            <label for="Sport">Tennis type:</label>
+            <select id="Sport" name="Sport" required>
                 <option value="tennis">Tennis</option>
                 <option value="padel">Padel</option>
             

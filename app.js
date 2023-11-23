@@ -120,6 +120,52 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
       }
     });
   });
+
+  app.post('/lavBooking', checkAuth, (req, res) => {
+
+    const {
+      BookingType,
+      BaneID,
+      BrugerID,
+      KalenderID,
+      MedspillerID,
+      Gæst,
+      Gentagene,
+      Dato,
+      Klokkeslæt,
+    } = req.body;
+
+    if( Gæst == 'Ja'){
+      MedspillerID = null;
+    }
+    Gentagene = "Nej";
+
+    const query = `
+      INSERT INTO booking (
+        BookingType,
+        BaneID,
+        BrugerID,
+        KalenderID,
+        MedspillerID,
+        Gæst,
+        Gentagene,
+        Dato,
+        Klokkeslæt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(query, [BookingType, BaneID, BrugerID, KalenderID, MedspillerID, Gæst, Gentagene, Dato, Klokkeslæt], (err, result) => {
+      if (err) {
+        console.error('Fejl ved booking: ' + err.message);
+        res.status(500).send('Serverfejl');
+      } else {
+        console.log('Booking registreret:', result);
+        
+      }
+    }
+    );
+  });
+
   
   // Funktion til at tjekke om brugernavnet allerede eksisterer
   function checkIfUsernameExists(username) {
@@ -202,7 +248,6 @@ app.post('/redigerprofil', checkAuth, (req, res) => {
 
 //admin auth check
 
-
 function checkAdminAuth(req, res, next) {
     const user = req.session.user;
   
@@ -215,14 +260,6 @@ function checkAdminAuth(req, res, next) {
       return next();
     } else {
       res.status(403).send('Du har ikke tilladelse til at få adgang til denne side.');
-    }
-  }
-
-  function checkNotAuthenticated(req, res, next) {
-    if (!req.session.user) {
-      return next(); // Brugeren er ikke logget ind, fortsæt med anmodningen
-    } else {
-      res.redirect('/'); // Hvis brugeren allerede er logget ind, omdirigér til hjemmesiden
     }
   }
 
@@ -273,7 +310,7 @@ app.get('/logout', (req, res) => {
 });
 });
 
-app.get('/minprofil', checkAuth, checkNotAuthenticated, (req, res) => {
+app.get('/minprofil', checkAuth, (req, res) => {
     // checkAuth middleware sikrer, at brugeren er logget ind
     // Du kan hente brugeroplysninger fra sessionen eller databasen
     const currentUser = req.session.user; // Antager, at brugeroplysninger gemmes i sessionen
