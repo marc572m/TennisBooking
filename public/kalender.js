@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
     
                 // Opdateret kode for at vise korrekt dato og måned i cellen
-                if (bookedTime && bookedTime.BaneID===selectedCourt) {
+                if (bookedTime && bookedTime.BaneID === selectedCourt) {
                     const bookingDate = new Date(bookedTime.Dato);
                     tableData.innerHTML = `Booket`;
                 } else {
@@ -144,22 +144,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.changeCourt = function() {
-        console.log('changeCourt called'); // Tilføjet denne linje for at kontrollere, om funktionen kaldes korrekt
-        
         const courtSelector = document.getElementById('courtSelector');
         const selectedCourt = parseInt(courtSelector.value, 10);
-        console.log(courtSelector.value); 
+    
         // Hent ugedagen og opdater kalenderen med det nye banevalg
         const updatedDate = new Date(currentYear, currentMonth, currentDay);
-        const firstDayOfWeek = updatedDate.getDate() - updatedDate.getDay() + (updatedDate.getDay() === 0 ? -6 : 1);
-    
-        updateCalendar(table, updatedDate.getFullYear(), updatedDate.getMonth(), firstDayOfWeek, calendarData, selectedCourt);
+        currentWeekStart.setDate(currentWeekStart.getDate());
+        
+        firstDayOfWeek = currentWeekStart.getDate() - currentWeekStart.getDay() + (currentWeekStart.getDay() === 0 ? -6 : 1);
+        updateCalendar(table, currentWeekStart.getFullYear(), currentWeekStart.getMonth(), currentWeekStart.getDate(), calendarData);
     }
-    // Tilknyt event listener til onchange begivenhed
-    // const courtSelector = document.getElementById('courtSelector');
-    // if (courtSelector) {
-    //     courtSelector.addEventListener('change', changeCourt);
-    // }
+    
     
 
     function showModal(formattedCellDate, cellHour, bookingID, bookedTime, bookedCourt) {
@@ -196,3 +191,26 @@ document.addEventListener('DOMContentLoaded', function () {
     // Kald af den indledende generering af kalenderen
     generateCalendar(table, calendarData);
 });
+
+let antalBaner = 0;
+
+fetch('/hentbaner')
+    .then(response => response.json())
+    .then(data => {
+        // Nu har du data fra din server (baner)
+        console.log(data);
+        antalBaner = data.length;
+
+        updateCourtSelector(data);
+    })
+    .catch(error => console.error('Fejl ved hentning af baner:', error));
+
+function updateCourtSelector(data) {
+    const courtSelector = document.getElementById('courtSelector');
+    for (let i = 0; i < data.length; i++) {
+        const option = document.createElement('option');
+        option.value = data[i].id;
+        option.text = data[i].Navn;
+        courtSelector.add(option);
+    }
+}

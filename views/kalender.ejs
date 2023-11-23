@@ -47,7 +47,20 @@ function convertUTCToLocal(utcDate) {
     return utcDate.toLocaleString('da-DK', options);
 }
 
-const numberOfCourts = 3;
+let antalBaner = 0;
+
+function updateCourtSelector(data) {
+    const courtSelector = document.getElementById('courtSelector');
+    for (let i = 0; i < data.length; i++) {
+        const option = document.createElement('option');
+        option.value = data[i].id;
+        option.text = data[i].Navn;
+        courtSelector.add(option);
+    }
+}
+
+
+const numberOfCourts = antalBaner ;
 let startDay, endDay;
 let dayCount;
 let firstDayOfWeek = currentDay - currentDate.getDay() + (currentDate.getDay() === 0 ? -6 : 1);
@@ -76,9 +89,6 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
         <br>
         <label for="courtSelector">Vælg bane:</label>
         <select id="courtSelector" onchange="window.changeCourt()">
-            <% for (let i = 1; i <= numberOfCourts; i++) { %>
-                <option value="<%= i %>">Bane <%= i %></option>
-            <% } %>
         </select>
         <button onclick="prevWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Forrige Uge</button>
         <button onclick="nextWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Næste Uge</button>
