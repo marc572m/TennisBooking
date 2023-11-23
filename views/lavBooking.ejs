@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Side</title>
+    <link rel="stylesheet" href="/styles/lavBooking.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/navbar.ejs') %>
+
+    <div class="container">
+        <form action="/lavBooking" method="POST" class="lavBooking-form">
+            
+            <label for="Sport">Tennis type:</label>
+            <select id="Sport" name="Sport" required>
+                <option value="tennis">Tennis</option>
+                <option value="padel">Padel</option>
+            
+            </select>
+
+            <label for="baner">Vælg bane:</label>
+            <select id="baner" name="baner" required>
+                <option value="bane1">Bane 1</option>
+                <option value="bane2">Bane 2</option>
+                <option value="bane3">Bane 3</option>
+
+            </select>
+
+            <label for="date">Dato:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="time">Tidspunkt:</label>
+            <select id="time" name="time" required>
+                <option value="09:00">09:00</option>
+                <option value="10:00">10:00</option>
+                <option value="11:00">11:00</option>
+                <!-- Tilføj flere tidspunkter efter behov -->
+            </select>
+
+            <label for="medspiller">Medspiller:</label>
+            <select id="medspiller" name="medspiller" required>
+                <option value="gæst">Gæst</option>
+                <option value="medlem">Medlem</option>
+            </select>
+            
+            <div id="teammate-search" style="display: none;">
+                <label for="teammate">Søg efter medspiller:</label>
+                <input type="text" id="teammate" name="teammate">
+                <ul id="search-results"></ul>
+            </div>
+
+            <button type="submit">Book Nu</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const medspillerSelect = document.getElementById('medspiller');
+            const teammateSearch = document.getElementById('teammate-search');
+            const teammateInput = document.getElementById('teammate');
+            const searchResults = document.getElementById('search-results');
+
+            medspillerSelect.addEventListener('change', function () {
+                if (medspillerSelect.value === 'gæst') {
+                    teammateSearch.style.display = 'none';
+                } else {
+                    teammateSearch.style.display = 'block';
+                }
+            });
+
+            teammateInput.addEventListener('input', function () {
+                if (medspillerSelect.value === 'medlem') {
+                    const searchQuery = teammateInput.value;
+                    fetch(`/search?query=${searchQuery}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            displaySearchResults(data);
+                        })
+                        .catch(error => console.error('Fejl under hentning af søgeresultater:', error));
+                }
+            });
+
+            function displaySearchResults(results) {
+                searchResults.innerHTML = '';
+
+                results.forEach(result => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = result.Brugernavn; // Tilpas dette baseret på din databasestruktur
+                    searchResults.appendChild(listItem);
+                });
+            }
+
+            const dateInput = document.getElementById('date');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+        });
+
+    </script>
+    <%- include('partials/footer.ejs') %>
+</body>
+</html>
