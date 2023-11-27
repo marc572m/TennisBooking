@@ -153,7 +153,36 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
         }
     });
 });
-  
+
+app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+
+  const query = `
+      DELETE FROM baner WHERE id = ?
+  `;
+
+  db.query(query, [id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved sletning af bane: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bane slettet:', result);
+
+          // Send the updated list of baner
+          db.query('SELECT * FROM baner', (error, updatedBaner) => {
+              if (error) {
+                  console.error('Fejl ved hentning af baner: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBaner);
+              }
+          });
+      }
+  });
+});
+
+
+
 
   app.post('/lavBooking', checkAuth, (req, res) => {
 
@@ -399,4 +428,9 @@ app.get('/minprofil', checkAuth, (req, res) => {
     const user = req.session.user;
 
     res.render('lavBane', { added, user });
+});
+
+app.get('/sletBane', checkAdminAuth, (req, res) => {
+    const user = req.session.user;
+    res.render('sletBane', { user });
 });

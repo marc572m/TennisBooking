@@ -1,0 +1,45 @@
+/* Tilpas stilen til sletBaner med klassenavne */
+
+.bane-list-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Juster afstanden til det foregående element */
+}
+
+h1 {
+    color: #333;
+}
+
+.bane-liste {
+    list-style: none;
+    padding: 0;
+}
+
+.bane-liste-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+
+.slet-knap {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.slet-knap:hover {
+    background-color: #c0392b;
+}
