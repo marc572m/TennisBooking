@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Side</title>
+    <link rel="stylesheet" href="/styles/lavBooking.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/navbar.ejs') %>
+
+    
+
+    <div class="container">
+
+        <h1>Tilføj bane</h1>
+        <br>
+        <form action="/lavBane" method="POST" class="lavBooking-form">
+            
+            <label for="Adresse">Adresse:</label>
+            <input type="text" id="Adresse" name="Adresse" required>
+
+            
+            <label for="PostnummerogBy">Postnummer og By:</label>
+            <input type="text" id="PostnummerogBy" name="PostnummerogBy" required>
+
+            <label for="Banetype">Banetype:</label>
+            <select id="Banetype" name="Banetype" required>
+                <option value="tennis">Indendørs</option>
+                <option value="padel">Udendørs</option>
+            </select>
+            
+            <label for="Sport">Tennis type:</label>
+            <select id="Sport" name="Sport" required>
+                <option value="Tennis">Tennis</option>
+                <option value="Padel">Padel</option>
+            </select>
+
+            <label for="Navn">Navn:</label>
+            <input type="text" id="Navn" name="Navn" required>
+
+            <label for="Kodeord">Kodeord:</label>
+            <input id="Kodeord" name="Kodeord">
+
+            <button type="submit">Tilføj bane</button>
+        </form>
+
+    </div>
+
+    <div id="popup" class="popup">
+        <div class="popup-content">
+            <span class="close-popup" onclick="closePopup()">&times;</span>
+            <p>Bane tilføjet!</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const added = <%= added %>;
+    
+            if (added) {
+                showPopup();
+            }
+        });
+    
+        function showPopup() {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'block';
+        }
+    
+        function closePopup() {
+            const popup = document.getElementById('popup');
+            popup.style.display = 'none';
+        }
+    </script>
+
+    <%- include('partials/footer.ejs') %>
+</body>
+
+</html>

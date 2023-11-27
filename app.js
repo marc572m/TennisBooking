@@ -121,6 +121,40 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
     });
   });
 
+  app.post('/lavBane', checkAdminAuth, (req, res) => {
+    const {
+        Adresse,
+        PostnummerogBy,
+        Banetype,
+        Sport,
+        Navn,
+        Kodeord
+    } = req.body;
+
+    const query = `
+        INSERT INTO baner (
+            Adresse,
+            PostnummerogBy,
+            Banetype,
+            Sport,
+            Navn,
+            Kodeord
+        ) VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(query, [Adresse, PostnummerogBy, Banetype, Sport, Navn, Kodeord], (err, result) => {
+        if (err) {
+            console.error('Fejl ved oprettelse af bane: ' + err.message);
+            res.status(500).send('Serverfejl');
+        } else {
+            console.log('Bane oprettet:', result);
+            // Send meddelelse om tilføjet bane
+            res.redirect('/lavBane?added=true');
+        }
+    });
+});
+  
+
   app.post('/lavBooking', checkAuth, (req, res) => {
 
     const {
@@ -359,3 +393,10 @@ app.get('/minprofil', checkAuth, (req, res) => {
     const user = req.session.user;
     res.render('lavBooking', { user });
   });
+
+  app.get('/lavBane', checkAdminAuth, (req, res) => {
+    const added = req.query.added === 'true';
+    const user = req.session.user;
+
+    res.render('lavBane', { added, user });
+});
