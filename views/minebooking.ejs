@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mine Booking</title>
+    <link rel="stylesheet" href="style.css"/>
+    <link rel="stylesheet" href="styles/minebooking.css"/>
+</head>
+<body>
+    <%- include('partials/navbar.ejs') %>
+    <div class="content">
+        <h1>Mine Bookinger:</h1>
+    
+        <ul id="listView">
+            <!-- The list items will be populated dynamically here -->
+            
+        </ul>
+    </div>
+
+    <%- include('partials/footer.ejs') %>
+
+    <!-- Include your client-side JavaScript logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const listView = document.getElementById('listView');
+            const data = <%- JSON.stringify(data) %>; // Access the data passed from the server
+    
+            // Function to format the date to 'søn 02. dec 2023' format
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
+                return date.toLocaleDateString('da-DK', options);
+            }
+    
+            // Check if data exists and is an array
+            if (Array.isArray(data) && data.length > 0) {
+                // Loop through the data and create card elements
+                data.forEach(booking => {
+                    const card = document.createElement('li');
+                    card.classList.add('card'); // Add a class for card styling
+    
+                    const formattedDate = formatDate(booking.Dato);
+    
+                    card.innerHTML = `
+                        <div class="card-content">
+                            <h3>Booking:</h3>
+                            <p>Booking Type: ${booking.BookingType}, ${booking.Bane_Banetype}</p>
+                            <p>Adresse: ${booking.Bane_Adresse}</p>
+                            <p>Dato: ${formattedDate}</p>
+                            <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
+                            <p>Medspiller: ${booking.Medspiller_Fornavn}</p>
+                            <p>Adgangskode: ${booking.Bane_Kodeord}</p>
+                        </div>
+                    `;
+    
+                    // Add click event to each card item (for demonstration purposes)
+                    card.addEventListener('click', function() {
+                        // Customize the click action if needed
+                        alert(`Clicked: ${booking.BookingType}`);
+                    });
+    
+                    listView.appendChild(card);
+                });
+            } else {
+                // Handle case when no data is available
+                const li = document.createElement('li');
+                li.textContent = 'No bookings available';
+                listView.appendChild(li);
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+

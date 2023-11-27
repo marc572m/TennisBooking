@@ -434,3 +434,42 @@ app.get('/sletBane', checkAdminAuth, (req, res) => {
     const user = req.session.user;
     res.render('sletBane', { user });
 });
+
+
+app.get('/minebooking',checkAuth, (req, res) => {
+  const user = req.session.user;
+  const userID = req.session.user.id;
+
+  const sqlString =
+    'SELECT booking.BookingType, ' +
+      'baner.Adresse AS Bane_Adresse, ' +
+      'baner.PostnummerogBy AS Bane_PostnummerogBy, ' +
+      'baner.Banetype AS Bane_Banetype, ' +
+      'baner.Sport AS Bane_Sport, ' +
+      'baner.Kodeord AS Bane_Kodeord, ' +
+      'brugere1.Fornavn AS Bruger_Fornavn, ' +
+      'brugere2.Fornavn AS Medspiller_Fornavn, ' +
+      'booking.Gæst, ' +
+      'booking.Gentagene, ' +
+      'booking.Dato, ' +
+      'booking.Klokkeslæt ' +
+    'FROM booking ' +
+    'JOIN baner ON booking.BaneID = baner.id ' +
+    'JOIN brugere AS brugere1 ON booking.BrugerID = brugere1.id ' +
+    'JOIN brugere AS brugere2 ON booking.MedspillerID = brugere2.id ' +
+    'WHERE BrugerID = ' + userID + ' AND booking.BaneID = baner.id'
+  ;
+  
+  db.query(sqlString, (error, result) => {
+    if(error){
+      console.error('ingen bookinger fundet ' + error.message);
+      res.status(204).send('ingen data returneret');
+    }
+    else{
+      res.render('minebooking', { data: result, user: user });
+      console.log(result);
+    }
+    
+  });
+  //res.render('minebooking', { user });
+});
