@@ -3,87 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Slet Baner</title>
-    <link rel="stylesheet" href="/styles/sletBane.css"> <!-- Tilpas stien til din CSS-fil -->
-    <link rel="stylesheet" href="/style.css"> <!-- Tilpas stien til din CSS-fil -->
+    <title>Slet og Rediger Baner</title>
+    <link rel="stylesheet" href="/styles/sletBane.css"> <!-- Adjust the path to your CSS file -->
+    <link rel="stylesheet" href="/style.css"> <!-- Adjust the path to your CSS file -->
 </head>
 <body>
     <%- include('partials/navbar.ejs') %>
 
     <div class="container bane-list-container">
-        <h1>Slet baner</h1>
+        <h1>Slet og Rediger baner</h1>
         <ul class="bane-liste" id="bane-liste">
-            <!-- Her vil dine baner blive vist dynamisk -->
+            <!-- Baner will be dynamically displayed here -->
         </ul>
     </div>
 
     <%- include('partials/footer.ejs') %>
 
+    <!-- Popup for editing a bane -->
+    <div id="editPopup" class="popup">
+        <div class="popup-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2>Rediger bane</h2>
+            
+            <form action="/" method="POST" class="lavBooking-form" id="editForm">
+                <label for="Adresse">Adresse:</label>
+                <input type="text" id="editAdresse" name="Adresse" required>
+    
+                <label for="PostnummerogBy">Postnummer og By:</label>
+                <input type="text" id="editPostnummerogBy" name="PostnummerogBy" required>
+    
+                <label for="Banetype">Banetype:</label>
+                <select id="editBanetype" name="Banetype" required>
+                    <option value="Indendørs">Indendørs</option>
+                    <option value="Udendørs">Udendørs</option>
+                </select>
+    
+                <label for="Sport">Tennis type:</label>
+                <select id="editSport" name="Sport" required>
+                    <option value="Tennis">Tennis</option>
+                    <option value="Padel">Padel</option>
+                </select>
+    
+                <label for="Navn">Navn:</label>
+                <input type="text" id="editNavn" name="Navn" required>
+    
+                <label for="Kodeord">Kodeord:</label>
+                <input id="editKodeord" name="Kodeord">
+    
+                <button type="submit">Opdater bane</button>
+            </form>
+
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Når siden indlæses, hent banerne og vis dem
+            // When the page is loaded, fetch banerne and display them
             hentBaner();
         });
 
         function hentBaner() {
-            // Brug fetch til at hente banerne fra /hentBaner endpoint
+            // Use fetch to retrieve banerne from the /hentBaner endpoint
             fetch('/hentBaner')
                 .then(response => response.json())
                 .then(baner => {
-                    // Kald funktionen til at vise banerne
+                    // Call the function to display banerne
                     visBaner(baner);
                 })
-                .catch(error => console.error('Fejl ved hentning af baner:', error));
+                .catch(error => console.error('Error fetching baner:', error));
         }
 
         function visBaner(baner) {
             const baneListe = document.getElementById('bane-liste');
 
-            // Tøm listen, hvis der er noget i forvejen
+            // Clear the list if there's anything already
             baneListe.innerHTML = '';
 
-            // Loop gennem hver bane og tilføj den til listen
+            // Loop through each bane and add it to the list
             baner.forEach(bane => {
                 const baneListItem = document.createElement('li');
                 baneListItem.classList.add('bane-liste-item');
 
                 const baneInfo = document.createElement('span');
                 baneInfo.classList.add('bane-info');
-                baneInfo.textContent = bane.Navn; // Du skal tilpasse dette baseret på din databasestruktur
-                baneInfo.textContent += ' - ' + bane.Adresse + ', ' + bane.PostnummerogBy; // Du skal tilpasse dette baseret på din databasestruktur
-                baneInfo.textContent += ' - ' + bane.Banetype; // Du skal tilpasse dette baseret på din databasestruktur
+                baneInfo.textContent = `${bane.Navn} - ${bane.Adresse}, ${bane.PostnummerogBy} - ${bane.Banetype}`;
 
                 const sletKnap = document.createElement('button');
                 sletKnap.classList.add('slet-knap');
                 sletKnap.textContent = 'Slet';
-                sletKnap.addEventListener('click', () => sletBane(bane.id)); // Send BaneID som parameter
+                sletKnap.addEventListener('click', () => sletBane(bane.id));
 
-                // Tilføj elementer til listeelementet
+                const redigerKnap = document.createElement('button');
+                redigerKnap.classList.add('rediger-knap');
+                redigerKnap.textContent = 'Rediger';
+                redigerKnap.addEventListener('click', () => openEditPopup(bane.id));
+
+                // Add elements to the list item
                 baneListItem.appendChild(baneInfo);
+                baneListItem.appendChild(redigerKnap);
                 baneListItem.appendChild(sletKnap);
+                
 
-                // Tilføj listeelementet til listen
+                // Add the list item to the list
                 baneListe.appendChild(baneListItem);
             });
         }
 
-    function sletBane(id) {
-    fetch(`/sletBane/${id}`, {
-        method: 'POST', // Change this to 'GET' if you update your server-side route to use app.get
-    })
-    .then(response => response.json())
-    .then(baner => {
-        // Kald funktionen til at vise banerne
-        visBaner(baner);
-    })
-    .catch(error => console.error('Fejl ved hentning af baner:', error))
-    .finally(() => {
-        // Make sure to call hentBaner after the deletion is complete
-        hentBaner();
-    });
+        function sletBane(id) {
+            fetch(`/sletBane/${id}`, {
+                method: 'POST',
+            })
+                .then(response => response.json())
+                .then(baner => {
+                    // Call the function to display banerne
+                    visBaner(baner);
+                })
+                .catch(error => console.error('Error fetching baner:', error))
+                .finally(() => {
+                    // Make sure to call hentBaner after the deletion is complete
+                    hentBaner();
+                });
+        }
+
+  // Function to open the edit popup and fill in the form fields
+function openEditPopup(id) {
+    const editPopup = document.getElementById('editPopup');
+    const editForm = document.getElementById('editForm');
+
+    // Fetch bane information based on id
+    fetch(`/hentBane/${id}`)
+        .then(response => response.json())
+        .then(bane => {
+            console.log('Fetched bane information:', bane);
+
+            // Fill in the form fields with bane information
+            const editAdresse = document.getElementById('editAdresse');
+            const editPostnummerogBy = document.getElementById('editPostnummerogBy');
+            const editBanetype = document.getElementById('editBanetype');
+            const editSport = document.getElementById('editSport');
+            const editNavn = document.getElementById('editNavn');
+            const editKodeord = document.getElementById('editKodeord');
+
+            if (editAdresse && editPostnummerogBy && editBanetype && editSport && editNavn && editKodeord) {
+                editAdresse.value = bane.Adresse;
+                editPostnummerogBy.value = bane.PostnummerogBy;
+                editBanetype.value = bane.Banetype;
+                editSport.value = bane.Sport;
+                editNavn.value = bane.Navn;
+                editKodeord.value = bane.Kodeord;
+
+                // Display the edit popup
+                editPopup.style.display = 'block';
+            } else {
+                console.error('One or more form elements not found.');
+            }
+        })
+        .catch(error => console.error('Error fetching bane information:', error));
 }
 
-    
+        // Function to close the popup
+        function closePopup() {
+            const editPopup = document.getElementById('editPopup');
+            editPopup.style.display = 'none';
+        }
 
     </script>
 </body>

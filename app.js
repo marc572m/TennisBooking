@@ -270,6 +270,22 @@ app.get('/hentbaner', (req, res) => {
     });
 });
 
+app.get('/hentBane/:id', (req, res) => {
+
+    const id = req.params.id;
+    
+    db.query('SELECT * FROM baner WHERE id = ?', [id], (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af bane: ' + error.message);
+            res.status(500).json({ error: 'Der opstod en fejl' });
+        } else {
+            res.json(result[0]);
+        }
+    }
+    );
+});
+
+
 // opdater oplysninger via redigerprofil
 
 app.post('/redigerprofil', checkAuth, (req, res) => {
