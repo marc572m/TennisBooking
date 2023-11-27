@@ -194,20 +194,6 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
       });
     });
   }
-  
-app.post('/antalBaner', (req, res) => {
-
-  db.query('SELECT COUNT(*) FROM baner', (error, result) => {
-      if(error){
-          console.error('ingen baner fundet ' + error.message);
-          res.status(204).send('ingen data returneret');
-      }
-      else{
-          res.render('antalBaner', { data: result });
-          console.log(result);
-      }
-  })
-});
 
 app.get('/hentbaner', (req, res) => {
     db.query('SELECT * FROM baner', (error, result) => {
@@ -331,7 +317,7 @@ app.get('/login', (req, res) => {
 
 app.get('/logout', (req, res) => {
  req.session.destroy((err) => {
-    res.redirect('/login');
+    res.redirect('/');
 });
 });
 
