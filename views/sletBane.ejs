@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slet Baner</title>
+    <link rel="stylesheet" href="/styles/sletBane.css"> <!-- Tilpas stien til din CSS-fil -->
+    <link rel="stylesheet" href="/style.css"> <!-- Tilpas stien til din CSS-fil -->
+</head>
+<body>
+    <%- include('partials/navbar.ejs') %>
+
+    <div class="container bane-list-container">
+        <h1>Slet baner</h1>
+        <ul class="bane-liste" id="bane-liste">
+            <!-- Her vil dine baner blive vist dynamisk -->
+        </ul>
+    </div>
+
+    <%- include('partials/footer.ejs') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Når siden indlæses, hent banerne og vis dem
+            hentBaner();
+        });
+
+        function hentBaner() {
+            // Brug fetch til at hente banerne fra /hentBaner endpoint
+            fetch('/hentBaner')
+                .then(response => response.json())
+                .then(baner => {
+                    // Kald funktionen til at vise banerne
+                    visBaner(baner);
+                })
+                .catch(error => console.error('Fejl ved hentning af baner:', error));
+        }
+
+        function visBaner(baner) {
+            const baneListe = document.getElementById('bane-liste');
+
+            // Tøm listen, hvis der er noget i forvejen
+            baneListe.innerHTML = '';
+
+            // Loop gennem hver bane og tilføj den til listen
+            baner.forEach(bane => {
+                const baneListItem = document.createElement('li');
+                baneListItem.classList.add('bane-liste-item');
+
+                const baneInfo = document.createElement('span');
+                baneInfo.classList.add('bane-info');
+                baneInfo.textContent = bane.Navn; // Du skal tilpasse dette baseret på din databasestruktur
+                baneInfo.textContent += ' - ' + bane.Adresse + ', ' + bane.PostnummerogBy; // Du skal tilpasse dette baseret på din databasestruktur
+                baneInfo.textContent += ' - ' + bane.Banetype; // Du skal tilpasse dette baseret på din databasestruktur
+
+                const sletKnap = document.createElement('button');
+                sletKnap.classList.add('slet-knap');
+                sletKnap.textContent = 'Slet';
+                sletKnap.addEventListener('click', () => sletBane(bane.id)); // Send BaneID som parameter
+
+                // Tilføj elementer til listeelementet
+                baneListItem.appendChild(baneInfo);
+                baneListItem.appendChild(sletKnap);
+
+                // Tilføj listeelementet til listen
+                baneListe.appendChild(baneListItem);
+            });
+        }
+
+    function sletBane(id) {
+    fetch(`/sletBane/${id}`, {
+        method: 'POST', // Change this to 'GET' if you update your server-side route to use app.get
+    })
+    .then(response => response.json())
+    .then(baner => {
+        // Kald funktionen til at vise banerne
+        visBaner(baner);
+    })
+    .catch(error => console.error('Fejl ved hentning af baner:', error))
+    .finally(() => {
+        // Make sure to call hentBaner after the deletion is complete
+        hentBaner();
+    });
+}
+
+    
+
+    </script>
+</body>
+</html>
