@@ -25,7 +25,7 @@
             <span class="close" onclick="closePopup()">&times;</span>
             <h2>Rediger bane</h2>
             
-            <form action="/" method="POST" class="lavBooking-form" id="editForm">
+            <form onsubmit="redigerBane(event)" method="POST" class="lavBooking-form" id="editForm">
                 <label for="Adresse">Adresse:</label>
                 <input type="text" id="editAdresse" name="Adresse" required>
     
@@ -49,6 +49,8 @@
     
                 <label for="Kodeord">Kodeord:</label>
                 <input id="editKodeord" name="Kodeord">
+
+                <input type="hidden" id="editBaneId" name="id">
     
                 <button type="submit">Opdater bane</button>
             </form>
@@ -124,7 +126,7 @@
                     hentBaner();
                 });
         }
-
+let valgtBaneid;
   // Function to open the edit popup and fill in the form fields
 function openEditPopup(id) {
     const editPopup = document.getElementById('editPopup');
@@ -143,6 +145,7 @@ function openEditPopup(id) {
             const editSport = document.getElementById('editSport');
             const editNavn = document.getElementById('editNavn');
             const editKodeord = document.getElementById('editKodeord');
+            valgtBaneid = bane.id;
 
             if (editAdresse && editPostnummerogBy && editBanetype && editSport && editNavn && editKodeord) {
                 editAdresse.value = bane.Adresse;
@@ -166,6 +169,41 @@ function openEditPopup(id) {
             const editPopup = document.getElementById('editPopup');
             editPopup.style.display = 'none';
         }
+
+        function redigerBane(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const editForm = document.getElementById('editForm');
+
+            // Get the id of the bane to edit
+            const id = valgtBaneid;
+            // Get the form data
+            const formData = new FormData(editForm);
+
+            // Convert the form data to JSON
+            const jsonData = JSON.stringify(Object.fromEntries(formData));
+
+            // Send the form data to the /redigerBane endpoint
+            fetch(`/redigerBane/${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: jsonData,
+            })
+                .then(response => response.json())
+                .then(baner => {
+                    // Call the function to display banerne
+                    visBaner(baner);
+                })
+                .catch(error => console.error('Error fetching baner:', error))
+                .finally(() => {
+                    // Make sure to call hentBaner after the edit is complete
+                    hentBaner();
+                    closePopup();
+                });
+        }
+       
 
     </script>
 </body>

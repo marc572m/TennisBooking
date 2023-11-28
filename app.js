@@ -285,6 +285,44 @@ app.get('/hentBane/:id', (req, res) => {
     );
 });
 
+app.post('/redigerBane/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+  const {
+      Adresse,
+      PostnummerogBy,
+      Banetype,
+      Sport,
+      Navn,
+      Kodeord
+  } = req.body;
+
+  const query = `
+      UPDATE baner
+      SET Adresse = ?, PostnummerogBy = ?, Banetype = ?, Sport = ?, Navn = ?, Kodeord = ?
+      WHERE id = ?
+  `;
+
+  db.query(query, [Adresse, PostnummerogBy, Banetype, Sport, Navn, Kodeord, id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved redigering af bane: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bane redigeret:', result);
+
+          // Send den opdaterede liste over baner
+          db.query('SELECT * FROM baner', (error, updatedBaner) => {
+              if (error) {
+                  console.error('Fejl ved hentning af baner: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBaner);
+              }
+          });
+      }
+  });
+});
+
+
 
 // opdater oplysninger via redigerprofil
 

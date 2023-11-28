@@ -35,6 +35,10 @@ h1 {
     background-color: #c0392b;
 }
 
+.rediger-knap:hover {
+    background-color: #2ecc71;
+}
+
 /* Styles for the "Rediger" button and "Slet" button */
 .action-buttons {
     display: flex;
@@ -51,13 +55,13 @@ h1 {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin-left: 900px;
+    margin-left: auto;
     cursor: pointer;
     border-radius: 4px;
 }
 
 .slet-knap {
-    background-color: #4CAF50; /* Green color for Rediger button */
+    background-color: #f44336; /* Red color for Slet button */
     border: none;
     color: white;
     padding: 10px 20px;
@@ -65,13 +69,10 @@ h1 {
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    margin: 4px;
+    margin-right: 0;
+    margin-left: 4px;
     cursor: pointer;
     border-radius: 4px;
-}
-
-.slet-knap {
-    background-color: #f44336; /* Red color for Slet button */
 }
 
 
