@@ -228,7 +228,27 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
     }
     );
   });
+  app.delete('/delete-booking/:id', checkAuth, (req, res) => {
+    const bookingId = req.params.id; // Extract the booking ID from the URL parameter
 
+    // Perform deletion operation in your database
+    // You should implement your database-specific logic here to delete the booking with the provided ID
+    // For example, using a SQL DELETE statement or an ORM's delete method
+
+    // Example using raw SQL with your database connection (replace this with your actual database logic)
+    const sqlDeleteBooking = 'DELETE FROM booking WHERE id = ?';
+    db.query(sqlDeleteBooking, [bookingId], (error, result) => {
+        if (error) {
+            console.error('Error deleting booking:', error);
+            res.status(500).json({ error: 'Failed to delete booking' });
+        } else {
+            // Successful deletion
+            res.status(200).json({ message: 'Booking deleted successfully' });
+            console.log('Booking deleted successfully');
+            // You can send any appropriate response back to the client
+        }
+    });
+  });
   
   // Funktion til at tjekke om brugernavnet allerede eksisterer
   function checkIfUsernameExists(username) {
@@ -441,7 +461,8 @@ app.get('/minebooking',checkAuth, (req, res) => {
   const userID = req.session.user.id;
 
   const sqlString =
-    'SELECT booking.BookingType, ' +
+    'SELECT booking.id, ' +
+      'booking.BookingType, ' +
       'baner.Adresse AS Bane_Adresse, ' +
       'baner.PostnummerogBy AS Bane_PostnummerogBy, ' +
       'baner.Banetype AS Bane_Banetype, ' +
@@ -457,7 +478,7 @@ app.get('/minebooking',checkAuth, (req, res) => {
     'JOIN baner ON booking.BaneID = baner.id ' +
     'JOIN brugere AS brugere1 ON booking.BrugerID = brugere1.id ' +
     'JOIN brugere AS brugere2 ON booking.MedspillerID = brugere2.id ' +
-    'WHERE BrugerID = ' + userID + ' AND booking.BaneID = baner.id'
+    'WHERE (BrugerID = ' + userID + ' OR MedspillerID = ' + userID + ') AND booking.BaneID = baner.id'
   ;
   
   db.query(sqlString, (error, result) => {
