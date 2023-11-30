@@ -1,5 +1,3 @@
-let baneData;
-
 function updateCourtList(baneData) {
     const courtList = document.getElementById('courtList');
     const selectedSport = document.getElementById('sportSelector').value;
@@ -15,7 +13,6 @@ function updateCourtList(baneData) {
             listItem.textContent = baneData[i].Navn;
             courtList.appendChild(listItem);
         }
-        console.log(baneData[i].Sport);
     }
 }
 
@@ -87,86 +84,92 @@ document.addEventListener('DOMContentLoaded', function () {
         currentYear = updatedDate.getFullYear();
         currentMonth = updatedDate.getMonth();
         currentDay = updatedDate.getDate();
-        table.innerHTML = '';
         generateCalendar(table, data);
     }
 
-    function generateCalendar(table, data) {
+    function generateCalendar(table, baneData) {
         table.innerHTML = '';
-
+    
         const headerRow = document.createElement('tr');
         headerRow.classList.add('header-row');
         headerRow.innerHTML = `<th class="time-column">Uge ${getWeekNumber(new Date(currentYear, currentMonth, currentDay))}</th>`;
-
-        const courtList = document.getElementById('courtList');
-        const selectedSport = document.getElementById('sportSelector').value;
-
-        for (let i = 0; i < data.length; i++) {
-            if(selectedSport == data[i].Sport) {
-                const listItem = document.createElement('li');
-                listItem.innerText = data[i].Sport;
-                courtList.appendChild(listItem);
-
-                console.log(data[i].Sport + " " + selectedSport);
     
-                const courtName = courtList.children[i].innerText;
+        const courtList = document.getElementById('courtList');
+        courtList.style.display = 'none';
+        const selectedSport = document.getElementById('sportSelector').value;
+        const selectedCourtType = document.getElementById('courtTypeSelector').value;
+    
+        console.log(baneData, "BaneData", selectedSport);
+        console.log(bookingData, "BookingData");
+        console.log(selectedCourtType, "CourtType", baneData[0].Banetype);
+    
+        courtList.innerHTML = '';
+    
+        for (let i = 0; i < baneData.length; i++) {
+            if (selectedSport == baneData[i].Sport && selectedCourtType == baneData[i].Banetype) {
+                const listItem = document.createElement('li');
+                listItem.innerText = baneData[i].Navn;
+                courtList.appendChild(listItem);
+    
+                const courtId = baneData[i].id;
+    
+                const courtName = baneData[i].Navn;
                 headerRow.innerHTML += `<th>${courtName}</th>`;
             }
-            console.log(courtList)
         }
-
-        updateCourtList(data);
-
+    
         table.appendChild(headerRow);
-
+    
         for (let hour = 8; hour < 21; hour++) {
             const row = document.createElement('tr');
             row.innerHTML = `<td class="time-column">${hour}:00 - ${hour + 1}:00</td>`;
-
-            for (let i = 0; i < courtList.children.length; i++) {
-                const courtId = parseInt(courtList.children[i].value, 10);
-
-                let startDay = undefined;
-                let dayCount = 1;
-
-                const cellDate = new Date(currentYear, currentMonth, currentDay, hour);
-                const formattedCellDate = formatDateWithWeekday(currentYear, currentMonth, currentDay).formattedDate;
-                const cellHour = cellDate.getHours();
-
-                const tableData = document.createElement('td');
-                tableData.setAttribute('data-day', dayCount);
-                tableData.setAttribute('data-hour', hour);
-                tableData.setAttribute('data-court', courtId);
-
-                tableData.addEventListener('click', function () {
-                    showModal(formattedCellDate, cellHour, null, null, null);
-                });
-
-                const bookedTime = data.find(item => {
-                    const itemHour = item.Klokkeslæt ? parseInt(item.Klokkeslæt.split(':')[0], 10) : null;
-                    const itemDate = new Date(item.Dato);
-                    return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour && item.BaneID === courtId;
-                });
-
-                if (bookedTime) {
-                    tableData.innerHTML = `Booket`;
-                    tableData.classList.add('booked');
+    
+            let dayCount = 1;
+    
+            for (let i = 0; i < baneData.length; i++) {
+                if (selectedSport == baneData[i].Sport && selectedCourtType == baneData[i].Banetype) {
+                    const courtId = baneData[i].id;
+    
+                    const cellDate = new Date(currentYear, currentMonth, currentDay, hour);
+                    const formattedCellDate = formatDateWithWeekday(currentYear, currentMonth, currentDay).formattedDate;
+                    const cellHour = cellDate.getHours();
+    
+                    const tableData = document.createElement('td');
+                    tableData.setAttribute('data-day', dayCount);
+                    tableData.setAttribute('data-hour', hour);
+                    tableData.setAttribute('data-court', courtId);
+    
                     tableData.addEventListener('click', function () {
-                        showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.Klokkeslæt, bookedTime.BaneID);
+                        showModal(formattedCellDate, cellHour, null, null, null);
                     });
-                } else {
-                    tableData.innerHTML = `Ledig`;
-                    tableData.classList.add('available');
+    
+                    const bookedTime = bookingData.find(item => {
+                        const itemHour = item.Klokkeslæt ? parseInt(item.Klokkeslæt.split(':')[0], 10) : null;
+                        const itemDate = new Date(item.Dato);
+                        return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour && item.BaneID === courtId;
+                    });
+    
+                    if (bookedTime) {
+                        tableData.innerHTML = `Booket`;
+                        tableData.classList.add('booked');
+                        tableData.addEventListener('click', function () {
+                            showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.Klokkeslæt, bookedTime.BaneID);
+                        });
+                    } else {
+                        tableData.innerHTML = `Ledig`;
+                        tableData.classList.add('available');
+                    }
+    
+                    row.appendChild(tableData);
+    
+                    dayCount++;
                 }
-
-                row.appendChild(tableData);
-
-                dayCount++;
             }
-
+    
             table.appendChild(row);
         }
     }
+    
 
     function formatDate(year, month, day) {
         const months = [
@@ -186,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             currentDay = new Date(currentYear, currentMonth + 1, 0).getDate();
         }
-        updateCalendar(table, currentYear, currentMonth, currentDay, bookingData);
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
         updateHeaderText();
     };
 
@@ -201,18 +204,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 currentYear++;
             }
         }
-        updateCalendar(table, currentYear, currentMonth, currentDay, bookingData);
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
         updateHeaderText();
     };
 
     function updateHeaderText() {
         const headerText = document.querySelector('.date-info h1');
-        headerText.textContent = `Booking kalender for: den ${formatDate(currentYear, currentMonth, currentDay)}`;
+        headerText.textContent = `Kalender: Den ${formatDate(currentYear, currentMonth, currentDay)}`;
     }
 
     window.changeSelector = function () {
         const courtList = document.getElementById('courtList');
         const sportSelector = document.getElementById('sportSelector');
+        const selectedCourtType = document.getElementById('selectedCourtType');
         const selectedSport = sportSelector.value;
     
         if (baneData) {

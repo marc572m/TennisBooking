@@ -71,25 +71,22 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
 
     <div class="date-info">
         <br>
-        <h1 data-current-day="<%= currentDay %>">Booking kalender for: den <%= formatDate(currentYear, currentMonth, currentDay) %></h1>
+        <h1 data-current-day="<%= currentDay %>">Kalender: Den <%= formatDate(currentYear, currentMonth, currentDay) %></h1>
         <br>
-        <label for="courtSelector">Vælg bane:</label>
         <ul id="courtList" class="court-List"></ul>
-
         <label for="sportSelector">Vælg Sport</label>
         <select id="sportSelector" onchange="window.changeSelector()">
         <option value="Tennis">Tennis</option>
         <option value="Padel">Padel</option>
         </select>
-        <br>
         <label for="courtTypeSelector">Indendørs/Udendørs</label>
-        <select id="courtTypeSelector" onchange="window.changeSport()">
+        <select id="courtTypeSelector" onchange="window.changeSelector()">
             <option value="Indendørs">Indendørs</option>
             <option value="Udendørs">Udendørs</option>
         </select>
         <br>
-        <button onclick="prevDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Tilbage en dag</button>
-        <button onclick="nextDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Frem en dag</button>
+        <button class="Button" onclick="prevDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">En dag tilbage</button>
+        <button class="Button" onclick="nextDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">En dag frem</button>
 
     </div>
     <script>
@@ -97,7 +94,6 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
         var bookingData;
         try {
             bookingData = JSON.parse('<%- JSON.stringify(data) %>');
-            console.log(bookingData , "booking data")
         } catch (error) {
             console.error('Fejl ved JSON-parsing:', error);
             bookingData = null; // eller anden håndtering af fejlen
@@ -105,8 +101,7 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
     </script>
     <script src="kalender2.js"></script>
 
-    <h1>Min Kalender</h1>
-    <table className="calendar-table" id="calendar-table" border="1">
+    <table class="calendar-table" id="calendar-table">
     </table>
 
     <!-- Modal -->
