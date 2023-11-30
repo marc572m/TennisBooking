@@ -472,6 +472,36 @@ app.get('/minprofil', checkAuth, (req, res) => {
     })
   })
 
+  app.get('/kalender2', (req, res) => {
+    const user = req.session.user;
+
+    // Hent banerne fra databasen
+    db.query('SELECT * FROM baner', (banerError, banerResult) => {
+        if (banerError) {
+            console.error('Fejl ved hentning af baner: ' + banerError.message);
+            res.status(500).json({ error: 'Der opstod en fejl ved hentning af baner' });
+        } else {
+            // Hent booking-data fra databasen
+            db.query('SELECT * FROM booking', (bookingError, bookingResult) => {
+                if (bookingError) {
+                    console.error('Fejl ved hentning af bookinger: ' + bookingError.message);
+                    res.status(500).send('Serverfejl');
+                } else {
+                    // Send både baner og bookinger til skabelonen
+                    res.render('kalender2', {
+                        baner: banerResult,
+                        data: bookingResult,
+                        user: user
+                    });
+                }
+            });
+        }
+    });
+});
+
+
+
+
   app.get('/lavBooking',checkAuth, (req, res) => {
     const user = req.session.user;
     res.render('lavBooking', { user });

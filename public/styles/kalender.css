@@ -2,18 +2,37 @@ th, td {
     padding: 10px;
     text-align: center;
     cursor: pointer; /* Add cursor style for clickable cells */
-    width: 12.5%; /* Set a fixed width for all cells */
     height: 50px; /* Set a fixed height for all cells */
+}
+td{
+    border: 0.5px solid rgb(134, 134, 134);
 }
  th{
     background-color: #4caf70;
     color: white;
     text-align: center;
+    font-size:x-large;
+    font-weight: bold;
 }
 
 .time-column {
-    text-align: right;
+    text-align: center;
     width: 12.5%;
+    font-weight: bold;
+}
+
+.Button{
+    background-color: #4caf70; /* Green color for Rediger button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 select, label, button {
@@ -33,7 +52,7 @@ option {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 5%;
+    margin-bottom: 10%;
 }
 
 /* Hidden modal initially */
@@ -133,19 +152,19 @@ table {
     table {
         width: 100%;
         font-size: 9px;
-        margin-bottom: 10%;
+        margin-bottom: 20%;
     }
 
     th, td {
-        width: auto;
+        width:fit-content;
         text-align: center;
         padding: 5px;
         height: 40px;
     }
 
     .time-column {
-        width: auto;
-        text-align: left;
+        width: 25%;
+        font-weight: bold;
     }
 
     .date-info {
@@ -154,8 +173,13 @@ table {
 
     select, label, button {
         text-align: center;
-        font-size: medium;
+        width: max-content;
+        font-size: x-large;
         margin: 5px;
+    }
+
+    .Button{
+        font-size: medium;
     }
 
 }
