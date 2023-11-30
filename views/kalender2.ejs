@@ -47,16 +47,6 @@ function convertUTCToLocal(utcDate) {
     return utcDate.toLocaleString('da-DK', options);
 }
 
-function updateCourtSelector(data) {
-    const courtSelector = document.getElementById('courtSelector');
-    for (let i = 0; i < data.length; i++) {
-        const option = document.createElement('option');
-        option.value = data[i].id;
-        option.text = data[i].Navn;
-        courtSelector.add(option);
-    }
-}
-
 let startDay, endDay;
 let dayCount;
 let firstDayOfWeek = currentDay - currentDate.getDay() + (currentDate.getDay() === 0 ? -6 : 1);
@@ -81,27 +71,39 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
 
     <div class="date-info">
         <br>
-        <h1 data-current-day="<%= currentDay %>">Dagens dato: <%= formatDate(currentYear, currentMonth, currentDay) %></h1>
+        <h1 data-current-day="<%= currentDay %>">Booking kalender for: den <%= formatDate(currentYear, currentMonth, currentDay) %></h1>
         <br>
         <label for="courtSelector">Vælg bane:</label>
-        <select id="courtSelector" onchange="window.changeCourt()">
-        </select>
-        <button onclick="prevWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Forrige Uge</button>
-        <button onclick="nextWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Næste Uge</button>
+        <ul id="courtList" class="court-List"></ul>
 
+        <label for="sportSelector">Vælg Sport</label>
+        <select id="sportSelector" onchange="window.changeSelector()">
+        <option value="Tennis">Tennis</option>
+        <option value="Padel">Padel</option>
+        </select>
+        <br>
+        <label for="courtTypeSelector">Indendørs/Udendørs</label>
+        <select id="courtTypeSelector" onchange="window.changeSport()">
+            <option value="Indendørs">Indendørs</option>
+            <option value="Udendørs">Udendørs</option>
+        </select>
+        <br>
+        <button onclick="prevDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Tilbage en dag</button>
+        <button onclick="nextDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">Frem en dag</button>
 
     </div>
     <script>
         // Brug af try-catch blok for at håndtere eventuelle JSON-parsing-fejl
-        var calendarData;
+        var bookingData;
         try {
-            calendarData = JSON.parse('<%- JSON.stringify(data) %>');
+            bookingData = JSON.parse('<%- JSON.stringify(data) %>');
+            console.log(bookingData , "booking data")
         } catch (error) {
             console.error('Fejl ved JSON-parsing:', error);
-            calendarData = null; // eller anden håndtering af fejlen
+            bookingData = null; // eller anden håndtering af fejlen
         }
     </script>
-    <script src="kalender.js"></script>
+    <script src="kalender2.js"></script>
 
     <h1>Min Kalender</h1>
     <table className="calendar-table" id="calendar-table" border="1">

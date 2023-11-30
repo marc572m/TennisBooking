@@ -194,20 +194,6 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
       });
     });
   }
-  
-app.post('/antalBaner', (req, res) => {
-
-  db.query('SELECT COUNT(*) FROM baner', (error, result) => {
-      if(error){
-          console.error('ingen baner fundet ' + error.message);
-          res.status(204).send('ingen data returneret');
-      }
-      else{
-          res.render('antalBaner', { data: result });
-          console.log(result);
-      }
-  })
-});
 
 app.get('/hentbaner', (req, res) => {
     db.query('SELECT * FROM baner', (error, result) => {
@@ -368,6 +354,36 @@ app.get('/minprofil', checkAuth, (req, res) => {
         }
     })
   })
+
+  app.get('/kalender2', (req, res) => {
+    const user = req.session.user;
+
+    // Hent banerne fra databasen
+    db.query('SELECT * FROM baner', (banerError, banerResult) => {
+        if (banerError) {
+            console.error('Fejl ved hentning af baner: ' + banerError.message);
+            res.status(500).json({ error: 'Der opstod en fejl ved hentning af baner' });
+        } else {
+            // Hent booking-data fra databasen
+            db.query('SELECT * FROM booking', (bookingError, bookingResult) => {
+                if (bookingError) {
+                    console.error('Fejl ved hentning af bookinger: ' + bookingError.message);
+                    res.status(500).send('Serverfejl');
+                } else {
+                    // Send både baner og bookinger til skabelonen
+                    res.render('kalender2', {
+                        baner: banerResult,
+                        data: bookingResult,
+                        user: user
+                    });
+                }
+            });
+        }
+    });
+});
+
+
+
 
   app.get('/lavBooking',checkAuth, (req, res) => {
     const user = req.session.user;
