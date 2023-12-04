@@ -73,6 +73,36 @@ table {
 #popup-content {
     font-size: 40px;
     line-height: 1.6;
+    height: 100%
+}
+
+.book-button, .login-button{
+    /*margin: 0 auto;
+    background-color: #4caf70; /* Green color for Rediger button 
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    font-size: 24px;
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 4px;
+    align-content: center;*/
+    background-color: #4caf70; /* Green color for button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 
@@ -165,6 +195,9 @@ table {
     .time-column {
         width: 25%;
         font-weight: bold;
+    }
+    td{
+        font-size: large;
     }
 
     .date-info {
