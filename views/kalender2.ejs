@@ -72,6 +72,13 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
     <div class="date-info">
         <br>
         <h1 data-current-day="<%= currentDay %>">Kalender: Den <%= formatDate(currentYear, currentMonth, currentDay) %></h1>
+        <% if (user){%>
+        <div id="userData" data-username="<%= user.Brugernavn %>"></div>
+        <% } %>
+
+            <!-- <% if (user) { %>
+            <p><%= user.Brugernavn%></p>
+            <% } %> -->
         <br>
         <ul id="courtList" class="court-List"></ul>
         <label for="sportSelector">Vælg Sport</label>
@@ -98,6 +105,7 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
             console.error('Fejl ved JSON-parsing:', error);
             bookingData = null; // eller anden håndtering af fejlen
         }
+
     </script>
     <script src="kalender2.js"></script>
 
@@ -108,7 +116,9 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
 <div id="popup" class="modal">
     <span class="modal-close" id="closeModalBtn">&times;</span>
     <div id="popup-content" class="popup-content">
-        <!-- Popup content goes here -->
+        <% if (user) { %>
+            <p><%= user.Brugernavn%></p>
+            <% } %>
     </div>
 </div>
 
@@ -117,7 +127,6 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
     <div id="popup" class="modal">
         <span class="modal-close" onclick="hideModal()">&times;</span>
         <div id="popup-content" class="popup-content">
-            <!-- Popup content goes here -->
         </div>
     </div>
 

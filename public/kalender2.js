@@ -16,20 +16,35 @@ function updateCourtList(baneData) {
     }
 }
 
-function showModal(formattedCellDate, cellHour, bookingID, bookedTime, bookedCourt) {
+function showModal(formattedCellDate, cellHour, bookingID, bookedTime, bookingType) {
     const overlay = document.getElementById('overlay');
     const popup = document.getElementById('popup');
     const popupContent = document.getElementById('popup-content');
+    const userDataElement = document.getElementById('userData');
+    const username = userDataElement ? userDataElement.dataset.username : null;
+
+    console.log(username);
 
     let contentHTML = `
         <p>Dato: ${formattedCellDate}</p>
         <p>Tid: ${cellHour}:00 - ${cellHour + 1}:00</p>
     `;
 
-    if (bookingID !== null) {
+    if (bookingID !== null && username != null) {
+        contentHTML += `<p>${bookingType}</p>`;
         contentHTML += `<p>Booking ID: ${bookingID}</p>`;
-        contentHTML += `<p>${bookedTime}</p>`;
-        contentHTML += `<p>Bane: ${bookedCourt}</p>`;
+        //contentHTML += `<p>${bookedTime}</p>`;
+    }
+    else if (bookingID == null && username != null) {
+        contentHTML += `<button class="book-button" onclick="lavBooking(${bookingID})">Book Tid</Button>`;
+    }
+    else if (bookingID !== null && username == null) {
+        contentHTML += `<p>Tiden er allerede booket</p>`;
+    }
+    else{
+        contentHTML += `<p>Log ind for at booke</p>`;
+        contentHTML += '<br>';
+        contentHTML += `<button class="login-button" onclick="window.location.href = '/login'">Log ind</button>`;
     }
 
     popupContent.innerHTML = contentHTML;
@@ -41,6 +56,9 @@ function showModal(formattedCellDate, cellHour, bookingID, bookedTime, bookedCou
 function hideModal() {
     const overlay = document.getElementById('overlay');
     const popup = document.getElementById('popup');
+    const popupContent = document.getElementById('popup-content');
+
+    popupContent.innerHTML = '';
 
     overlay.style.display = 'none';
     popup.style.display = 'none';
@@ -148,16 +166,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         const itemDate = new Date(item.Dato);
                         return itemDate.toDateString() === cellDate.toDateString() && itemHour === cellHour && item.BaneID === courtId;
                     });
+
+                    tableData.style.textShadow = '1px 2px 4px black';
     
                     if (bookedTime) {
                         tableData.innerHTML = `Booket`;
                         tableData.classList.add('booked');
+                        tableData.style.backgroundColor = '#ff3333';
+                        tableData.style.color = 'white';
                         tableData.addEventListener('click', function () {
-                            showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.Klokkeslæt, bookedTime.BaneID);
+                            showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.Klokkeslæt, bookedTime.BookingType);
                         });
                     } else {
                         tableData.innerHTML = `Ledig`;
                         tableData.classList.add('available');
+                        tableData.style.backgroundColor = '#82F45C';
+                        tableData.style.color = 'white';
                     }
     
                     row.appendChild(tableData);
