@@ -72,11 +72,35 @@ table {
 
 #popup-content {
     font-size: 40px;
-    line-height: 1.6;
     height: 100%
 }
 
-.book-button, .login-button{
+.booking-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* To kolonner med lige bredde */
+    gap: 10px; /* Afstand mellem kolonner og rækker */
+}
+
+.booking-form .form-group {
+    margin-bottom: 10px; /* Juster afstanden mellem formulargrupper */
+}
+
+.booking-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.booking-form input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.booking-form button:hover {
+    background-color: #45a049;
+}
+
+.book-button, .login-button, .confirm-button{
     /*margin: 0 auto;
     background-color: #4caf70; /* Green color for Rediger button 
     border: none;
