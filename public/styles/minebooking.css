@@ -1,0 +1,148 @@
+/* Add CSS styles for the list */
+ul {
+    list-style: none;
+    padding: 0;
+}
+.headline{
+    margin-left: 10%;
+}
+#listView{
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+li {
+    
+    margin-bottom: 5px;
+    cursor: pointer;
+    width: ;
+}
+
+li:hover {
+    background-color: lightgray;
+}
+.card {
+    list-style: none;
+    margin: 10px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+    background-color: #fff;
+    cursor: pointer;
+    width: 80%;
+}
+.card:last-child{
+    margin-bottom: 8%;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-content {
+    /* Define styles for the content inside the card */
+    /* Customize this according to your design */
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+.card-content-button{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    
+}
+.card-content-info{
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.card h3 {
+    /* Additional styles for heading within the card */
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.delete_button {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+/*---------------------button---------------------------------------*/
+
+.delete_button {
+    background-color: #f44336; /* Red color for Slet button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 20px;
+}
+.edit_button {
+    background-color: #4CAF50; /* Green color for Rediger button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.delete_button:hover {
+    background-color: #c0392b;
+}
+.edit_button:hover {
+    background-color: #2ecc71;
+}
+button {
+    padding-right: 1px;
+}
+
+
+@media(max-width: 920px) {
+    .card:last-child{
+        margin-bottom: 42%;
+    }
+}
+
+@media(max-width: 740px) {
+    .card:last-child{
+        margin-bottom: 12%;
+    }
+}@media(max-width: 670px) {
+    .card-content-button {
+        flex-direction: column-reverse;
+    }
+    .delete_button {
+        margin-top: 30px;
+        margin-left: 0px;
+    }
+}
+@media(max-width: 420px) {
+    .card:last-child{
+        margin-bottom: 22%;
+    }
+}
+@media(max-width: 375px) {
+    .card:last-child{
+        margin-bottom: 22%;
+    }
+}
