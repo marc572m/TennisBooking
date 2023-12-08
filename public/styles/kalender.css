@@ -2,18 +2,37 @@ th, td {
     padding: 10px;
     text-align: center;
     cursor: pointer; /* Add cursor style for clickable cells */
-    width: 12.5%; /* Set a fixed width for all cells */
     height: 50px; /* Set a fixed height for all cells */
+}
+td{
+    border: 0.5px solid rgb(134, 134, 134);
 }
  th{
     background-color: #4caf70;
     color: white;
     text-align: center;
+    font-size:x-large;
+    font-weight: bold;
 }
 
 .time-column {
-    text-align: right;
+    text-align: center;
     width: 12.5%;
+    font-weight: bold;
+}
+
+.Button{
+    background-color: #4caf70; /* Green color for Rediger button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 4px;
 }
 
 select, label, button {
@@ -33,7 +52,7 @@ option {
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 5%;
+    margin-bottom: 10%;
 }
 
 /* Hidden modal initially */
@@ -53,7 +72,61 @@ table {
 
 #popup-content {
     font-size: 40px;
-    line-height: 1.6;
+    height: 100%
+}
+
+.booking-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* To kolonner med lige bredde */
+    gap: 10px; /* Afstand mellem kolonner og rækker */
+}
+
+.booking-form .form-group {
+    margin-bottom: 10px; /* Juster afstanden mellem formulargrupper */
+}
+
+.booking-form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.booking-form input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.booking-form button:hover {
+    background-color: #45a049;
+}
+
+.book-button, .login-button, .confirm-button{
+    /*margin: 0 auto;
+    background-color: #4caf70; /* Green color for Rediger button 
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    font-size: 24px;
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 4px;
+    align-content: center;*/
+    background-color: #4caf70; /* Green color for button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 
@@ -133,19 +206,22 @@ table {
     table {
         width: 100%;
         font-size: 9px;
-        margin-bottom: 10%;
+        margin-bottom: 20%;
     }
 
     th, td {
-        width: auto;
+        width:fit-content;
         text-align: center;
         padding: 5px;
         height: 40px;
     }
 
     .time-column {
-        width: auto;
-        text-align: left;
+        width: 25%;
+        font-weight: bold;
+    }
+    td{
+        font-size: large;
     }
 
     .date-info {
@@ -154,8 +230,13 @@ table {
 
     select, label, button {
         text-align: center;
-        font-size: medium;
+        width: max-content;
+        font-size: x-large;
         margin: 5px;
+    }
+
+    .Button{
+        font-size: medium;
     }
 
 }

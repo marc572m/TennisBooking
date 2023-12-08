@@ -290,6 +290,60 @@ app.get('/hentbaner', (req, res) => {
     });
 });
 
+app.get('/hentBane/:id', (req, res) => {
+
+    const id = req.params.id;
+    
+    db.query('SELECT * FROM baner WHERE id = ?', [id], (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af bane: ' + error.message);
+            res.status(500).json({ error: 'Der opstod en fejl' });
+        } else {
+            res.json(result[0]);
+        }
+    }
+    );
+});
+
+app.post('/redigerBane/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+  const {
+      Adresse,
+      PostnummerogBy,
+      Banetype,
+      Sport,
+      Navn,
+      Kodeord
+  } = req.body;
+
+  const query = `
+      UPDATE baner
+      SET Adresse = ?, PostnummerogBy = ?, Banetype = ?, Sport = ?, Navn = ?, Kodeord = ?
+      WHERE id = ?
+  `;
+
+  db.query(query, [Adresse, PostnummerogBy, Banetype, Sport, Navn, Kodeord, id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved redigering af bane: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bane redigeret:', result);
+
+          // Send den opdaterede liste over baner
+          db.query('SELECT * FROM baner', (error, updatedBaner) => {
+              if (error) {
+                  console.error('Fejl ved hentning af baner: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBaner);
+              }
+          });
+      }
+  });
+});
+
+
+
 // opdater oplysninger via redigerprofil
 
 app.post('/redigerprofil', checkAuth, (req, res) => {
@@ -437,6 +491,36 @@ app.get('/minprofil', checkAuth, (req, res) => {
         }
     })
   })
+
+  app.get('/kalender2', (req, res) => {
+    const user = req.session.user;
+
+    // Hent banerne fra databasen
+    db.query('SELECT * FROM baner', (banerError, banerResult) => {
+        if (banerError) {
+            console.error('Fejl ved hentning af baner: ' + banerError.message);
+            res.status(500).json({ error: 'Der opstod en fejl ved hentning af baner' });
+        } else {
+            // Hent booking-data fra databasen
+            db.query('SELECT * FROM booking', (bookingError, bookingResult) => {
+                if (bookingError) {
+                    console.error('Fejl ved hentning af bookinger: ' + bookingError.message);
+                    res.status(500).send('Serverfejl');
+                } else {
+                    // Send både baner og bookinger til skabelonen
+                    res.render('kalender2', {
+                        baner: banerResult,
+                        data: bookingResult,
+                        user: user
+                    });
+                }
+            });
+        }
+    });
+});
+
+
+
 
   app.get('/lavBooking',checkAuth, (req, res) => {
     const user = req.session.user;
