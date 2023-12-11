@@ -92,8 +92,11 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
             <option value="Udendørs">Udendørs</option>
         </select>
         <br>
+        <button class="Button" onclick="prevWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">En uge tilbage</button>
         <button class="Button" onclick="prevDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">En dag tilbage</button>
+        <button class="Button" onclick="today()">I dag</button>
         <button class="Button" onclick="nextDay(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">En dag frem</button>
+        <button class="Button" onclick="nextWeek(<%= currentYear %>, <%= currentMonth %>, <%= currentDay %>)">En uge frem</button>
 
     </div>
     <script>

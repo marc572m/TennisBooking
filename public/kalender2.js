@@ -16,36 +16,38 @@ function updateCourtList(baneData) {
     }
 }
 
-function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType) {
+function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType, cellDate) {
     const overlay = document.getElementById('overlay');
     const popup = document.getElementById('popup');
     const popupContent = document.getElementById('popup-content');
     const userDataElement = document.getElementById('userData');
     const username = userDataElement ? userDataElement.dataset.username : null;
 
-    console.log(username);
-    console.log(cellHour);
+    // Opret et Date-objekt for den aktuelle tid
+    const currentDate = new Date();
 
     let contentHTML = `
         <p>Dato: ${formattedCellDate}</p>
         <p>Tid: ${cellHour}:00 - ${cellHour + 1}:00</p>
     `;
 
-    if (bookingID !== null && username != null) {
-        contentHTML += `<p>${bookingType}</p>`;
-        contentHTML += `<p>Booking ID: ${bookingID}</p>`;
-        //contentHTML += `<p>${bookedTime}</p>`;
-    }
-    else if (bookingID == null && username != null) {
-        contentHTML += `<button class="book-button" onclick="makeBooking('${username}', ${cellHour}, '${formattedCellDate}', ${baneID}, '${baneData[baneID-1].Navn}')">Book Tid</Button>`;
-    }
-    else if (bookingID !== null && username == null) {
-        contentHTML += `<p>Tiden er allerede booket</p>`;
-    }
-    else{
-        contentHTML += `<p>Log ind for at booke</p>`;
-        contentHTML += '<br>';
-        contentHTML += `<button class="login-button" onclick="window.location.href = '/login'">Log ind</button>`;
+    // Tjek om bookingtiden er passeret
+    if (cellDate <= currentDate) {
+        contentHTML += `<p>Den valgte tid er allerede passeret.</p>`;
+    } else {
+        if (bookingID !== null && username != null) {
+            contentHTML += `<p>${bookingType}</p>`;
+            contentHTML += `<p>Booking ID: ${bookingID}</p>`;
+            //contentHTML += `<p>${bookedTime}</p>`;
+        } else if (bookingID == null && username != null) {
+            contentHTML += `<button class="book-button" onclick="makeBooking('${username}', ${cellHour}, '${formattedCellDate}', ${baneID}, '${baneData[baneID-1].Navn}')">Book Tid</Button>`;
+        } else if (bookingID !== null && username == null) {
+            contentHTML += `<p>Tiden er allerede booket</p>`;
+        } else {
+            contentHTML += `<p>Log ind for at booke</p>`;
+            contentHTML += '<br>';
+            contentHTML += `<button class="login-button" onclick="window.location.href = '/login'">Log ind</button>`;
+        }
     }
 
     popupContent.innerHTML = contentHTML;
@@ -53,6 +55,8 @@ function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType) 
     overlay.style.display = 'block';
     popup.style.display = 'block';
 }
+
+
 
 const months = [
     "Januar", "Februar", "Marts", "April", "Maj", "Juni",
@@ -320,7 +324,6 @@ document.addEventListener('DOMContentLoaded', function () {
     
         console.log(baneData, "BaneData", selectedSport);
         console.log(bookingData, "BookingData");
-        console.log(selectedCourtType, "CourtType", baneData[0].Banetype);
     
         courtList.innerHTML = '';
     
@@ -359,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     tableData.setAttribute('data-court', courtId);
     
                     tableData.addEventListener('click', function () {
-                        showModal(formattedCellDate, cellHour, null, courtId, null);
+                        showModal(formattedCellDate, cellHour, null, courtId, null, cellDate);
                     });
     
                     const bookedTime = bookingData.find(item => {
@@ -376,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         tableData.style.backgroundColor = '#ff3333';
                         tableData.style.color = 'white';
                         tableData.addEventListener('click', function () {
-                            showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.BaneID, bookedTime.BookingType);
+                            showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.BaneID, bookedTime.BookingType, cellDate);
                         });
                     } else {
                         tableData.innerHTML = `Ledig`;
@@ -420,6 +423,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.nextDay = function () {
         currentDay++;
+        const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        if (currentDay > lastDayOfMonth) {
+            currentDay = 1;
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
+        updateHeaderText();
+    };
+
+    window.today = function () {
+        currentDay = new Date();
+        currentYear = currentDate.getFullYear();
+        currentMonth = currentDate.getMonth();
+        currentDay = currentDate.getDate();
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
+        updateHeaderText();
+    }
+
+    window.prevWeek = function () {
+        currentDay-7;
+        if (currentDay < 1) {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            currentDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+        }
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
+        updateHeaderText();
+    };
+
+    window.nextWeek = function () {
+        currentDay-7;
         const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         if (currentDay > lastDayOfMonth) {
             currentDay = 1;
