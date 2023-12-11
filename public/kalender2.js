@@ -16,36 +16,38 @@ function updateCourtList(baneData) {
     }
 }
 
-function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType) {
+function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType, cellDate) {
     const overlay = document.getElementById('overlay');
     const popup = document.getElementById('popup');
     const popupContent = document.getElementById('popup-content');
     const userDataElement = document.getElementById('userData');
     const username = userDataElement ? userDataElement.dataset.username : null;
 
-    console.log(username);
-    console.log(cellHour);
+    // Opret et Date-objekt for den aktuelle tid
+    const currentDate = new Date();
 
     let contentHTML = `
         <p>Dato: ${formattedCellDate}</p>
         <p>Tid: ${cellHour}:00 - ${cellHour + 1}:00</p>
     `;
 
-    if (bookingID !== null && username != null) {
-        contentHTML += `<p>${bookingType}</p>`;
-        contentHTML += `<p>Booking ID: ${bookingID}</p>`;
-        //contentHTML += `<p>${bookedTime}</p>`;
-    }
-    else if (bookingID == null && username != null) {
-        contentHTML += `<button class="book-button" onclick="makeBooking('${username}', ${cellHour}, '${formattedCellDate}', ${baneID}, '${baneData[baneID-1].Navn}')">Book Tid</Button>`;
-    }
-    else if (bookingID !== null && username == null) {
-        contentHTML += `<p>Tiden er allerede booket</p>`;
-    }
-    else{
-        contentHTML += `<p>Log ind for at booke</p>`;
-        contentHTML += '<br>';
-        contentHTML += `<button class="login-button" onclick="window.location.href = '/login'">Log ind</button>`;
+    // Tjek om bookingtiden er passeret
+    if (cellDate <= currentDate) {
+        contentHTML += `<p>Den valgte tid er allerede passeret.</p>`;
+    } else {
+        if (bookingID !== null && username != null) {
+            contentHTML += `<p>${bookingType}</p>`;
+            contentHTML += `<p>Booking ID: ${bookingID}</p>`;
+            //contentHTML += `<p>${bookedTime}</p>`;
+        } else if (bookingID == null && username != null) {
+            contentHTML += `<button class="book-button" onclick="makeBooking('${username}', ${cellHour}, '${formattedCellDate}', ${baneID}, '${baneData[baneID-1].Navn}')">Book Tid</Button>`;
+        } else if (bookingID !== null && username == null) {
+            contentHTML += `<p>Tiden er allerede booket</p>`;
+        } else {
+            contentHTML += `<p>Log ind for at booke</p>`;
+            contentHTML += '<br>';
+            contentHTML += `<button class="login-button" onclick="window.location.href = '/login'">Log ind</button>`;
+        }
     }
 
     popupContent.innerHTML = contentHTML;
@@ -54,185 +56,12 @@ function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType) 
     popup.style.display = 'block';
 }
 
+
+
 const months = [
     "Januar", "Februar", "Marts", "April", "Maj", "Juni",
     "Juli", "August", "September", "Oktober", "November", "December"
 ];
-
-
-function makeBooking(username, cellHour, formattedCellDate, courtId, courtName) {
-    const overlay = document.getElementById('overlay');
-    const popup = document.getElementById('popup');
-    const popupContent = document.getElementById('popup-content');
-    const userDataElement = document.getElementById('userData');
-    console.log('Tid: ', cellHour);
-    console.log('Dato: ', formattedCellDate);
-
-    const dateArray = formattedCellDate.split('.');
-    const day = parseInt(dateArray[0], 10); // Konverter til heltal
-    const month = dateArray[1]; // Lad måneden være som en streng
-    const year = new Date().getFullYear();
-    console.log(year, month, day);
-    const bookingDate = new Date(year, getMonthIndex(month), day);
-
-    const formattedDate = formatDateForInput(bookingDate);
-    console.log(formattedDate);
-
-    const bookingCourt = courtId;
-    const bookingSport = document.getElementById('sportSelector').value;
-    const bookingCourtType = document.getElementById('courtTypeSelector').value;
-
-    let contentHTML = `
-    <div class="booking-form">
-    <div class="form-group">
-        <label for="bookingUsername">Brugernavn:</label>
-        <input type="text" id="bookingUsername" value="${username}" disabled>
-    </div>
-
-    <div class="form-group">
-        <label for="bookingDate">Dato:</label>
-        <input type="date" id="bookingDate" value="${formattedDate}" disabled>
-    </div>
-
-    <div class="form-group">
-        <label for="bookingDate">Tidsrum: ${cellHour}:00 - ${cellHour+1}:00</label>
-    </div>
-
-    <div class="form-group">
-        <label for="bookingCourt">Bane:</label>
-        <input type="text" id="bookingCourt" value="${courtName}, ID: ${bookingCourt}" disabled>
-    </div>
-
-    <div class="form-group">
-        <label for="bookingSport">Sport:</label>
-        <input type="text" id="bookingSport" value="${bookingSport}" disabled>
-    </div>
-
-    <div class="form-group">
-        <label for="bookingSport">Banetype:</label>
-        <input type="text" id="bookingSport" value="${bookingCourtType}" disabled>
-    </div>
-
-    <div class="form-group">
-        <label for="medspiller">Medspiller:</label>
-        <select id="medspiller" name="medspiller" onchange="teammateType()" required>
-            <option value="Gæst">Gæst</option>
-            <option value="Medlem">Medlem</option>
-        </select>
-            
-        <div id="medspiller-search" style="display: none;">
-            <label for="teammate">Søg efter medspiller:</label>
-            <input type="text" id="teammate" name="teammate">
-            <ul id="search-results"></ul>
-        </div>
-
-        <div id="team-list">
-            <label for="team-list">Medspillere:</label>
-            <ul id="team-list"></ul>
-        </div>
-
-    <div class="form-group">
-        <button class="confirm-button" onclick="completeBooking()">Færdig</button>
-    </div>
-
-    
-</div>
-    `;
-    popupContent.innerHTML = contentHTML;
-}
-
-window.teammateType = function () {
-    const medspillerSelect = document.getElementById('medspiller');
-    const teammateSearch = document.getElementById('medspiller-search');
-    const teammateInput = document.getElementById('teammate');
-    const searchResults = document.getElementById('search-results');
-    const teamList = document.getElementById('team-list');
-    const userDataElement = document.getElementById('userData');
-    const username = userDataElement ? userDataElement.dataset.username : null;
-
-        if (medspillerSelect.value === 'Gæst') {
-            teammateSearch.style.display = 'none';
-        } else {
-            teammateSearch.style.display = 'block';
-        }
-
-        teammateInput.addEventListener('input', function () {
-        if (medspillerSelect.value === 'Medlem') {
-            const searchQuery = teammateInput.value;
-            if(searchQuery != null && searchQuery.length > 0) {
-            fetch(`/search?query=${searchQuery}`)
-                .then(response => response.json())
-                .then(data => {
-                    displaySearchResults(data);
-                })
-                .catch(error => console.error('Fejl under hentning af søgeresultater:', error));
-            }
-            else {
-                searchResults.innerHTML = '';
-                console.log('Ingen resultater');
-            }
-        }
-    });
-
-    function displaySearchResults(results) {
-        searchResults.innerHTML = '';
-
-        results.forEach(result => {
-            if(result.Brugernavn != username){
-            const listItem = document.createElement('li');
-            listItem.textContent = result.Brugernavn; // Tilpas dette baseret på din databasestruktur
-            searchResults.appendChild(listItem);
-            }
-        });
-    }
-
-    searchResults.addEventListener('click', function (event) {
-        // Kontroller om det klikkede element er en <li> (listeobjekt)
-        if (event.target.tagName === 'LI') {
-            // Hent teksten fra det klikkede listeobjekt
-            const selectedPlayer = event.target.textContent;
-
-            if(selectedPlayer != username) {
-            // Tilføj den valgte spiller til din spillerliste (her skal du tilføje din egen logik)
-            window.addPlayerToTeam(selectedPlayer);
-
-            // Ryd søgeresultaterne efter valg
-            }
-            else {
-                //Kan helt fjernes
-                alert("Du kan ikke tilføje dig selv til medspillere.");
-            }
-        }
-    });
-
-    window.addPlayerToTeam = function (playerName) {
-        // Tjek om spilleren allerede er på holdet
-        const isPlayerAlreadyAdded = Array.from(teamList.children).some(player => player.textContent === playerName);
-
-        if (!isPlayerAlreadyAdded) {
-            // Spilleren er ikke allerede på holdet, så tilføj den
-            const listItem = document.createElement('li');
-            listItem.textContent = playerName;
-            listItem.addEventListener('click', function () {
-                removePlayerFromTeam(playerName);
-            });
-            teamList.appendChild(listItem);
-        }
-        else {
-            alert("Spilleren er allerede tilføjet.");
-        }
-    };
-
-    function removePlayerFromTeam(playerName) {
-        // Fjern spilleren fra holdet ved at filtrere listen for at beholde alle undtagen den valgte spiller
-        const updatedTeamList = Array.from(teamList.children).filter(player => player.textContent !== playerName);
-        // Opdater holdlisten med den nye liste uden den valgte spiller
-        teamList.innerHTML = '';
-        updatedTeamList.forEach(player => {
-            teamList.appendChild(player);
-        });
-    };   
-}
 
 //Når datoen indsættes i databasen, skal den være i formatet YYYY-MM-DD
 //Samt vises year og month som året og måneden før, så derfor +1
@@ -261,6 +90,186 @@ function hideModal() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    //Lav booking
+
+    window.makeBooking = function (username, cellHour, formattedCellDate, courtId, courtName) {
+        console.log('Making booking for user:', username);
+        const overlay = document.getElementById('overlay');
+        const popup = document.getElementById('popup');
+        const popupContent = document.getElementById('popup-content');
+        const userDataElement = document.getElementById('userData');
+        console.log('Tid: ', cellHour);
+        console.log('Dato: ', formattedCellDate);
+    
+        const dateArray = formattedCellDate.split('.');
+        const day = parseInt(dateArray[0], 10); // Konverter til heltal
+        const month = dateArray[1]; // Lad måneden være som en streng
+        const year = new Date().getFullYear();
+        console.log(year, month, day);
+        const bookingDate = new Date(year, getMonthIndex(month), day);
+    
+        const formattedDate = formatDateForInput(bookingDate);
+        console.log(formattedDate);
+    
+        const bookingCourt = courtId;
+        const bookingSport = document.getElementById('sportSelector').value;
+        const bookingCourtType = document.getElementById('courtTypeSelector').value;
+    
+        let contentHTML = `
+            <div class="booking-form">
+                <div class="form-group">
+                    <label for="bookingUsername">Brugernavn:</label>
+                    <input type="text" id="bookingUsername" value="${username}" disabled>
+                </div>
+    
+                <div class="form-group">
+                    <label for="bookingDate">Dato:</label>
+                    <input type="date" id="bookingDate" value="${formattedDate}" disabled>
+                </div>
+    
+                <div class="form-group">
+                    <label for="bookingDate">Tidsrum: ${cellHour}:00 - ${cellHour + 1}:00</label>
+                </div>
+    
+                <div class="form-group">
+                    <label for="bookingCourt">Bane:</label>
+                    <input type="text" id="bookingCourt" value="${courtName}, ID: ${bookingCourt}" disabled>
+                </div>
+    
+                <div class="form-group">
+                    <label for="bookingSport">Sport:</label>
+                    <input type="text" id="bookingSport" value="${bookingSport}" disabled>
+                </div>
+    
+                <div class="form-group">
+                    <label for="bookingSport">Banetype:</label>
+                    <input type="text" id="bookingSport" value="${bookingCourtType}" disabled>
+                </div>
+    
+                <div class="form-group">
+                    <label for="medspiller">Medspiller:</label>
+                    <button id="add-guest-btn" class="guest-button">Tilføj Gæst</button>
+                </div>
+    
+                <div id="medspiller-search">
+                    <input type="text" id="teammate" placeholder="Søg efter medspiller">
+                    <ul id="search-results"></ul>
+                </div>
+    
+                <div>
+                    <label for="team-list">Medspillere:</label>
+                    <ul id="team-list"></ul>
+                </div>
+    
+                <div class="form-group">
+                    <button class="confirm-button" onclick="completeBooking()">Færdig</button>
+                </div>
+            </div>
+        `;
+    
+        popupContent.innerHTML = contentHTML;
+
+        console.log('DOM loaded');
+        const teammateInput = document.getElementById('teammate');
+        const searchResults = document.getElementById('search-results');
+        const teamList = document.getElementById('team-list');
+        const addGuestBtn = document.getElementById('add-guest-btn');
+
+    
+    teammateInput.addEventListener('input', function () {
+        console.log('Input event triggered');
+        const searchQuery = teammateInput.value;
+        if (searchQuery != null && searchQuery.length > 0) {
+            fetch(`/search?query=${searchQuery}`)
+                .then(response => response.json())
+                .then(data => {
+                    displaySearchResults(data);
+                })
+                .catch(error => console.error('Fejl under hentning af søgeresultater:', error));
+        } else {
+            searchResults.innerHTML = '';
+            console.log('Ingen resultater');
+        }
+    });
+
+    function displaySearchResults(results) {
+        searchResults.innerHTML = '';
+
+        results.forEach(result => {
+            if (result.Brugernavn != username) {
+                const listItem = document.createElement('li');
+                listItem.textContent = result.Brugernavn;
+                searchResults.appendChild(listItem);
+            }
+        });
+    }
+
+    searchResults.addEventListener('click', function (event) {
+        if (event.target.tagName === 'LI') {
+            const selectedPlayer = event.target.textContent;
+
+            if (selectedPlayer != username) {
+                window.addPlayerToTeam(selectedPlayer);
+            } else {
+                alert("Du kan ikke tilføje dig selv til medspillere.");
+            }
+        }
+    });
+
+    addGuestBtn.addEventListener('click', function () {
+        const guestName = 'Gæst';
+        window.addPlayerToTeam(guestName);
+    });
+
+    window.addPlayerToTeam = function (playerName) {
+        const isPlayerAlreadyAdded = Array.from(teamList.children).some(player => player.textContent === playerName);
+
+        if (!isPlayerAlreadyAdded && playerName != "Gæst" && teamList.children.length < 4) {
+            const listItem = document.createElement('li');
+            listItem.textContent = playerName;
+            listItem.addEventListener('click', function () {
+                removePlayerFromTeam(playerName);
+            });
+            teamList.appendChild(listItem);
+        } else if (playerName == "Gæst" && teamList.children.length < 4) {
+            const listItem = document.createElement('li');
+            listItem.textContent = playerName;
+            listItem.addEventListener('click', function () {
+                removePlayerFromTeam(playerName);
+            });
+            teamList.appendChild(listItem);
+        } else if (teamList.children.length >= 4) {
+            alert("Der må kun være 4 spillere på banen af gangen.");
+        } else {
+            alert("Spilleren er allerede tilføjet.");
+        }
+    };
+
+    window.removePlayerFromTeam = function (playerName) {
+        const updatedTeamList = Array.from(teamList.children).filter(player => player.textContent !== playerName);
+
+        if (playerName !== "Gæst") {
+            teamList.innerHTML = '';
+            updatedTeamList.forEach(player => {
+                teamList.appendChild(player);
+            });
+        } else {
+            let guestRemoved = false;
+
+            for (let i = 0; i < teamList.children.length; i++) {
+                const player = teamList.children[i];
+                if (player.textContent === playerName && !guestRemoved) {
+                    teamList.removeChild(player);
+                    guestRemoved = true;
+                }
+            }
+        }
+    };
+}
+
+    //Lav Kalender
+
     const table = document.getElementById('calendar-table');
     let currentWeekStart = new Date();
     let currentYear, currentMonth, currentDay;
@@ -315,7 +324,6 @@ document.addEventListener('DOMContentLoaded', function () {
     
         console.log(baneData, "BaneData", selectedSport);
         console.log(bookingData, "BookingData");
-        console.log(selectedCourtType, "CourtType", baneData[0].Banetype);
     
         courtList.innerHTML = '';
     
@@ -354,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     tableData.setAttribute('data-court', courtId);
     
                     tableData.addEventListener('click', function () {
-                        showModal(formattedCellDate, cellHour, null, courtId, null);
+                        showModal(formattedCellDate, cellHour, null, courtId, null, cellDate);
                     });
     
                     const bookedTime = bookingData.find(item => {
@@ -371,7 +379,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         tableData.style.backgroundColor = '#ff3333';
                         tableData.style.color = 'white';
                         tableData.addEventListener('click', function () {
-                            showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.BaneID, bookedTime.BookingType);
+                            showModal(formattedCellDate, cellHour, bookedTime.BrugerID, bookedTime.BaneID, bookedTime.BookingType, cellDate);
                         });
                     } else {
                         tableData.innerHTML = `Ledig`;
@@ -415,6 +423,44 @@ document.addEventListener('DOMContentLoaded', function () {
 
     window.nextDay = function () {
         currentDay++;
+        const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        if (currentDay > lastDayOfMonth) {
+            currentDay = 1;
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+        }
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
+        updateHeaderText();
+    };
+
+    window.today = function () {
+        currentDay = new Date();
+        currentYear = currentDate.getFullYear();
+        currentMonth = currentDate.getMonth();
+        currentDay = currentDate.getDate();
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
+        updateHeaderText();
+    }
+
+    window.prevWeek = function () {
+        currentDay-7;
+        if (currentDay < 1) {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            currentDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+        }
+        updateCalendar(table, currentYear, currentMonth, currentDay, baneData);
+        updateHeaderText();
+    };
+
+    window.nextWeek = function () {
+        currentDay-7;
         const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         if (currentDay > lastDayOfMonth) {
             currentDay = 1;
