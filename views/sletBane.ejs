@@ -117,15 +117,16 @@
             })
                 .then(response => response.json())
                 .then(baner => {
-                    // Call the function to display banerne
+                    
                     visBaner(baner);
                 })
                 .catch(error => console.error('Error fetching baner:', error))
                 .finally(() => {
-                    // Make sure to call hentBaner after the deletion is complete
+                    
                     hentBaner();
                 });
         }
+
 let valgtBaneid;
   // Function to open the edit popup and fill in the form fields
 function openEditPopup(id) {

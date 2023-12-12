@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brugerliste</title>   
+    <link rel="stylesheet" href="/styles/redigerogsletbruger.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <%- include('partials/navbar.ejs') %>
+
+<div class="container">
+    <h1>Brugerliste</h1>
+    <input type="text" id="searchInput" placeholder="Søg efter brugere...">
+
+    <ul class="bruger-liste" id="bruger-liste">
+
+    </ul>
+</div>
+
+
+<div id="openEditPopup" class="popup">
+    <div class="popup-content">
+        <span class="close" onclick="closePopup()">&times;</span>
+        <h2>Rediger bruger</h2>
+
+        <form onsubmit="redigerBruger(event)" method="POST" class="redigerBruger-form" id="editForm">
+        
+            <label for="Brugernavn">Brugernavn:</label>
+            <input type="text" id="editBrugernavn" name="Brugernavn" required>
+
+            <label for="Fornavn">Fornavn:</label>
+            <input type="text" id="editFornavn" name="Fornavn" required>
+
+            <label for="Efternavn">Efternavn:</label>
+            <input type="text" id="editEfternavn" name="Efternavn" required>
+
+            <label for="Telefonnummer">Telefonnummer:</label>
+            <input type="text" id="editTelefonnummer" name="Telefonnummer" required>
+
+            <label for="Email">Email:</label>
+            <input type="text" id="editEmail" name="Email" required>
+
+            <label for="Kodeord">Kodeord:</label>
+            <input id="editKodeord" name="Kodeord" required>
+
+            <label for="Adresse">Adresse:</label>
+            <input type="text" id="editAdresse" name="Adresse" required>
+
+            <label for="PostnummerogBy">Postnummer og By:</label>
+            <input type="text" id="editPostnummerogBy" name="PostnummerogBy" required>
+
+            <label for="Medlemstype">Medlemstype:</label>
+            <select id="editMedlemstype" name="Medlemstype" required>
+                <option value="Normal">Normal</option>
+                <option value="Padel">Padel</option>
+                <option value="Dobbelt">Padel og normal tennis </option>
+            </select>
+
+            <label for="Brugertype">Brugertype:</label>
+            <select id="editBrugertype" name="Brugertype" required>
+                <option value="Normal">Normal</option>
+                <option value="Admin">Admin</option>
+
+            </select>
+
+            <input type="hidden" id="editBrugerId" name="id">
+
+            <button type="submit">Opdater bruger</button>
+
+        </form>
+
+    </div>
+
+
+</div>
+
+<div id="openInfoPopup" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <h2>Brugerinfo</h2>
+
+    <h4>Brugernavn:</h4>
+    <p id="Brugernavn"></p>
+
+    <h4>Email:</h4>
+    <p id="Email"></p>
+    <h4>Telefonnummer:</h4>
+    <p id="Telefonnummer"></p>
+    <h4>Fornavn:</h4>
+    <p id="Fornavn"></p> 
+    <h4>Efternavn:</h4>
+    <p id="Efternavn"></p>
+    <h4>Adresse:</h4>
+    <p id="Adresse"></p>
+    <h4>Postnummer og By:</h4>
+    <p id="PostnummerogBy"></p>
+    <h4>Medlemstype:</h4>
+    <p id="Medlemstype"></p>
+    <h4>Brugertype:</h4>
+    <p id="Brugertype"></p>
+
+
+</div>
+
+<%- include('partials/footer.ejs') %>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", () => {
+        
+        hentBrugere();
+
+        const searchInput = document.getElementById('searchInput');
+        searchInput.addEventListener('input', () => søgBrugere(searchInput.value));
+    });
+
+    function hentBrugere() {
+    fetch('/hentbrugere')
+        .then(response => response.json())
+        .then(brugere => {
+            visbrugere(brugere);
+        })
+        .catch(error => {
+            console.log('Error:', error);
+        });
+}
+
+function visbrugere(brugere) {
+    const brugerListe = document.getElementById('bruger-liste');
+
+    brugerListe.innerHTML = "";
+
+    brugere.forEach(bruger => {
+        const brugerListeItem = document.createElement('li');
+        brugerListeItem.classList.add('bruger-liste-item');
+
+        const brugerInfo = document.createElement('span');
+        brugerInfo.classList.add('bruger-info');
+        brugerInfo.textContent = `${bruger.Brugernavn} - ${bruger.Fornavn} ${bruger.Efternavn} - ${bruger.Email}`;
+
+        const redigerKnap = document.createElement('button');
+        redigerKnap.classList.add('rediger-knap');
+        redigerKnap.textContent = 'Rediger';
+        redigerKnap.addEventListener('click', () => openEditPopup(bruger.id));
+
+        const infoKnap = document.createElement('button');
+        infoKnap.classList.add('info-knap');
+        infoKnap.textContent = 'Info';
+        infoKnap.addEventListener('click', () => openInfoPopup(bruger.id));
+
+        const sletKnap = document.createElement('button');
+        sletKnap.classList.add('slet-knap');
+        sletKnap.textContent = 'Slet';
+        sletKnap.addEventListener('click', () => sletBruger(bruger.id));
+
+        brugerListeItem.appendChild(brugerInfo);
+        brugerListeItem.appendChild(redigerKnap);
+        brugerListeItem.appendChild(infoKnap);
+        brugerListeItem.appendChild(sletKnap);
+
+        brugerListe.appendChild(brugerListeItem);
+    });
+}
+
+function søgBrugere() {
+    const searchInput = document.getElementById('searchInput');
+    const filter = searchInput.value.toUpperCase();
+    const brugerListe = document.getElementById('bruger-liste');
+    const brugerListeItems = brugerListe.querySelectorAll('li');
+
+    brugerListeItems.forEach(brugerListeItem => {
+        const brugerInfo = brugerListeItem.querySelector('.bruger-info');
+        const brugerInfoValue = brugerInfo.textContent || brugerInfo.innerText;
+
+        if (brugerInfoValue.toUpperCase().indexOf(filter) > -1) {
+            brugerListeItem.style.display = '';
+        } else {
+            brugerListeItem.style.display = 'none';
+        }
+    });
+    
+}
+
+function sletBruger(id) {
+    fetch(`/sletBruger/${id}`, {
+        method: 'POST',
+    })
+        .then(response => response.json())
+        .then(brugere => {
+            visbrugere(brugere);
+        })
+        .catch(error => console.error('Error fetching brugere:', error))
+}
+
+let valgtBrugerid;
+
+function openEditPopup(brugerId){
+    const editPopup = document.getElementById('openEditPopup');
+    const editForm = document.getElementById('editForm');
+
+    fetch(`/hentbruger/${brugerId}`)
+        .then(response => response.json())
+        .then(bruger => {
+
+            const brugernavn = document.getElementById('editBrugernavn');
+            const fornavn = document.getElementById('editFornavn');
+            const efternavn = document.getElementById('editEfternavn');
+            const telefonnummer = document.getElementById('editTelefonnummer');
+            const email = document.getElementById('editEmail');
+            const kodeord = document.getElementById('editKodeord');
+            const adresse = document.getElementById('editAdresse');
+            const postnummerogBy = document.getElementById('editPostnummerogBy');
+            const medlemstype = document.getElementById('editMedlemstype');
+            const brugertype = document.getElementById('editBrugertype');
+
+
+            if (editBrugernavn.value === brugernavn.value &&
+                editFornavn.value === fornavn.value &&
+                editEfternavn.value === efternavn.value &&
+                editTelefonnummer.value === telefonnummer.value &&
+                editEmail.value === email.value &&
+                editKodeord.value === kodeord.value
+                && editAdresse.value === adresse.value
+                && editPostnummerogBy.value === postnummerogBy.value
+                && editMedlemstype.value === medlemstype.value
+                && editBrugertype.value === brugertype.value
+                ) 
+                {
+                valgtBrugerid = bruger.id;
+                brugernavn.value = bruger.Brugernavn;
+                fornavn.value = bruger.Fornavn;
+                efternavn.value = bruger.Efternavn;
+                telefonnummer.value = bruger.Telefonnummer;
+                email.value = bruger.Email;
+                kodeord.value = bruger.Kodeord;
+                adresse.value = bruger.Adresse;
+                postnummerogBy.value = bruger.PostnummerogBy;
+                medlemstype.value = bruger.Medlemstype;
+                brugertype.value = bruger.Brugertype;
+                
+
+                editPopup.style.display = 'block';
+            } else {
+                console.error('One or more form elements not found.');
+            }
+            
+        })
+        .catch(error => console.error('Error fetching bruger:', error))
+}
+
+function closePopup() {
+    const editPopup = document.getElementById('openEditPopup');
+    const infoPopup = document.getElementById('openInfoPopup');
+    editPopup.style.display = 'none';
+    infoPopup.style.display = 'none';
+
+    }
+
+function openInfoPopup(brugerId) {
+    const infoPopup = document.getElementById('openInfoPopup');
+    
+    fetch(`/hentbruger/${brugerId}`)
+        .then(response => response.json())
+        .then(bruger => {
+            const brugernavn = document.getElementById('Brugernavn');
+            const fornavn = document.getElementById('Fornavn');
+            const efternavn = document.getElementById('Efternavn');
+            const telefonnummer = document.getElementById('Telefonnummer');
+            const email = document.getElementById('Email');
+            const adresse = document.getElementById('Adresse');
+            const postnummerogBy = document.getElementById('PostnummerogBy');
+            const medlemstype = document.getElementById('Medlemstype');
+            const brugertype = document.getElementById('Brugertype');
+
+            brugernavn.textContent = bruger.Brugernavn;
+            fornavn.textContent = bruger.Fornavn;
+            efternavn.textContent = bruger.Efternavn;
+            telefonnummer.textContent = bruger.Telefonnummer;
+            email.textContent = bruger.Email;
+            adresse.textContent = bruger.Adresse;
+            postnummerogBy.textContent = bruger.PostnummerogBy;
+            medlemstype.textContent = bruger.Medlemstype;
+            brugertype.textContent = bruger.Brugertype;
+
+            infoPopup.style.display = 'block';
+        })
+        .catch(error => console.error('Error fetching bruger:', error))
+    
+}
+
+function redigerBruger(event) {
+    event.preventDefault();
+
+    const editForm = document.getElementById('editForm');
+    const id = valgtBrugerid;
+
+    const formData = new FormData(editForm);   
+    const jsonData = JSON.stringify(Object.fromEntries(formData));
+
+    fetch(`/redigerBruger/${id}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData,
+    })
+        .then(response => response.json())
+        .then(brugere => {
+            visbrugere(brugere);
+            closePopup();
+        })
+        .catch(error => console.error('Error:', error));
+
+
+}
+
+
+</script>
+</body>
+</html>
