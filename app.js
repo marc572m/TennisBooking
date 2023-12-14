@@ -154,6 +154,35 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
     });
 });
 
+app.post('/sletBruger/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+
+  const query = `
+      DELETE FROM brugere WHERE id = ?
+  `;
+
+  db.query(query, [id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved sletning af bruger: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bruger slettet:', result);
+
+          // Send the updated list of brugere
+          db.query('SELECT * FROM brugere', (error, updatedBrugere) => {
+              if (error) {
+                  console.error('Fejl ved hentning af brugere: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBrugere);
+              }
+          });
+      }
+  });
+}
+)
+
+
 app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
   const id = req.params.id;
 
@@ -180,8 +209,6 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
       }
   });
 });
-
-
 
 
   app.post('/lavBooking', checkAuth, (req, res) => {
@@ -278,6 +305,33 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
     });
   }
 
+  app.get('/hentbrugere', (req, res) => {
+    db.query('SELECT * FROM brugere', (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af brugere: ' + error.message);
+            res.status(500).json({ error: 'Der opstod en fejl' });
+        } else {
+            res.json(result);
+            console.log(result);
+        }
+    }
+    );
+  });
+
+  app.get('/hentbruger/:id', (req, res) => { 
+    const id = req.params.id;
+    
+    db.query('SELECT * FROM brugere WHERE id = ?', [id], (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af bruger: ' + error.message);
+            res.status(500).json({ error: 'Der opstod en fejl' });
+        } else {
+            res.json(result[0]);
+        }
+    }
+    );
+});
+
 app.get('/hentbaner', (req, res) => {
     db.query('SELECT * FROM baner', (error, result) => {
         if (error) {
@@ -303,6 +357,47 @@ app.get('/hentBane/:id', (req, res) => {
         }
     }
     );
+});
+
+app.post('/redigerBruger/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+  const {
+      Brugernavn,
+      Kodeord,
+      Brugertype,
+      Fornavn,
+      Efternavn,
+      Telefonnummer,
+      Email,
+      Adresse,
+      PostnummerogBy,
+      Medlemstype
+  } = req.body;
+
+  const query = `
+      UPDATE brugere
+      SET Brugernavn = ?, Kodeord = ?, Brugertype = ?, Fornavn = ?, Efternavn = ?, Telefonnummer = ?, Email = ?, Adresse = ?, PostnummerogBy = ?, Medlemstype = ?
+      WHERE id = ?
+  `;
+  db.query(query, [Brugernavn, Kodeord, Brugertype, Fornavn, Efternavn, Telefonnummer, Email, Adresse, PostnummerogBy, Medlemstype, id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved redigering af bruger: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bruger redigeret:', result);
+
+          // Send den opdaterede liste over brugere
+          db.query('SELECT * FROM brugere', (error, updatedBrugere) => {
+              if (error) {
+                  console.error('Fejl ved hentning af brugere: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBrugere);
+              }
+          });
+      }
+  }
+  );
 });
 
 app.post('/redigerBane/:id', checkAdminAuth, (req, res) => {
@@ -539,6 +634,10 @@ app.get('/sletBane', checkAdminAuth, (req, res) => {
     res.render('sletBane', { user });
 });
 
+app.get('/redigerogsletbruger', checkAdminAuth, (req, res) => {
+  const user = req.session.user;
+  res.render('redigerogsletbruger', { user });
+});
 
 app.get('/minebooking',checkAuth, (req, res) => {
   const user = req.session.user;
