@@ -677,3 +677,8 @@ app.get('/minebooking',checkAuth, (req, res) => {
   });
   //res.render('minebooking', { user });
 });
+
+app.get('/OpretHoldSide', checkAdminAuth, (req, res) => {
+  const user = req.session.user;
+  res.render('opretHold', { user });
+});
