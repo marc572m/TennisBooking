@@ -25,6 +25,7 @@ function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType, 
 
     // Opret et Date-objekt for den aktuelle tid
     const currentDate = new Date();
+    const currentHour = new Date().getHours();
 
     let contentHTML = `
         <p>Dato: ${formattedCellDate}</p>
@@ -32,7 +33,7 @@ function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType, 
     `;
 
     // Tjek om bookingtiden er passeret
-    if (cellDate <= currentDate) {
+    if (cellDate < currentDate && cellHour < currentHour || cellDate.getDate() < currentDate.getDate()) {
         contentHTML += `<p>Den valgte tid er allerede passeret.</p>`;
     } else {
         if (bookingID !== null && username != null) {
@@ -90,6 +91,8 @@ function hideModal() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
+    let medspillereList = [];  // Liste med medspillere
 
     //Lav booking
 
@@ -225,21 +228,21 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addPlayerToTeam = function (playerName) {
         const isPlayerAlreadyAdded = Array.from(teamList.children).some(player => player.textContent === playerName);
 
-        if (!isPlayerAlreadyAdded && playerName != "Gæst" && teamList.children.length < 4) {
+        if (!isPlayerAlreadyAdded && playerName != "Gæst" && teamList.children.length < 3) {
             const listItem = document.createElement('li');
             listItem.textContent = playerName;
             listItem.addEventListener('click', function () {
                 removePlayerFromTeam(playerName);
             });
             teamList.appendChild(listItem);
-        } else if (playerName == "Gæst" && teamList.children.length < 4) {
+        } else if (playerName == "Gæst" && teamList.children.length < 3) {
             const listItem = document.createElement('li');
             listItem.textContent = playerName;
             listItem.addEventListener('click', function () {
                 removePlayerFromTeam(playerName);
             });
             teamList.appendChild(listItem);
-        } else if (teamList.children.length >= 4) {
+        } else if (teamList.children.length >= 3) {
             alert("Der må kun være 4 spillere på banen af gangen.");
         } else {
             alert("Spilleren er allerede tilføjet.");
@@ -266,6 +269,67 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     };
+
+    window.completeBooking = function () {
+        console.log('Completing booking', teamList);
+
+        var playerName = userDataElement.dataset.username;
+        const teamListArray = Array.from(teamList.children);
+        const medspillereIDs = [];
+    
+        if (teamList.childElementCount > 0) {
+
+            teamListArray.forEach(liElement => {
+                const playerName = liElement.textContent;
+                if(playerName != "Gæst"){
+                    fetch(`/getSpillerID/${playerName}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const spillerID = data.medspillerID;
+                                console.log(`Medspiller ID for ${playerName} er: ${spillerID}`);
+                                medspillereIDs.push(spillerID);
+                            } else {
+                                console.error(`Fejl: ${data.error}`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fejl under hentning af brugerens id:', error);
+                        });
+                    }
+            });
+            const popupContent = document.getElementById('popup-content');
+            console.log(teamListArray)
+        } 
+
+            playerName = userDataElement.dataset.username;
+            fetch(`/getSpillerID/${playerName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const spillerID = data.medspillerID;
+                        console.log(`Medspiller ID for ${playerName} er: ${spillerID}`);
+                        medspillereIDs.push(spillerID);
+                    } else {
+                        console.error(`Fejl: ${data.error}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Fejl under hentning af brugerens id:', error);
+                });
+
+        const bookingForm = {
+            BrugerID: playerName,
+            Sport: bookingSport,
+            Banetype: bookingCourtType,
+            Klokkeslæt: cellHour,
+            Dato: formattedDate,
+            BaneID: bookingCourt,
+            BookingType: "Træning",
+            MedspillerID: medspillereIDs
+        };
+        console.log(bookingForm);
+    }
 }
 
     //Lav Kalender
@@ -384,8 +448,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     } else {
                         tableData.innerHTML = `Ledig`;
                         tableData.classList.add('available');
-                        tableData.style.backgroundColor = '#82F45C';
                         tableData.style.color = 'white';
+
+                        const currentDate = new Date();
+                        const currentHour = new Date().getHours();
+
+                        if ((cellDate < currentDate && cellHour < currentHour || cellDate.getDate() < currentDate.getDate())){
+                            tableData.style.backgroundColor = "#c7c7c7"
+                        }
+                        else{
+                            tableData.style.backgroundColor = '#3ddb6387';
+                        }
                     }
     
                     row.appendChild(tableData);
@@ -446,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     window.prevWeek = function () {
-        currentDay-7;
+        currentDay = currentDay - 7;
         if (currentDay < 1) {
             currentMonth--;
             if (currentMonth < 0) {
@@ -460,7 +533,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     window.nextWeek = function () {
-        currentDay-7;
+        currentDay = currentDay + 7;
         const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
         if (currentDay > lastDayOfMonth) {
             currentDay = 1;
