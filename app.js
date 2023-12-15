@@ -531,6 +531,20 @@ function checkAuth(req, res, next) {
         }
     });
 });
+  app.get('/bookingType',(req,res) => {
+    const sqlString='SELECT DISTINCT BookingType FROM booking;';
+    db.query(sqlString, (error, result) => {
+      if(error){
+        console.error('ingen BookingType fundet ' + error.message);
+        res.status(204).send('ingen data returneret');
+      }
+      else{
+        res.json(result);
+        //console.log(result);
+      }
+      
+    });
+  });
 
 
 app.listen(3000);

@@ -13,6 +13,15 @@
     
     <div class="container">
         <form >
+            <label for="holdName">Tennis type:</label>
+            <span id="Hold">
+                <select id="holdName" name="holdName" required>
+                    <option value="Træning">Træning 60+</option>
+                    <option value="Drop-In">Drop-In D</option>
+                </select>
+                <button id="newHoldName">Tilføj Hold Navn</button>
+            </span>
+
             <label for="Sport">Tennis type:</label>
             <select id="Sport" name="Sport" required>
                 <option value="Tennis">Tennis</option>
@@ -54,7 +63,7 @@
             <span>
                 <label for="time">Tidspunkter:</label>
                 <select id="time" name="time" required>
-                    <option value="vælg">Vælg tid</option>
+                    <option value="Vælg">Vælg tid</option>
                     <% for (let i = 8; i <= 20; i++) { %>
                       <% const formattedHourStart = (i < 10) ? `0${i}` : `${i}`; %>
                       <% const formattedHourEnd = ((i + 1) < 10) ? `0${i + 1}` : `${i + 1}`; %>

@@ -46,3 +46,59 @@ p {
     cursor: pointer;
     width: 80%;
 }
+.chooseBane button{
+    background-color: #f44336; /* Red color for Slet button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 20px;
+}
+.chooseBane button:hover{
+    background-color: #c0392b;
+}
+.chooseTimes button{
+    background-color: #f44336; /* Red color for Slet button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-left: 20px;
+}
+.chooseTimes button:hover{
+    background-color: #c0392b;
+}
+.chooseTimes{
+    list-style: none;
+    margin: 10px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease-in-out;
+    background-color: #fff;
+    cursor: pointer;
+    width: 80%;
+}
+
+.card-content {
+    /* Define styles for the content inside the card */
+    /* Customize this according to your design */
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}

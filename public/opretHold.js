@@ -1,5 +1,6 @@
 //--------------------------------------------------------------baner-------------------------------------------------------------------
 let baneData;
+let holdTyper;
     //hent court to drop down 
 fetch("/hentbaner")
     .then(response => response.json())
@@ -8,6 +9,16 @@ fetch("/hentbaner")
         populateSelectOptions(baneData);
     })
     .catch(error => console.error("Fejl ved hentning af baner:", error));
+
+fetch('/bookingType')
+    .then(response => response.json())
+    .then(data => {
+        holdTyper= data;
+        //console.log(holdTyper);
+        populateHoldTypesOptions(holdTyper);
+    })
+    .catch(error => console.error("Fejl ved hentning af baner:", error));
+    
 
 function populateSelectOptions(baneData) {
     console.log("run populateSelectOptions()");
@@ -42,6 +53,42 @@ function populateSelectOptions(baneData) {
         selectElement.appendChild(option);
     }
 }
+function populateHoldTypesOptions(holdTyper) {
+    const selectHoldTypes = document.getElementById("holdName");
+    if (holdTyper && holdTyper.length > 0) {
+        selectHoldTypes.innerHTML = ""; // Clear the options first
+
+
+        // Create the default option
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "Vælg";
+        defaultOption.textContent = "Vælg Hold";
+        selectHoldTypes.appendChild(defaultOption);
+        //add court if courte macthe the sellectede sport
+        holdTyper.forEach(type => {
+            // console.log(bane.Banetype=== selectBaneType.value);
+            //if (bane.Sport === selectSport.value && bane.Banetype=== selectBaneType.value) {
+                const option = document.createElement("option");
+                //option.value = ;
+                option.textContent = type.BookingType;
+                selectHoldTypes.appendChild(option);
+            
+        });
+    
+    
+    }else {
+        // Handle case where baneData is empty or undefined
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No Hold exist";
+        option.disabled = true;
+        selectHoldTypes.appendChild(option);
+    }
+
+
+
+    //populateSelectOptions(baneData)
+};
 // Event listener when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -49,6 +96,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectBaneType = document.getElementById("BaneType");
     const addBaneButton = document.getElementById('addBane');
     const addTimeButton = document.getElementById('addTime');
+
+
+
     // Listen for changes in the 'Sport' select element
     selectSport.addEventListener("change", function() {
         const selectbaner = document.getElementById('listBaner');
@@ -65,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectElement = document.getElementById('baner');
         const selectedBaneName = selectElement.value;
         // Check if a bane has been selected
-        if (selectedBaneName && selectedBaneName !== 'Vælg') {
+        if (selectedBaneName && selectedBaneName !== 'Vælg' && selectedBaneName !== 'vælg') {
             const selectbaner = document.getElementById('listBaner');
             const selectedBaneName = selectElement.value;
             
@@ -73,7 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const existingElements = selectbaner.querySelectorAll(`li[value="${selectedBaneName}"]`);
             if (existingElements.length === 0) {
                 // If no element with the same value exists, add the new one
-                selectbaner.innerHTML += `<li class="chooseBane" value="${selectedBaneName}">${selectElement.options[selectElement.selectedIndex].textContent}</li>`;
+                selectbaner.innerHTML += `<li class="chooseBane card-content" value="${selectedBaneName}">
+                    <p class="card-content">${selectElement.options[selectElement.selectedIndex].textContent}</p>
+                    <button class="slet-knap-bane card-content" id="deleteBane">Slet</button>
+                </li>`;
             } else {
                 console.log('Element already exists in the list.');
                 // Handle the case where the element already exists (e.g., display an error message)
@@ -92,13 +145,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedTime = selectElement.value;
         //listTimes
 
-        if (selectedTime && selectedTime !== 'Vælg') {
+        if (selectedTime && selectedTime !== 'Vælg' && selectedTime !== 'vælg') {
+            console.log(selectedTime);
             const selectTimes = document.getElementById('listTimes');
             const existingElements = selectTimes.querySelectorAll(`li[value="${selectedTime}"]`);
 
             if (existingElements.length === 0) {
                 // If no element with the same value exists, add the new one
-                selectTimes.innerHTML += `<li class="chooseBane" value="${selectedTime}">${selectElement.options[selectElement.selectedIndex].textContent}</li>`;
+                selectTimes.innerHTML += `
+                <li class="chooseTimes card-content" value="${selectedTime}">
+                    <p class ="card-content">${selectElement.options[selectElement.selectedIndex].textContent}</p>
+                    <button class="slet-knap-time card-content" id="deleteBane">Slet</button>
+                </li>`;
             } else {
                 console.log('Element already exists in the list.');
                 // Handle the case where the element already exists (e.g., display an error message)
@@ -117,6 +175,81 @@ document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         dateInput.value = today;  
     }
+    
+    // Event delegation for delete buttons
+    const listBaner = document.getElementById('listBaner');
+    const listTimes = document.getElementById('listTimes');
+
+    listBaner.addEventListener('click', function(event) {
+        if (event.target.classList.contains('slet-knap-bane')) {
+            const listItem = event.target.closest('.chooseBane');
+            if (listItem) {
+                listItem.remove();
+            }
+        }
+    });
+
+    listTimes.addEventListener('click', function(event) {
+        if (event.target.classList.contains('slet-knap-time')) {
+            const listItem = event.target.closest('.chooseTimes');
+            if (listItem) {
+                listItem.remove();
+            }
+        }
+    });
+    //add hold names 
+    const holdButom = document.getElementById('newHoldName');
+    holdButom.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevents the default form submission behavior
+        const holdElement = document.getElementById('Hold');
+        const existingHoldNameInput = document.getElementById('HoldNameString');
+        if(!existingHoldNameInput){
+            const inputElement = document.createElement('input');
+            inputElement.setAttribute('type', 'text');
+            inputElement.setAttribute('id', 'HoldNameString');
+            inputElement.setAttribute('placeholder', 'Skriv Navn');
+            
+            const buttonToInput = document.createElement('button');
+            buttonToInput.textContent = 'Tilføj';
+    
+            holdElement.appendChild(inputElement);
+            holdElement.appendChild(buttonToInput);
+    
+            inputElement.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addNewOption();
+                }
+            });
+    
+            buttonToInput.addEventListener('click', function(evnt) {
+                evnt.preventDefault();
+                addNewOption();
+            });
+    
+            function addNewOption() {
+                const selectElement = document.getElementById('holdName');
+                const enteredHoldName = inputElement.value.trim();
+    
+                if (enteredHoldName) {
+                    // Create a new option element
+                    const option = document.createElement('option');
+                    option.value = enteredHoldName;
+                    option.textContent = enteredHoldName;
+    
+                    // Add the new option to the select element
+                    selectElement.appendChild(option);
+    
+                    // Remove the HoldNameString input element and button
+                    inputElement.remove();
+                    buttonToInput.remove();
+                } else {
+                    console.log('Please enter a valid name.');
+                }
+            }
+        } 
+    });
+
     
 
 });
