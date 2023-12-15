@@ -1,0 +1,171 @@
+body, h1, h2, h3, p, ul, li, button {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+}
+
+input[type="text"] {
+    padding: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.bruger-liste {
+    list-style: none;
+    padding: 0;
+}
+
+.bruger-liste-item {
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.bruger-info {
+    font-size: 16px;
+}
+
+.info-knap {
+
+    background-color: #416aa3; /* Red color for Slet button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+
+}
+.slet-knap {
+    background-color: #f44336; 
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.rediger-knap{
+    background-color: #4CAF50; 
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.slet-knap:hover {
+    background-color: #c0392b;
+}
+
+.rediger-knap:hover {
+    background-color: #2ecc71;
+}
+
+.info-knap:hover {
+    background-color: #3a5f92;
+}
+
+
+
+.popup {
+    max-height: 80vh;
+    overflow-y: auto;
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.popup-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #888;
+}
+
+.redigerBruger-form {
+    display: grid;
+    grid-gap: 10px;
+}
+
+.redigerBruger-form label {
+    font-weight: bold;
+}
+
+.redigerBruger-form input,
+.redigerBruger-form select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.redigerBruger-form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.redigerBruger-form button:hover {
+    background-color: #45a049;
+}
+
+/* Style for the info popup */
+#openInfoPopup p {
+    margin-bottom: 10px;
+}

@@ -1,0 +1,136 @@
+/* Tilpas stilen til sletBaner med klassenavne */
+
+.bane-list-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px; /* Juster afstanden til det foregående element */
+}
+
+h1 {
+    color: #333;
+}
+
+.bane-liste {
+    list-style: none;
+    padding: 0;
+}
+
+.bane-liste-item {
+    display: flex;
+
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+
+
+.slet-knap:hover {
+    background-color: #c0392b;
+}
+
+.rediger-knap:hover {
+    background-color: #2ecc71;
+}
+
+/* Styles for the "Rediger" button and "Slet" button */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px; /* Adjust the margin as needed */
+}
+
+.rediger-knap{
+    background-color: #4CAF50; /* Green color for Rediger button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: auto;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.slet-knap {
+    background-color: #f44336; /* Red color for Slet button */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 0;
+    margin-left: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+
+/* Styles for the edit popup */
+.popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.popup-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Styles for the form within the popup */
+.lavBooking-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.lavBooking-form label {
+    margin-bottom: 8px;
+}
+
+.lavBooking-form input,
+.lavBooking-form select {
+    padding: 8px;
+    margin-bottom: 16px;
+}
+
+.lavBooking-form button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.lavBooking-form button:hover {
+    background-color: #45a049;
+}

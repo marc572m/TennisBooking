@@ -121,6 +121,96 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
     });
   });
 
+  app.post('/lavBane', checkAdminAuth, (req, res) => {
+    const {
+        Adresse,
+        PostnummerogBy,
+        Banetype,
+        Sport,
+        Navn,
+        Kodeord
+    } = req.body;
+
+    const query = `
+        INSERT INTO baner (
+            Adresse,
+            PostnummerogBy,
+            Banetype,
+            Sport,
+            Navn,
+            Kodeord
+        ) VALUES (?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(query, [Adresse, PostnummerogBy, Banetype, Sport, Navn, Kodeord], (err, result) => {
+        if (err) {
+            console.error('Fejl ved oprettelse af bane: ' + err.message);
+            res.status(500).send('Serverfejl');
+        } else {
+            console.log('Bane oprettet:', result);
+            // Send meddelelse om tilføjet bane
+            res.redirect('/lavBane?added=true');
+        }
+    });
+});
+
+app.post('/sletBruger/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+
+  const query = `
+      DELETE FROM brugere WHERE id = ?
+  `;
+
+  db.query(query, [id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved sletning af bruger: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bruger slettet:', result);
+
+          // Send the updated list of brugere
+          db.query('SELECT * FROM brugere', (error, updatedBrugere) => {
+              if (error) {
+                  console.error('Fejl ved hentning af brugere: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBrugere);
+              }
+          });
+      }
+  });
+}
+)
+
+
+app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+
+  const query = `
+      DELETE FROM baner WHERE id = ?
+  `;
+
+  db.query(query, [id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved sletning af bane: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bane slettet:', result);
+
+          // Send the updated list of baner
+          db.query('SELECT * FROM baner', (error, updatedBaner) => {
+              if (error) {
+                  console.error('Fejl ved hentning af baner: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBaner);
+              }
+          });
+      }
+  });
+});
+
+
   app.post('/lavBooking', checkAuth, (req, res) => {
 
     const {
@@ -165,7 +255,27 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
     }
     );
   });
+  app.delete('/delete-booking/:id', checkAuth, (req, res) => {
+    const bookingId = req.params.id; // Extract the booking ID from the URL parameter
 
+    // Perform deletion operation in your database
+    // You should implement your database-specific logic here to delete the booking with the provided ID
+    // For example, using a SQL DELETE statement or an ORM's delete method
+
+    // Example using raw SQL with your database connection (replace this with your actual database logic)
+    const sqlDeleteBooking = 'DELETE FROM booking WHERE id = ?';
+    db.query(sqlDeleteBooking, [bookingId], (error, result) => {
+        if (error) {
+            console.error('Error deleting booking:', error);
+            res.status(500).json({ error: 'Failed to delete booking' });
+        } else {
+            // Successful deletion
+            res.status(200).json({ message: 'Booking deleted successfully' });
+            console.log('Booking deleted successfully');
+            // You can send any appropriate response back to the client
+        }
+    });
+  });
   
   // Funktion til at tjekke om brugernavnet allerede eksisterer
   function checkIfUsernameExists(username) {
@@ -195,6 +305,33 @@ app.post('/registrer', checkAdminAuth, async (req, res) => {
     });
   }
 
+  app.get('/hentbrugere', (req, res) => {
+    db.query('SELECT * FROM brugere', (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af brugere: ' + error.message);
+            res.status(500).json({ error: 'Der opstod en fejl' });
+        } else {
+            res.json(result);
+            console.log(result);
+        }
+    }
+    );
+  });
+
+  app.get('/hentbruger/:id', (req, res) => { 
+    const id = req.params.id;
+    
+    db.query('SELECT * FROM brugere WHERE id = ?', [id], (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af bruger: ' + error.message);
+            res.status(500).json({ error: 'Der opstod en fejl' });
+        } else {
+            res.json(result[0]);
+        }
+    }
+    );
+});
+
 app.get('/hentbaner', (req, res) => {
     db.query('SELECT * FROM baner', (error, result) => {
         if (error) {
@@ -207,6 +344,99 @@ app.get('/hentbaner', (req, res) => {
     });
 });
 
+
+app.get('/hentBane/:id', (req, res) => {
+
+    const id = req.params.id;
+    
+    db.query('SELECT * FROM baner WHERE id = ?', [id], (error, result) => {
+        if (error) {
+            console.error('Fejl ved hentning af bane: ' + error.message);
+            res.status(500).json({ error: 'Der opstod en fejl' });
+        } else {
+            res.json(result[0]);
+        }
+    }
+    );
+});
+
+app.post('/redigerBruger/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+  const {
+      Brugernavn,
+      Kodeord,
+      Brugertype,
+      Fornavn,
+      Efternavn,
+      Telefonnummer,
+      Email,
+      Adresse,
+      PostnummerogBy,
+      Medlemstype
+  } = req.body;
+
+  const query = `
+      UPDATE brugere
+      SET Brugernavn = ?, Kodeord = ?, Brugertype = ?, Fornavn = ?, Efternavn = ?, Telefonnummer = ?, Email = ?, Adresse = ?, PostnummerogBy = ?, Medlemstype = ?
+      WHERE id = ?
+  `;
+  db.query(query, [Brugernavn, Kodeord, Brugertype, Fornavn, Efternavn, Telefonnummer, Email, Adresse, PostnummerogBy, Medlemstype, id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved redigering af bruger: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bruger redigeret:', result);
+
+          // Send den opdaterede liste over brugere
+          db.query('SELECT * FROM brugere', (error, updatedBrugere) => {
+              if (error) {
+                  console.error('Fejl ved hentning af brugere: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBrugere);
+              }
+          });
+      }
+  }
+  );
+});
+
+app.post('/redigerBane/:id', checkAdminAuth, (req, res) => {
+  const id = req.params.id;
+  const {
+      Adresse,
+      PostnummerogBy,
+      Banetype,
+      Sport,
+      Navn,
+      Kodeord
+  } = req.body;
+
+  const query = `
+      UPDATE baner
+      SET Adresse = ?, PostnummerogBy = ?, Banetype = ?, Sport = ?, Navn = ?, Kodeord = ?
+      WHERE id = ?
+  `;
+
+  db.query(query, [Adresse, PostnummerogBy, Banetype, Sport, Navn, Kodeord, id], (err, result) => {
+      if (err) {
+          console.error('Fejl ved redigering af bane: ' + err.message);
+          res.status(500).send('Serverfejl');
+      } else {
+          console.log('Bane redigeret:', result);
+
+          // Send den opdaterede liste over baner
+          db.query('SELECT * FROM baner', (error, updatedBaner) => {
+              if (error) {
+                  console.error('Fejl ved hentning af baner: ' + error.message);
+                  res.status(500).json({ error: 'Der opstod en fejl' });
+              } else {
+                  res.json(updatedBaner);
+              }
+          });
+      }
+  });
+});
 
 app.get('/getSpillerID/:username', (req, res) => {
   const username = req.params.username;
@@ -230,9 +460,6 @@ app.get('/getSpillerID/:username', (req, res) => {
       }
   });
 });
-
-
-
 
 // opdater oplysninger via redigerprofil
 
@@ -326,6 +553,20 @@ function checkAuth(req, res, next) {
         }
     });
 });
+  app.get('/bookingType',(req,res) => {
+    const sqlString='SELECT DISTINCT BookingType FROM booking;';
+    db.query(sqlString, (error, result) => {
+      if(error){
+        console.error('ingen BookingType fundet ' + error.message);
+        res.status(204).send('ingen data returneret');
+      }
+      else{
+        res.json(result);
+        //console.log(result);
+      }
+      
+    });
+  });
 
 
 app.listen(3000);
@@ -344,7 +585,7 @@ app.get('/login', (req, res) => {
 
 app.get('/logout', (req, res) => {
  req.session.destroy((err) => {
-    res.redirect('/login');
+    res.redirect('/');
 });
 });
 
@@ -416,3 +657,64 @@ app.get('/minprofil', checkAuth, (req, res) => {
     const user = req.session.user;
     res.render('lavBooking', { user });
   });
+
+  app.get('/lavBane', checkAdminAuth, (req, res) => {
+    const added = req.query.added === 'true';
+    const user = req.session.user;
+
+    res.render('lavBane', { added, user });
+});
+
+app.get('/sletBane', checkAdminAuth, (req, res) => {
+    const user = req.session.user;
+    res.render('sletBane', { user });
+});
+
+app.get('/redigerogsletbruger', checkAdminAuth, (req, res) => {
+  const user = req.session.user;
+  res.render('redigerogsletbruger', { user });
+});
+
+app.get('/minebooking',checkAuth, (req, res) => {
+  const user = req.session.user;
+  const userID = req.session.user.id;
+
+  const sqlString =
+    'SELECT booking.id, ' +
+      'booking.BookingType, ' +
+      'baner.Adresse AS Bane_Adresse, ' +
+      'baner.PostnummerogBy AS Bane_PostnummerogBy, ' +
+      'baner.Banetype AS Bane_Banetype, ' +
+      'baner.Sport AS Bane_Sport, ' +
+      'baner.Kodeord AS Bane_Kodeord, ' +
+      'brugere1.Fornavn AS Bruger_Fornavn, ' +
+      'brugere2.Fornavn AS Medspiller_Fornavn, ' +
+      'booking.Gæst, ' +
+      'booking.Gentagene, ' +
+      'booking.Dato, ' +
+      'booking.Klokkeslæt ' +
+    'FROM booking ' +
+    'JOIN baner ON booking.BaneID = baner.id ' +
+    'JOIN brugere AS brugere1 ON booking.BrugerID = brugere1.id ' +
+    'JOIN brugere AS brugere2 ON booking.MedspillerID = brugere2.id ' +
+    'WHERE (BrugerID = ' + userID + ' OR MedspillerID = ' + userID + ') AND booking.BaneID = baner.id'
+  ;
+  
+  db.query(sqlString, (error, result) => {
+    if(error){
+      console.error('ingen bookinger fundet ' + error.message);
+      res.status(204).send('ingen data returneret');
+    }
+    else{
+      res.render('minebooking', { data: result, user: user });
+      console.log(result);
+    }
+    
+  });
+  //res.render('minebooking', { user });
+});
+
+app.get('/OpretHoldSide', checkAdminAuth, (req, res) => {
+  const user = req.session.user;
+  res.render('opretHold', { user });
+});
