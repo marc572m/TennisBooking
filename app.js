@@ -657,7 +657,7 @@ app.get('/minebooking',checkAuth, (req, res) => {
   const user = req.session.user;
   const userID = req.session.user.id;
 
-  const sqlString =
+  /* const sqlString =
     'SELECT booking.id, ' +
       'booking.BookingType, ' +
       'baner.Adresse AS Bane_Adresse, ' +
@@ -676,7 +676,38 @@ app.get('/minebooking',checkAuth, (req, res) => {
     'JOIN brugere AS brugere1 ON booking.BrugerID = brugere1.id ' +
     'JOIN brugere AS brugere2 ON booking.MedspillerID = brugere2.id ' +
     'WHERE (BrugerID = ' + userID + ' OR MedspillerID = ' + userID + ') AND booking.BaneID = baner.id'
-  ;
+  ; */
+  const sqlString =`
+  SELECT 
+      booking.id,
+      booking.BookingType,
+      baner.Adresse AS Bane_Adresse,
+      baner.PostnummerogBy AS Bane_PostnummerogBy,
+      baner.Banetype AS Bane_Banetype,
+      baner.Sport AS Bane_Sport,
+      baner.Kodeord AS Bane_Kodeord,
+      brugere1.Fornavn AS Bruger_Fornavn,
+      GROUP_CONCAT(brugere2.Fornavn) AS Medspillere_List,
+      booking.Gæst,
+      booking.Gentagene,
+      booking.Dato,
+      booking.Klokkeslæt
+  FROM 
+      booking
+  JOIN 
+      baner ON booking.BaneID = baner.id
+  JOIN 
+      brugere AS brugere1 ON booking.BrugerID = brugere1.id
+  LEFT JOIN 
+      medspillere ON booking.id = medspillere.BookingID
+  LEFT JOIN 
+      brugere AS brugere2 ON medspillere.BrugerID = brugere2.id
+  WHERE 
+      (booking.BrugerID = ${userID} OR medspillere.BrugerID = ${userID}) AND booking.BaneID = baner.id
+  GROUP BY 
+      booking.id;
+`;
+  
   
   db.query(sqlString, (error, result) => {
     if(error){
