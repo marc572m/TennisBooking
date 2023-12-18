@@ -317,6 +317,8 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch (error) {
               console.error('Error:', error);
             }
+
+
         }
         
     });
@@ -330,8 +332,9 @@ document.addEventListener('DOMContentLoaded', function() {
       
         // Automatically remove the message after a certain time (e.g., 5 seconds)
         setTimeout(() => {
-          messageElement.remove();
-        }, 5000); // Adjust the time  in milliseconds
+            messageElement.remove();
+            location.reload(); // Reload the page after the message disappears
+        }, 5000); // Adjust the time as needed (in milliseconds)
     }
 
 
