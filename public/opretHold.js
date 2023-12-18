@@ -68,11 +68,12 @@ function populateHoldTypesOptions(holdTyper) {
         holdTyper.forEach(type => {
             // console.log(bane.Banetype=== selectBaneType.value);
             //if (bane.Sport === selectSport.value && bane.Banetype=== selectBaneType.value) {
-                const option = document.createElement("option");
-                //option.value = ;
-                option.textContent = type.BookingType;
-                selectHoldTypes.appendChild(option);
-            
+                if(type.BookingType !== "privat spil"){
+                    const option = document.createElement("option");
+                    //option.value = ;
+                    option.textContent = type.BookingType;
+                    selectHoldTypes.appendChild(option);
+                }
         });
     
     
@@ -250,8 +251,91 @@ document.addEventListener('DOMContentLoaded', function() {
         } 
     });
 
-    
+    const form = document.getElementById('myForm');
+    //const listBaner = document.getElementById('listBaner');
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get selected holdName /booking type
+        const holdNameSelect = document.getElementById('holdName');
+        const selectedHoldName = holdNameSelect.value;
+        // Get selected Sport
+        const sportSelect = document.getElementById('Sport');
+        const selectedSport= sportSelect.value;
+
+        // Get selected Baner from the list 
+        const selectedBaneItems = listBaner.querySelectorAll('li');
+        const selectedBanerValues = Array.from(selectedBaneItems).map(item => item.getAttribute('value'));
+
+        // Get selected date
+        const dateSelect = document.getElementById('date');
+        const selectedDate= dateSelect.value;
+        
+        // Get selected Periode
+        const periodeStartDateSelect = document.getElementById('PeriodeStartDate');
+        const selectedPeriodeStartDate= periodeStartDateSelect.value;
+
+        const periodeEndDateSelect = document.getElementById('PeriodeEndDate');
+        const selectedPeriodeEndDate= periodeEndDateSelect.value;
+
+        // Get selected Baner from the list 
+        const selectedTimesItems = listTimes.querySelectorAll('li');
+        const selectedTimesValues = Array.from(selectedTimesItems).map(item => item.getAttribute('value'));
+
+        // Creating an object with the selected values
+        const formData = {
+            selectedHoldName,
+            selectedSport,
+            selectedBanerValues,
+            selectedDate,
+            selectedPeriodeStartDate,
+            selectedPeriodeEndDate,
+            selectedTimesValues
+        };
+        // Convert the object to a JSON string
+        const jsonString = JSON.stringify(formData);
+        console.log(jsonString);
+
+
+        // Custom validation logic
+        if (selectedHoldName === 'Vælg'||  selectedSport=== 'Vælg' ||selectedBanerValues.length === 0 ||selectedTimesValues.length ===0) {
+            console.log('Please select all required fields.'); // Display error message or handle validation logic here
+            window.alert('Please select all required fields.'); // Display error message as a popup
+        } else {
+            /* // All required fields are filled, proceed with form submission
+            console.log('Form submitted successfully!');
+            form.submit(); // Uncomment this line to submit the form */
+
+            try {
+              const response = await fetch('/OpretHoldSide/submit', {
+                method: 'POST',
+                body: jsonString,
+              });
+          
+              const data = await response.json();
+              displayResponseMessage(data.message);
+            } catch (error) {
+              console.error('Error:', error);
+            }
+        }
+        
+    });
+
+    function displayResponseMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messageElement.classList.add('response-message');
+      
+        document.body.appendChild(messageElement);
+      
+        // Automatically remove the message after a certain time (e.g., 5 seconds)
+        setTimeout(() => {
+          messageElement.remove();
+        }, 5000); // Adjust the time  in milliseconds
+    }
+
 
 });
+
 //---------------------------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------Banetype-------------------------------------------------------------------
+//--------------------------------------------------------------Banetype-------------------------------------------------------

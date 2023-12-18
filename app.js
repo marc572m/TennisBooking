@@ -255,6 +255,19 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
     }
     );
   });
+
+  // Handle POST request when form is submitted
+  app.post('/OpretHoldSide/submit', (req, res) => {
+    const formData = req.body; // Access form data here
+    
+    // Process the form data as needed
+    
+    // Send a response back (you can redirect or send a success message)
+    const successMessage = 'Form submitted successfully!';
+    res.status(200).json({ message: successMessage });
+  });
+
+
   app.delete('/delete-booking/:id', checkAuth, (req, res) => {
     const bookingId = req.params.id; // Extract the booking ID from the URL parameter
 

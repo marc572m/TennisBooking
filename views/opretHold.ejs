@@ -12,14 +12,14 @@
     <%- include('partials/navbar.ejs') %>
     
     <div class="container">
-        <form >
+        <form id="myForm" action="/OpretHoldSide/submit" method="POST">
             <label for="holdName">Tennis type:</label>
             <span id="Hold">
                 <select id="holdName" name="holdName" required>
                     <option value="Træning">Træning 60+</option>
                     <option value="Drop-In">Drop-In D</option>
                 </select>
-                <button id="newHoldName">Tilføj Hold Navn</button>
+                <button id="newHoldName">Tilføj Hold Navn til Liste </button>
             </span>
 
             <label for="Sport">Tennis type:</label>
@@ -76,6 +76,7 @@
             <ul class="listTimes" id="listTimes">
                 <!--<li class="chooseBane" value="">coffe </li>-->
             </ul>
+            <button type="submit" class="makeHold">Lav Hold</button>
         </form>
     </div>
     <%- include('partials/footer.ejs') %>

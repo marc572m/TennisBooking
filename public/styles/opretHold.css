@@ -4,6 +4,7 @@
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 80px;
 }
 form {
     display: flex;
@@ -34,6 +35,16 @@ p {
 
     
 }*/
+
+.makeHold{
+    background-color: #4caf70;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    margin-bottom: 16px;
+    padding: 10px;
+    font-size: 16px;
+}
 .chooseBane{
     list-style: none;
     margin: 10px;
@@ -102,3 +113,19 @@ p {
     justify-content: space-between;
     align-items: center
 }
+
+.response-message {
+    position: fixed;
+    top: 50%; /* Adjust as needed */
+    left: 50%; /* Adjust as needed */
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    /* background-color: #1caf60; */
+    background-color: #1caf60c7;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    color: white;
+    font-size: xx-large;
+  }
