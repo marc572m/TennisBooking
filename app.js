@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
 const session = require('express-session');
+const { json } = require('body-parser');
 
 const app = express();
 const port = 3000;
@@ -257,14 +258,66 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
   });
 
   // Handle POST request when form is submitted
-  app.post('/OpretHoldSide/submit', (req, res) => {
-    const formData = req.body; // Access form data here
-    
-    // Process the form data as needed
-    
-    // Send a response back (you can redirect or send a success message)
-    const successMessage = 'Form submitted successfully!';
-    res.status(200).json({ message: successMessage });
+  app.post('/OpretHoldSide/submit', async (req, res) => {
+    try {
+      const formData = req.body; // Access form data here
+      
+      // Process the form data as needed
+      console.log("formData", formData);
+      let sportID = await checkSportExists(formData.Sport);
+
+      if(sportID.length===0){
+        await makeHold(formData.Sport);
+        sportID = await checkSportExists(formData.Sport);
+      }else{
+        
+      }
+      //console.log("sportID:",sportID);
+      if(sportID===0||sportID===null){console.log("sportID er null");}else{holdID=sportID;}
+      const bookings = [];
+      //console.log("sport:" + formData.Sport);
+      for (let index = 0; index < formData.BanersID.length; index++) {
+        const BookingType = formData.BookingType;
+        let BaneID = formData.BanersID[index];
+        const BrugerID = req.session.user.id;
+        const HoldID =sportID[0].id;
+        const Gæst = 0;
+        const Gentagene = 1;
+        const Dato = formData.Dato;
+        for (let i = 0; i < formData.Times.length; i++) {
+          const Klokkeslæt =formData.Times[i];
+
+          const booking = {
+            BookingType,
+            BaneID,
+            BrugerID,
+            HoldID,
+            Gæst,
+            Gentagene,
+            Dato,
+            Klokkeslæt
+          };
+          bookings.push(booking);
+        }
+      }
+
+      console.log("bookings:", bookings);
+      const startDate = new Date(formData.PeriodeStartDate);
+      const endDate = new Date(formData.PeriodeEndDate);
+      
+      const bookingsPeriode =  await addPoriode(bookings, startDate, endDate);
+      console.log(" bookingsPeriode",  bookingsPeriode);
+
+
+
+      // Send a response back (you can redirect or send a success message)
+      const successMessage = 'Formular indsendt succesfuldt!';
+      res.status(200).json({ message: successMessage });
+
+    } catch (error) {
+      console.error('Error:', error);
+      res.status(500).send('Internal Server Error');
+    }
   });
 
 
@@ -318,6 +371,84 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
     });
   }
 
+//--------------------------------Hold funktions-----------------------------------------------------
+  //Funktion til at tjekke om Sport allerede eksisterer and vis gør send id til bage
+  function checkSportExists(sport){
+    return new Promise((resolve, reject) => {
+      const sqlString = `SELECT id FROM hold WHERE Sport = ?`;
+      
+      db.query(sqlString, [sport], (error, result) => {
+        if(error){
+          console.error('ingen Sport fundet ' + error.message);
+          reject(error);
+        }
+        else{
+          if(result===0){
+            console.log("Sport: [null]");
+            resolve(null);
+          }else{
+            resolve(result);
+          }
+        }
+      });
+    });
+  }
+
+  //laver nyt hold
+  function makeHold(sport){
+    return new Promise((resolve, reject) => {
+      const sqlString = 'INSERT INTO hold (id, Sport) VALUES (NULL, ?)';
+      const values = [sport];
+
+      db.query(sqlString, values, (error, result) => {
+        if (error) {
+          console.error('Error inserting new sport: ' + error.message);
+          reject(error);
+          //res.status(500).send('Error inserting new sport');
+        } else {
+          console.log('New sport inserted successfully');
+          resolve(result);
+        }
+      });
+    });
+  }
+
+  async function addPoriode(bookings, startDate, endDate) {
+    try {
+      const bookingsHold = [...bookings]; // Copy the bookings array to avoid direct mutation
+  
+      const currentDate = new Date(startDate); // Initialize currentDate as startDate
+  
+      while (currentDate <= endDate) {
+        console.log("date in loop:", currentDate.toISOString().split('T')[0]);
+  
+        for (let i = 0; i < bookingsHold.length; i++) {
+          const bookingDate = new Date(bookingsHold[i].Dato);
+  
+          if (currentDate.toISOString().split('T')[0] === bookingDate.toISOString().split('T')[0]) {
+            bookingsHold[i].Dato = currentDate.toISOString().split('T')[0]; // Update the booking date to the current date
+  
+            const nextWeekBooking = {
+              ...bookingsHold[i], // Copy existing booking details
+              Dato: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // Update date for next week
+            };
+  
+            bookingsHold.push(nextWeekBooking); // Add the booking for the next week
+          }
+        }
+  
+        currentDate.setDate(currentDate.getDate() + 7); // Increment currentDate by 7 days (for next week)
+      }
+      return bookingsHold;
+
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
+
+
+  //------------------------------------------------------------------------------------------------------------------------
   app.get('/hentbrugere', (req, res) => {
     db.query('SELECT * FROM brugere', (error, result) => {
         if (error) {
@@ -352,7 +483,7 @@ app.get('/hentbaner', (req, res) => {
             res.status(500).json({ error: 'Der opstod en fejl' });
         } else {
             res.json(result);
-            console.log(result);
+            //console.log(result);
         }
     });
 });

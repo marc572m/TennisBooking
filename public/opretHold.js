@@ -284,13 +284,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Creating an object with the selected values
         const formData = {
-            selectedHoldName,
-            selectedSport,
-            selectedBanerValues,
-            selectedDate,
-            selectedPeriodeStartDate,
-            selectedPeriodeEndDate,
-            selectedTimesValues
+            BookingType: selectedHoldName,
+            Sport: selectedSport,
+            BanersID: selectedBanerValues,
+            Dato: selectedDate,
+            PeriodeStartDate: selectedPeriodeStartDate,
+            PeriodeEndDate: selectedPeriodeEndDate,
+            Times: selectedTimesValues
         };
         // Convert the object to a JSON string
         const jsonString = JSON.stringify(formData);
@@ -309,7 +309,10 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
               const response = await fetch('/OpretHoldSide/submit', {
                 method: 'POST',
-                body: jsonString,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
               });
           
               const data = await response.json();
@@ -331,10 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(messageElement);
       
         // Automatically remove the message after a certain time (e.g., 5 seconds)
-        setTimeout(() => {
+        /* setTimeout(() => {
             messageElement.remove();
             location.reload(); // Reload the page after the message disappears
-        }, 5000); // Adjust the time as needed (in milliseconds)
+        }, 5000); // Adjust the time as needed (in milliseconds) */
     }
 
 

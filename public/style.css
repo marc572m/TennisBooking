@@ -181,6 +181,9 @@ strong {
 .dropdown-content a:hover {
   background-color: #ddd;
 }
+.navbar-links .dropdownList:hover {
+  background-color: #ddd;
+}
 
 .show {
   display: block;
