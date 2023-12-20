@@ -334,10 +334,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(messageElement);
       
         // Automatically remove the message after a certain time (e.g., 5 seconds)
-        /* setTimeout(() => {
+        setTimeout(() => {
             messageElement.remove();
             location.reload(); // Reload the page after the message disappears
-        }, 5000); // Adjust the time as needed (in milliseconds) */
+        }, 5000); // Adjust the time as needed (in milliseconds)
     }
 
 

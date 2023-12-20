@@ -304,9 +304,22 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
       console.log("bookings:", bookings);
       const startDate = new Date(formData.PeriodeStartDate);
       const endDate = new Date(formData.PeriodeEndDate);
+      //try {
+        const bookingsPeriode =  await addPoriode(bookings, startDate, endDate);
+        console.log(" bookingsPeriode",  bookingsPeriode);
+        
+        const ExistsBookings = [];
+        for (let index = 0; index < bookingsPeriode.length; index++) {
+          const element = await checkBookingExists(bookingsPeriode[index]);
+          if (element !== null) {
+            ExistsBookings.push(element);
+          }
+        }
+      /* } catch (error) {
+        console.error('Error:', error);
+        res.status(500).send('Internal Server Error');
+      } */
       
-      const bookingsPeriode =  await addPoriode(bookings, startDate, endDate);
-      console.log(" bookingsPeriode",  bookingsPeriode);
 
 
 
@@ -413,37 +426,77 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
     });
   }
 
-  async function addPoriode(bookings, startDate, endDate) {
-    try {
-      const bookingsHold = [...bookings]; // Copy the bookings array to avoid direct mutation
-  
-      const currentDate = new Date(startDate); // Initialize currentDate as startDate
-  
-      while (currentDate <= endDate) {
-        console.log("date in loop:", currentDate.toISOString().split('T')[0]);
-  
-        for (let i = 0; i < bookingsHold.length; i++) {
-          const bookingDate = new Date(bookingsHold[i].Dato);
-  
-          if (currentDate.toISOString().split('T')[0] === bookingDate.toISOString().split('T')[0]) {
-            bookingsHold[i].Dato = currentDate.toISOString().split('T')[0]; // Update the booking date to the current date
-  
-            const nextWeekBooking = {
-              ...bookingsHold[i], // Copy existing booking details
-              Dato: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // Update date for next week
-            };
-  
-            bookingsHold.push(nextWeekBooking); // Add the booking for the next week
+    async function addPoriode(bookings, startDate, endDate) {
+      try {
+        const bookingsHold = [...bookings]; // Copy the bookings array to avoid direct mutation
+    
+        const currentDate = new Date(startDate); // Initialize currentDate as startDate
+        const currentDate1 = new Date(startDate);
+        while (currentDate  <= endDate) {
+          //console.log("date in loop:", currentDate.toISOString().split('T')[0]);
+    
+          for (let i = 0; i < bookingsHold.length; i++) {
+            const bookingDate = new Date(bookingsHold[i].Dato);
+    
+            if (currentDate.toISOString().split('T')[0] === bookingDate.toISOString().split('T')[0]) {
+              bookingsHold[i].Dato = currentDate.toISOString().split('T')[0]; // Update the booking date to the current date
+    
+              const nextWeekBooking = {
+                ...bookingsHold[i], // Copy existing booking details
+                Dato: new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] // Update date for next week
+              };
+
+              /* console.log("endDate:", endDate.toISOString().split('T')[0]);
+              console.log("bookingDate:", bookingDate.toISOString().split('T')[0]);
+              console.log("nextWeekBooking:", nextWeekBooking.Dato ); */
+              if(bookingDate.toISOString().split('T')[0] < endDate.toISOString().split('T')[0] && 
+              nextWeekBooking.Dato <= endDate.toISOString().split('T')[0]){
+                //console.log("nextWeekBooking:", nextWeekBooking );
+                bookingsHold.push(nextWeekBooking); // Add the booking for the next week
+                
+              }
+              
+            }
+            else{
+              /* console.log("if not true");
+              console.log("currentDate.toISOString().split('T')[0]:",currentDate.toISOString().split('T')[0]);
+              console.log("bookingDate.toISOString().split('T')[0]:", bookingDate.toISOString().split('T')[0]); */
+            }
+          }
+    
+          currentDate.setDate(currentDate.getDate() + 1); // Increment currentDate by 7 days (for next week)
+        }
+        return bookingsHold;
+
+      } catch (error) {
+        throw new Error(error);
+      }
+    }
+  function checkBookingExists (booking){
+    return new Promise((resolve, reject) => {
+      const sqlString = `SELECT * FROM booking WHERE Dato = ? AND Klokkeslæt = ?`;
+      
+      db.query(sqlString, [booking.Dato,booking.Klokkeslæt], (error, result) => {
+        if(error){
+          console.error('ingen booking fundet ' + error.message);
+          reject(error);
+        }
+        else{
+          if(result.length === 0){
+            console.log("booking: don't Exists");
+            resolve(null);
+          }else{
+            console.log("fundet", result)
+            resolve(result);
           }
         }
-  
-        currentDate.setDate(currentDate.getDate() + 7); // Increment currentDate by 7 days (for next week)
-      }
-      return bookingsHold;
+      });
+    });
+  }
 
-    } catch (error) {
-      throw new Error(error);
-    }
+  function addHoldBooking(){
+
+
   }
 
 
