@@ -295,12 +295,89 @@ document.addEventListener('DOMContentLoaded', function() {
         // Convert the object to a JSON string
         const jsonString = JSON.stringify(formData);
         console.log(jsonString);
-
-
+        const today = new Date().toISOString().split('T')[0];
+        let booldato = selectedPeriodeStartDate <= selectedDate &&
+         selectedPeriodeEndDate >= selectedDate &&
+         selectedPeriodeEndDate >= selectedPeriodeStartDate &&
+         selectedDate >= selectedPeriodeStartDate&&
+         selectedDate >=today&&
+         selectedPeriodeStartDate >=today
+         selectedPeriodeEndDate>=today;
         // Custom validation logic
-        if (selectedHoldName === 'Vælg'||  selectedSport=== 'Vælg' ||selectedBanerValues.length === 0 ||selectedTimesValues.length ===0) {
-            console.log('Please select all required fields.'); // Display error message or handle validation logic here
-            window.alert('Please select all required fields.'); // Display error message as a popup
+        if (selectedHoldName === 'Vælg'||  selectedSport=== 'Vælg' ||selectedBanerValues.length === 0 ||selectedTimesValues.length ===0|| !booldato ) {
+            const labels = ["holdNameLabel", "sportLabel", "BanetypeLabel","banerLabel","dateLabel","PeriodeLabel","PeriodeStartDateLabel","PeriodeEndDateLabel","timeLabel"];
+            var redstare;
+            let message="";
+            switch (true) {
+                case selectedHoldName === 'Vælg':
+                    redstare = document.getElementById(labels[0]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select a hold name.');*/
+                    message += "vælg hold Navn \n";
+                    //break; 
+                case selectedSport === 'Vælg':
+                    redstare = document.getElementById(labels[1]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select a sport.');*/
+                    message += "vælg Tennis type \n";
+                    //break; 
+                case selectedBanerValues.length === 0:
+                    redstare = document.getElementById(labels[3]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select bane Type.');*/
+                    message += "vælg en bane eller baner \n";
+                    //break; 
+                case selectedTimesValues.length === 0:
+                    redstare = document.getElementById(labels[8]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select times values.');*/
+                    message += "vælg en tid eller flere tider \n";
+                    //break; 
+                case !booldato:
+
+                    switch(true) {
+                        case selectedDate < today || selectedDate <selectedPeriodeStartDate :
+                            redstare = document.getElementById(labels[4]);
+                            redstare.style.display= "contents";
+                            message += "vælg dato der højder \n";
+                            //break;
+                        case selectedPeriodeStartDate< today:
+                            redstare = document.getElementById(labels[5]);
+                            redstare.style.display= "contents";
+                            redstare = document.getElementById(labels[6]);
+                            redstare.style.display= "contents";
+                            message += "vælg Periode start der højder \n";
+                            //break;
+                        case selectedPeriodeEndDate< today|| selectedPeriodeEndDate < selectedPeriodeStartDate ||selectedPeriodeEndDate<  selectedDate:
+                            redstare = document.getElementById(labels[5]);
+                            redstare.style.display= "contents";
+                            redstare = document.getElementById(labels[7]);
+                            redstare.style.display= "contents";
+                            message += "vælg Periode slut der højder \n";
+                            //break;
+                        default:
+                        // code block
+                        break;
+                    }
+
+                    break;
+                    /* redstare = document.getElementById(labels[4]);
+                    redstare.style.display= "contents";
+                    redstare = document.getElementById(labels[5]);
+                    redstare.style.display= "contents";
+                    redstare = document.getElementById(labels[6]);
+                    redstare.style.display= "contents";
+                    redstare = document.getElementById(labels[7]);
+                    redstare.style.display= "contents";
+                    window.alert('Date conditions not met.'); */
+                    //break;
+                default:
+                    console.log('Default case.');
+                  // Handle any default behavior if needed
+            }
+            console.log(message);
+            window.alert(message);
+            //window.alert('Please select all required fields.'); // Display error message as a popup
         } else {
             /* // All required fields are filled, proceed with form submission
             console.log('Form submitted successfully!');

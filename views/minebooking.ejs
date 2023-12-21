@@ -53,6 +53,7 @@
                                     <div class="card-content-info">
                                         <h3>Bookning:</h3>
                                         <p>Booknings Type: ${booking.Bane_Sport}, ${booking.Bane_Banetype}</p>
+                                        <p>Bane Navn: ${booking.Bane_Navn}</p>
                                         <p>Adresse: ${booking.Bane_Adresse}</p>
                                         <p>Dato: ${formattedDate}</p>
                                         <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
@@ -73,6 +74,7 @@
                                         <h3>Bookning:</h3>
                                         <p style="margin-bottom: 5px;"><span style="text-decoration-line: underline;">Inviteret af:</span> ${booking.Bruger_Fornavn}</p>
                                         <p>Booknings Type: ${booking.Bane_Sport}, ${booking.Bane_Banetype}</p>
+                                        <p>Bane Navn: ${booking.Bane_Navn}</p>
                                         <p>Adresse: ${booking.Bane_Adresse}</p>
                                         <p>Dato: ${formattedDate}</p>
                                         <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
@@ -89,23 +91,25 @@
                     
                     }else{
                         card.innerHTML = `
-                                <div class="card-content">
-                                    <div class="card-content-info">
-                                        <h3>Bookning:</h3>
-                                        <h4>Hold: <span> ${booking.BookingType}</span></h4>
-                                        <p>Booknings Type: ${booking.Bane_Sport}, ${booking.Bane_Banetype}</p>
-                                        <p>Adresse: ${booking.Bane_Adresse}</p>
-                                        <p>Dato: ${formattedDate}</p>
-                                        <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
-                                        <p>Medspiller: ${booking.Medspillere_List}</p>
-                                        <p>Adgangskode: ${booking.Bane_Kodeord}</p>
-                                    </div>
-                                    <div class="card-content-button">
-                                        <button class="delete_button">Slet</button>
-                                        
-                                    </div>
+                            <div class="card-content">
+                                <div class="card-content-info">
+                                    <h3>Bookning:</h3>
+                                    <h4>Hold: <span> ${booking.BookingType}</span></h4>
+                                    <p>Booknings Type: ${booking.Bane_Sport}, ${booking.Bane_Banetype}</p>
+                                    <p>Bane Navn: ${booking.Bane_Navn}</p>
+                                    <p>Adresse: ${booking.Bane_Adresse}</p>
+                                    <p>Dato: ${formattedDate}</p>
+                                    <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
+                                    <p>Medspiller: ${booking.Medspillere_List}</p>
+                                    <p>Adgangskode: ${booking.Bane_Kodeord}</p>
                                 </div>
-                            `;
+                                <div class="card-content-button">
+                                    <button class="delete_button">Slet</button>
+                                    
+                                </div>
+                            </div>
+                        `;
+                        
                     };  
                     // Add click event to each card item (for demonstration purposes)
                     //card.addEventListener('click', function() {
@@ -148,7 +152,7 @@
                         }
                     });
 
-/* 
+                    /* 
                     // Add click event to each edit button
                     const editButton = card.querySelector('.edit_button');
                     //console.log('Edit Button:', editButton); //button is null

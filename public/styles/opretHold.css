@@ -113,6 +113,10 @@ p {
     justify-content: space-between;
     align-items: center
 }
+.redStare{
+    color:#f44336;
+    display: none;
+}
 
 .response-message {
     position: fixed;
@@ -128,4 +132,4 @@ p {
     z-index: 9999;
     color: white;
     font-size: xx-large;
-  }
+}

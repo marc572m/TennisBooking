@@ -263,7 +263,7 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
       const formData = req.body; // Access form data here
       
       // Process the form data as needed
-      console.log("formData", formData);
+      //console.log("formData", formData);
       let sportID = await checkSportExists(formData.Sport);
 
       if(sportID.length===0){
@@ -273,7 +273,11 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
         
       }
       //console.log("sportID:",sportID);
-      if(sportID===0||sportID===null){console.log("sportID er null");}else{holdID=sportID;}
+      if(sportID===0||sportID===null){
+        console.log("sportID er null");
+      }else{
+        holdID=sportID;
+      }
       const bookings = [];
       //console.log("sport:" + formData.Sport);
       for (let index = 0; index < formData.BanersID.length; index++) {
@@ -304,27 +308,30 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
       console.log("bookings:", bookings);
       const startDate = new Date(formData.PeriodeStartDate);
       const endDate = new Date(formData.PeriodeEndDate);
-      //try {
-        const bookingsPeriode =  await addPoriode(bookings, startDate, endDate);
-        console.log(" bookingsPeriode",  bookingsPeriode);
-        
-        const ExistsBookings = [];
-        for (let index = 0; index < bookingsPeriode.length; index++) {
-          const element = await checkBookingExists(bookingsPeriode[index]);
-          if (element !== null) {
-            ExistsBookings.push(element);
-          }
-        }
-      /* } catch (error) {
-        console.error('Error:', error);
-        res.status(500).send('Internal Server Error');
-      } */
       
+      const bookingsPeriode =  await addPoriode(bookings, startDate, endDate);
+      //console.log(" bookingsPeriode",  bookingsPeriode);
+      //deleted bookings 
+      const ExistsBookings = [];
 
 
+      for (let index = 0; index < bookingsPeriode.length; index++) {
+        const element = await checkBookingExists(bookingsPeriode[index]);
+        if (element !== null) {
+          ExistsBookings.push(element);
+          //console.log("element.id:", element[0].id);
+          await deleteBookingById(element[0].id);
+        }
+         await insertNewBooking(bookingsPeriode[index]);
+      }
 
+      /*console.log("\n\n");
+      console.log("bookingsPeriode:", bookingsPeriode);
+      console.log("\n");*/
+      console.log("deleteBooking:", ExistsBookings); 
+      
       // Send a response back (you can redirect or send a success message)
-      const successMessage = 'Formular indsendt succesfuldt!';
+      const successMessage = 'Hold oprettede succesfuldt!';
       res.status(200).json({ message: successMessage });
 
     } catch (error) {
@@ -334,26 +341,20 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
   });
 
 
-  app.delete('/delete-booking/:id', checkAuth, (req, res) => {
+  app.delete('/delete-booking/:id', checkAuth, async (req, res) => {
     const bookingId = req.params.id; // Extract the booking ID from the URL parameter
+    try {
+      
+      await deleteBookingById(bookingId);
+      
+      res.status(200).json({ message: 'Booking deleted successfully' });
+      console.log('Booking deleted successfully');
+    } catch (error) {
+      console.error('Error deleting booking:', error);
+      res.status(500).json({ error: 'Failed to delete booking' });
+    }
 
-    // Perform deletion operation in your database
-    // You should implement your database-specific logic here to delete the booking with the provided ID
-    // For example, using a SQL DELETE statement or an ORM's delete method
 
-    // Example using raw SQL with your database connection (replace this with your actual database logic)
-    const sqlDeleteBooking = 'DELETE FROM booking WHERE id = ?';
-    db.query(sqlDeleteBooking, [bookingId], (error, result) => {
-        if (error) {
-            console.error('Error deleting booking:', error);
-            res.status(500).json({ error: 'Failed to delete booking' });
-        } else {
-            // Successful deletion
-            res.status(200).json({ message: 'Booking deleted successfully' });
-            console.log('Booking deleted successfully');
-            // You can send any appropriate response back to the client
-        }
-    });
   });
   
   // Funktion til at tjekke om brugernavnet allerede eksisterer
@@ -474,9 +475,9 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
     }
   function checkBookingExists (booking){
     return new Promise((resolve, reject) => {
-      const sqlString = `SELECT * FROM booking WHERE Dato = ? AND Klokkeslæt = ?`;
+      const sqlString = `SELECT * FROM booking WHERE BaneID = ? AND Dato = ? AND Klokkeslæt = ?`;
       
-      db.query(sqlString, [booking.Dato,booking.Klokkeslæt], (error, result) => {
+      db.query(sqlString, [booking.BaneID, booking.Dato, booking.Klokkeslæt], (error, result) => {
         if(error){
           console.error('ingen booking fundet ' + error.message);
           reject(error);
@@ -486,17 +487,62 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
             console.log("booking: don't Exists");
             resolve(null);
           }else{
-            console.log("fundet", result)
+            // Adjust the date here before resolving
+            result.forEach((row) => {
+              row.Dato = new Date(row.Dato);
+              row.Dato.setDate(row.Dato.getDate() + 1); // Increment date by one day
+            });
+
+            console.log("fundet", result);
             resolve(result);
+            
           }
         }
       });
     });
   }
 
-  function addHoldBooking(){
+  function insertNewBooking(bookingData) {
+    return new Promise((resolve, reject) => {
+      const sqlString = 'INSERT INTO booking (BookingType, BaneID, BrugerID, HoldID, Gæst, Gentagene, Dato, Klokkeslæt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+      const values = [
+        bookingData.BookingType,
+        bookingData.BaneID,
+        bookingData.BrugerID,
+        bookingData.HoldID,
+        bookingData['Gæst'],
+        bookingData.Gentagene,
+        bookingData.Dato,
+        bookingData['Klokkeslæt']
+      ];
+  
+      db.query(sqlString, values, (error, result) => {
+        if (error) {
+          //console.error('Error inserting new booking:', error.message);
+          reject(error);
+        } else {
+          console.log('New booking inserted successfully:' , result);
+          resolve(result);
+        }
+      });
+    });
+  }
 
-
+  function deleteBookingById(bookingId) {
+    return new Promise((resolve, reject) => {
+      console.log("bookingId:", bookingId);
+      //   /minebooking
+      const sqlString = 'DELETE FROM booking WHERE id = ?';
+      db.query(sqlString, [bookingId], (error, result) => {
+        if (error) {
+          //console.error('Error deleting booking:', error.message);
+          reject(error);
+        } else {
+          console.log('Booking deleted successfully',result);
+          resolve(result);
+        }
+      });
+    });
   }
 
 
@@ -878,6 +924,7 @@ app.get('/minebooking',checkAuth, (req, res) => {
   SELECT 
       booking.id,
       booking.BookingType,
+      baner.Navn AS Bane_Navn,
       baner.Adresse AS Bane_Adresse,
       baner.PostnummerogBy AS Bane_PostnummerogBy,
       baner.Banetype AS Bane_Banetype,
