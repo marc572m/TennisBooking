@@ -305,7 +305,7 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
         }
       }
 
-      console.log("bookings:", bookings);
+      //console.log("bookings:", bookings);
       const startDate = new Date(formData.PeriodeStartDate);
       const endDate = new Date(formData.PeriodeEndDate);
       
@@ -325,8 +325,8 @@ app.post('/sletBane/:id', checkAdminAuth, (req, res) => {
          await insertNewBooking(bookingsPeriode[index]);
       }
 
-      /*console.log("\n\n");
-      console.log("bookingsPeriode:", bookingsPeriode);
+      console.log("\n\n");
+      /*console.log("bookingsPeriode:", bookingsPeriode);
       console.log("\n");*/
       console.log("deleteBooking:", ExistsBookings); 
       
