@@ -35,7 +35,8 @@
                 const options = { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' };
                 return date.toLocaleDateString('da-DK', options);
             }
-    
+            let existingCards = [];
+            const groupedBookings = {};
             // Check if data exists and is an array
             if (Array.isArray(data) && data.length > 0) {
                 // Loop through the data and create card elements
@@ -90,7 +91,23 @@
                         };
                     
                     }else{
-                        card.innerHTML = `
+                        existingCards.push({
+                            "id": booking.id,
+                            "BookingType": booking.BookingType,
+                            "Bane_Navn": booking.Bane_Navn,
+                            "Bane_Adresse": booking.Bane_Adresse,
+                            "Bane_PostnummerogBy": booking.Bane_PostnummerogBy,
+                            "Bane_Banetype": booking.Bane_Banetype,
+                            "Bane_Sport": booking.Bane_Sport,
+                            "Bane_Kodeord": booking.Bane_Kodeord,
+                            "Bruger_Fornavn": booking.Bruger_Fornavn,
+                            "Medspillere_List": booking.Medspillere_List,
+                            "Gæst": booking.Gæst,
+                            "Gentagene": booking.Gentagene,
+                            "Dato": formattedDate,
+                            "Klokkeslæt": booking.Klokkeslæt.slice(0, 5)
+                        });
+                        /* card.innerHTML = `
                             <div class="card-content">
                                 <div class="card-content-info">
                                     <h3>Bookning:</h3>
@@ -108,8 +125,9 @@
                                     
                                 </div>
                             </div>
-                        `;
-                        
+                        `; */
+                        return;
+                        //continue;
                     };  
                     // Add click event to each card item (for demonstration purposes)
                     //card.addEventListener('click', function() {
@@ -180,10 +198,104 @@
                 li.textContent = 'No bookings available';
                 listView.appendChild(li);
             }
+            console.log("existingCards", existingCards);
+            if(existingCards.length !== 0){
+                existingCards.forEach(existingCard => {
+                    const { id, Dato, ...rest } = existingCard;//Exclude id and Dato from comparison
+
+                    // Create a key by combining the properties you want to compare (excluding id and Dato)
+                    const key = JSON.stringify(rest);
+                    if (!groupedBookings[key]) {
+                        // If the key doesn't exist in the grouped bookings, create a new array
+                        groupedBookings[key] = [];
+                    }
+
+                    // Push the current card to its respective group
+                    groupedBookings[key].push(existingCard);
+
+                });
+                // Generate cards for each group
+                for (const key in groupedBookings) {
+                    const group = groupedBookings[key];
+
+                    // Find the minimum and maximum Dato within the group
+                    const dates = group.map(card => new Date(card.Dato));
+                    const minDate = new Date(Math.min(...dates)).toISOString().split('T')[0];
+                    const maxDate = new Date(Math.max(...dates)).toISOString().split('T')[0];
+
+                    // Extract IDs for the 'id' attribute in the card content
+                    const ids = group.map(card => card.id).join(',');
+
+                    // Create a card with min and max dates
+                    const card = document.createElement('li');
+                    card.classList.add('card');
+
+                    // Initialize the content HTML with minimum and maximum dates
+                    let contentHTML = `
+                        <div class="card-content">
+                            <div class="card-content-info" id='${ids}'>
+                                <h3>Bookning:</h3>
+                                <h4>Hold: <span>${group[0].BookingType}</span></h4>
+                                <p>Booknings Type: ${group[0].Bane_Sport}, ${group[0].Bane_Banetype}</p>
+                                <p>Bane Navn: ${group[0].Bane_Navn}</p>
+                                <p>Adresse: ${group[0].Bane_Adresse}</p>
+                                <p>Dato: ${minDate} - ${maxDate}</p>
+                                <p>Klokkeslæt: ${group[0].Klokkeslæt.slice(0, 5)}</p>
+                                <p>Medspiller: ${group[0].Medspillere_List}</p>
+                                <p>Adgangskode: ${group[0].Bane_Kodeord}</p>
+                            </div>
+                            <div class="card-content-button">
+                                <button class="delete_button">Slet</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    card.innerHTML = contentHTML;
+                    const deleteButton = card.querySelector('.delete_button');
+                    deleteButton.addEventListener('click', function() {
+                        const confirmation = confirm('Are you sure you want to delete this booking?');
+                        if (confirmation) {
+                            const bookingId = ids; // Assuming booking.id is accessible here
+
+                            console.log("bookingId", bookingId );   
+        /* 
+                            fetch(`/delete-booking/${bookingId}`, {
+                                method: 'DELETE',
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    listView.removeChild(card); 
+                                    console.log('Booking deleted successfully ');                                
+                                } else {
+                                    // Handle error cases if the deletion failed
+                                    console.error('Failed to delete booking');
+                                    console.log('Error from server:', JSON.stringify(data.error));
+                                }
+                            })
+                            .catch(error => {
+                                // Handle network errors or other exceptions
+                                console.error('Error deleting booking:', error);
+                            });  */
+                        }
+                    });
+
+
+
+
+                    listView.appendChild(card); 
+                };
+                
+            }else{
+                const li = document.createElement('li');
+                li.textContent = 'No Hold bookings available';
+                listView.appendChild(li);
+            }
+
+
+
         });
     </script>
 </body>
 </html>
-
 
 
