@@ -12,29 +12,29 @@
     <%- include('partials/navbar.ejs') %>
     
     <div class="container">
-        <form >
-            <label for="holdName">Tennis type:</label>
+        <form id="myForm" action="/OpretHoldSide/submit" method="POST">
+            <label for="holdName">HoldNavn:<span id="holdNameLabel" class="redStare">*</span></label>
             <span id="Hold">
                 <select id="holdName" name="holdName" required>
-                    <option value="Træning">Træning 60+</option>
+                    <option value="Træning">Vent...</option>
                     <option value="Drop-In">Drop-In D</option>
                 </select>
-                <button id="newHoldName">Tilføj Hold Navn</button>
+                <button id="newHoldName">Tilføj Hold Navn til Liste </button>
             </span>
 
-            <label for="Sport">Tennis type:</label>
+            <label for="Sport">Tennis type:<span id="sportLabel" class="redStare">*</span></label>
             <select id="Sport" name="Sport" required>
                 <option value="Tennis">Tennis</option>
                 <option value="Padel">Padel</option>
             </select>
 
-            <label for="BaneType">Bane Type:</label>
+            <label for="BaneType">Bane Type:<span id="BanetypeLabel" class="redStare">*</span></label>
             <select id="BaneType" name="BaneType" required>
                 <option value="Indendørs">Indendørs</option>
                 <option value="Udendørs">Udendørs</option>
             </select>
 
-            <label for="baner">Vælg baner:</label>
+            <label for="baner">Vælg baner:<span id="banerLabel" class="redStare">*</span></label>
             <span>      
                 <select id="baner" name="baner" required>
                     <option value="Vælg">Vælg Bane</option>
@@ -46,22 +46,22 @@
             </ul>
             
             <!-- For choosing a specific date in the week -->
-            <label for="date">Dato:</label>
+            <label for="date">Dato:<span id="dateLabel" class="redStare">*</span></label>
             <input type="date" id="date" name="date" required>
            
              <!-- For choosing start and end dates of a period -->
             <!-- <label for="period" >Periode:</label> -->
-            <p>Periode:</p>
+            <p>Periode:<span id="PeriodeLabel" class="redStare">*</span></p>
             <span class="period-start-end">
-                <label for="PeriodeStartDate">Periode start:</label>
+                <label for="PeriodeStartDate">Periode start:<span id="PeriodeStartDateLabel" class="redStare">*</span></label>
                 <input type="date" id="PeriodeStartDate" name="PeriodeStartDate" required>
     
-                <label for="PeriodeEndDate">Periode slut:</label>
+                <label for="PeriodeEndDate">Periode slut:<span id="PeriodeEndDateLabel" class="redStare">*</span></label>
                 <input type="date" id="PeriodeEndDate" name="PeriodeEndDate" required>
             </span>
 
             <span>
-                <label for="time">Tidspunkter:</label>
+                <label for="time">Tidspunkter:<span id="timeLabel" class="redStare">*</span></label>
                 <select id="time" name="time" required>
                     <option value="Vælg">Vælg tid</option>
                     <% for (let i = 8; i <= 20; i++) { %>
@@ -76,6 +76,7 @@
             <ul class="listTimes" id="listTimes">
                 <!--<li class="chooseBane" value="">coffe </li>-->
             </ul>
+            <button type="submit" class="makeHold">Lav Hold</button>
         </form>
     </div>
     <%- include('partials/footer.ejs') %>

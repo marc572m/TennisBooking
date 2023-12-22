@@ -44,50 +44,73 @@
                     card.classList.add('card'); // Add a class for card styling
     
                     const formattedDate = formatDate(booking.Dato);
-                   
-                    if(booking.Bruger_Fornavn == <%- JSON.stringify(user.Fornavn) %>){
-                        
-                        //console.log(booking.Bruger_Fornavn, Userfornavn, booking.id);
-                        card.innerHTML = `
-                            <div class="card-content">
-                                <div class="card-content-info">
-                                    <h3>Bookning:</h3>
-                                    <p>Booknings Type: ${booking.BookingType}, ${booking.Bane_Banetype}</p>
-                                    <p>Adresse: ${booking.Bane_Adresse}</p>
-                                    <p>Dato: ${formattedDate}</p>
-                                    <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
-                                    <p>Medspiller: ${booking.Medspiller_Fornavn}</p>
-                                    <p>Adgangskode: ${booking.Bane_Kodeord}</p>
+                   if(booking.BookingType == "privat spil"){
+                        if(booking.Bruger_Fornavn == <%- JSON.stringify(user.Fornavn) %>){
+                            
+                            //console.log(booking.Bruger_Fornavn, Userfornavn, booking.id);
+                            card.innerHTML = `
+                                <div class="card-content">
+                                    <div class="card-content-info">
+                                        <h3>Bookning:</h3>
+                                        <p>Booknings Type: ${booking.Bane_Sport}, ${booking.Bane_Banetype}</p>
+                                        <p>Bane Navn: ${booking.Bane_Navn}</p>
+                                        <p>Adresse: ${booking.Bane_Adresse}</p>
+                                        <p>Dato: ${formattedDate}</p>
+                                        <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
+                                        <p>Medspiller: ${booking.Medspillere_List}</p>
+                                        <p>Adgangskode: ${booking.Bane_Kodeord}</p>
+                                    </div>
+                                    <div class="card-content-button">
+                                        <button class="delete_button">Slet</button>
+                                       
+                                    </div>
                                 </div>
-                                <div class="card-content-button">
-                                    <button class="delete_button">Slet</button>
-                                    <button class="edit_button">Rediger</button>
+                            `;
+                        }else{
+                            //console.log('invited', booking.id);
+                            card.innerHTML = `
+                                <div class="card-content">
+                                    <div class="card-content-info">
+                                        <h3>Bookning:</h3>
+                                        <p style="margin-bottom: 5px;"><span style="text-decoration-line: underline;">Inviteret af:</span> ${booking.Bruger_Fornavn}</p>
+                                        <p>Booknings Type: ${booking.Bane_Sport}, ${booking.Bane_Banetype}</p>
+                                        <p>Bane Navn: ${booking.Bane_Navn}</p>
+                                        <p>Adresse: ${booking.Bane_Adresse}</p>
+                                        <p>Dato: ${formattedDate}</p>
+                                        <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
+                                        <p>Medspiller: ${booking.Medspillere_List}</p>
+                                        <p>Adgangskode: ${booking.Bane_Kodeord}</p>
+                                    </div>
+                                    <div class="card-content-button">
+                                        <button class="delete_button">Slet</button>
+                                        
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        };
+                    
                     }else{
-                        //console.log('invited', booking.id);
                         card.innerHTML = `
                             <div class="card-content">
                                 <div class="card-content-info">
                                     <h3>Bookning:</h3>
-                                    <p style="margin-bottom: 5px;"><span style="text-decoration-line: underline;">Inviteret af:</span> ${booking.Bruger_Fornavn}</p>
-                                    <p>Booknings Type: ${booking.BookingType}, ${booking.Bane_Banetype}</p>
+                                    <h4>Hold: <span> ${booking.BookingType}</span></h4>
+                                    <p>Booknings Type: ${booking.Bane_Sport}, ${booking.Bane_Banetype}</p>
+                                    <p>Bane Navn: ${booking.Bane_Navn}</p>
                                     <p>Adresse: ${booking.Bane_Adresse}</p>
                                     <p>Dato: ${formattedDate}</p>
                                     <p>Klokkeslæt: ${booking.Klokkeslæt.slice(0, 5)}</p>
-                                    <p>Medspiller: ${booking.Medspiller_Fornavn}</p>
+                                    <p>Medspiller: ${booking.Medspillere_List}</p>
                                     <p>Adgangskode: ${booking.Bane_Kodeord}</p>
                                 </div>
                                 <div class="card-content-button">
                                     <button class="delete_button">Slet</button>
-                                    <button class="edit_button">Rediger</button>
+                                    
                                 </div>
                             </div>
                         `;
-                    };
-                    
-                    
+                        
+                    };  
                     // Add click event to each card item (for demonstration purposes)
                     //card.addEventListener('click', function() {
                     //    // Customize the click action if needed
@@ -129,7 +152,7 @@
                         }
                     });
 
-
+                    /* 
                     // Add click event to each edit button
                     const editButton = card.querySelector('.edit_button');
                     //console.log('Edit Button:', editButton); //button is null
@@ -147,7 +170,7 @@
                         }
 
 
-                    });
+                    }); */
     
                     listView.appendChild(card);
                 });

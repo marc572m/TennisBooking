@@ -22,23 +22,26 @@
                     <% if (user) { %>
                         <% if (user.Brugertype === 'Admin') { %>
                             <ul>
-                                <li><a href="/minprofil">Profile</a></li>
-                                <li><a href="/registrer">Tilføj Bruger</a></li>
-                                <li><a href="/redigerogsletbruger">Søg efter brugere</a></li>
-                                <li><a href="/lavBane">Opret Bane</a></li>
-                                <li><a href="/sletBane">Rediger/Slet Bane</a></li>
-                                <li><a href="/OpretHoldSide">Opret hold side</a></li>
-                                <li><a href="/oversigtAfBookinger">Oversigt af bookinger</a></li>
-                                <li><a href="/logout" id="logoutLink">Logout</a></li>
+                            
+                                <li class="dropdownList"><a href="/minprofil">Profile</a></li>
+                                <li class="dropdownList"><a href="/registrer">Tilføj Bruger</a></li>
+                                <li class="dropdownList"><a href="/redigerogsletbruger">Søg efter brugere</a></li>
+                                <li class="dropdownList"><a href="/lavBane">Opret Bane</a></li>
+                                <li class="dropdownList"><a href="/sletBane">Rediger/Slet Bane</a></li>
+                                <li class="dropdownList"><a href="/OpretHoldSide">Opret hold side</a></li>
+                                <li class="dropdownList"><a href="/oversigtAfBookinger">Oversigt af bookinger</a></li>
+                                <li class="dropdownList"><a href="/logout" id="logoutLink">Logout</a></li>
                                 
                             </ul>
                             <%console.log('login ===Admin'); %>
                         <% } else if (user.Brugertype === 'Normal') { %>
                             <ul>
-                                <li><a href="/minprofil">Profile</a></li>
-                                <li><a href="/minebooking">Mine Booking</a></li>
-                                <li><a href="/mineTilmeldinger">Mine tilmeldinger</a></li>
-                                <li><a href="/logout" id="logoutLink">Logout</a></li>
+
+                                <li class="dropdownList"><a href="/minprofil">Profile</a></li>
+                                <li class="dropdownList"><a href="/minebooking">Mine Booking</a></li>
+                                <li class="dropdownList"><a href="/mineTilmeldinger">Mine tilmeldinger</a></li>
+                                <li class="dropdownList"><a href="/logout" id="logoutLink">Logout</a></li>
+
                             </ul>
                             <%console.log('login ===Normal'); %>
                         <% } else { console.log('unexpected Brugertype'); } %>

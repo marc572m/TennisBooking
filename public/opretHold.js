@@ -68,11 +68,12 @@ function populateHoldTypesOptions(holdTyper) {
         holdTyper.forEach(type => {
             // console.log(bane.Banetype=== selectBaneType.value);
             //if (bane.Sport === selectSport.value && bane.Banetype=== selectBaneType.value) {
-                const option = document.createElement("option");
-                //option.value = ;
-                option.textContent = type.BookingType;
-                selectHoldTypes.appendChild(option);
-            
+                if(type.BookingType !== "privat spil"){
+                    const option = document.createElement("option");
+                    //option.value = ;
+                    option.textContent = type.BookingType;
+                    selectHoldTypes.appendChild(option);
+                }
         });
     
     
@@ -250,8 +251,174 @@ document.addEventListener('DOMContentLoaded', function() {
         } 
     });
 
-    
+    const form = document.getElementById('myForm');
+    //const listBaner = document.getElementById('listBaner');
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get selected holdName /booking type
+        const holdNameSelect = document.getElementById('holdName');
+        const selectedHoldName = holdNameSelect.value;
+        // Get selected Sport
+        const sportSelect = document.getElementById('Sport');
+        const selectedSport= sportSelect.value;
+
+        // Get selected Baner from the list 
+        const selectedBaneItems = listBaner.querySelectorAll('li');
+        const selectedBanerValues = Array.from(selectedBaneItems).map(item => item.getAttribute('value'));
+
+        // Get selected date
+        const dateSelect = document.getElementById('date');
+        const selectedDate= dateSelect.value;
+        
+        // Get selected Periode
+        const periodeStartDateSelect = document.getElementById('PeriodeStartDate');
+        const selectedPeriodeStartDate= periodeStartDateSelect.value;
+
+        const periodeEndDateSelect = document.getElementById('PeriodeEndDate');
+        const selectedPeriodeEndDate= periodeEndDateSelect.value;
+
+        // Get selected Baner from the list 
+        const selectedTimesItems = listTimes.querySelectorAll('li');
+        const selectedTimesValues = Array.from(selectedTimesItems).map(item => item.getAttribute('value'));
+
+        // Creating an object with the selected values
+        const formData = {
+            BookingType: selectedHoldName,
+            Sport: selectedSport,
+            BanersID: selectedBanerValues,
+            Dato: selectedDate,
+            PeriodeStartDate: selectedPeriodeStartDate,
+            PeriodeEndDate: selectedPeriodeEndDate,
+            Times: selectedTimesValues
+        };
+        // Convert the object to a JSON string
+        const jsonString = JSON.stringify(formData);
+        console.log(jsonString);
+        const today = new Date().toISOString().split('T')[0];
+        let booldato = selectedPeriodeStartDate <= selectedDate &&
+         selectedPeriodeEndDate >= selectedDate &&
+         selectedPeriodeEndDate >= selectedPeriodeStartDate &&
+         selectedDate >= selectedPeriodeStartDate&&
+         selectedDate >=today&&
+         selectedPeriodeStartDate >=today
+         selectedPeriodeEndDate>=today;
+        // Custom validation logic
+        if (selectedHoldName === 'Vælg'||  selectedSport=== 'Vælg' ||selectedBanerValues.length === 0 ||selectedTimesValues.length ===0|| !booldato ) {
+            const labels = ["holdNameLabel", "sportLabel", "BanetypeLabel","banerLabel","dateLabel","PeriodeLabel","PeriodeStartDateLabel","PeriodeEndDateLabel","timeLabel"];
+            var redstare;
+            let message="";
+            switch (true) {
+                case selectedHoldName === 'Vælg':
+                    redstare = document.getElementById(labels[0]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select a hold name.');*/
+                    message += "vælg hold Navn \n";
+                    //break; 
+                case selectedSport === 'Vælg':
+                    redstare = document.getElementById(labels[1]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select a sport.');*/
+                    message += "vælg Tennis type \n";
+                    //break; 
+                case selectedBanerValues.length === 0:
+                    redstare = document.getElementById(labels[3]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select bane Type.');*/
+                    message += "vælg en bane eller baner \n";
+                    //break; 
+                case selectedTimesValues.length === 0:
+                    redstare = document.getElementById(labels[8]);
+                    redstare.style.display= "contents";
+                    /* window.alert('Please select times values.');*/
+                    message += "vælg en tid eller flere tider \n";
+                    //break; 
+                case !booldato:
+
+                    switch(true) {
+                        case selectedDate < today || selectedDate <selectedPeriodeStartDate :
+                            redstare = document.getElementById(labels[4]);
+                            redstare.style.display= "contents";
+                            message += "vælg dato der højder \n";
+                            //break;
+                        case selectedPeriodeStartDate< today:
+                            redstare = document.getElementById(labels[5]);
+                            redstare.style.display= "contents";
+                            redstare = document.getElementById(labels[6]);
+                            redstare.style.display= "contents";
+                            message += "vælg Periode start der højder \n";
+                            //break;
+                        case selectedPeriodeEndDate< today|| selectedPeriodeEndDate < selectedPeriodeStartDate ||selectedPeriodeEndDate<  selectedDate:
+                            redstare = document.getElementById(labels[5]);
+                            redstare.style.display= "contents";
+                            redstare = document.getElementById(labels[7]);
+                            redstare.style.display= "contents";
+                            message += "vælg Periode slut der højder \n";
+                            //break;
+                        default:
+                        // code block
+                        break;
+                    }
+
+                    break;
+                    /* redstare = document.getElementById(labels[4]);
+                    redstare.style.display= "contents";
+                    redstare = document.getElementById(labels[5]);
+                    redstare.style.display= "contents";
+                    redstare = document.getElementById(labels[6]);
+                    redstare.style.display= "contents";
+                    redstare = document.getElementById(labels[7]);
+                    redstare.style.display= "contents";
+                    window.alert('Date conditions not met.'); */
+                    //break;
+                default:
+                    console.log('Default case.');
+                  // Handle any default behavior if needed
+            }
+            console.log(message);
+            window.alert(message);
+            //window.alert('Please select all required fields.'); // Display error message as a popup
+        } else {
+            /* // All required fields are filled, proceed with form submission
+            console.log('Form submitted successfully!');
+            form.submit(); // Uncomment this line to submit the form */
+
+            try {
+              const response = await fetch('/OpretHoldSide/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+              });
+          
+              const data = await response.json();
+              displayResponseMessage(data.message);
+            } catch (error) {
+              console.error('Error:', error);
+            }
+
+
+        }
+        
+    });
+
+    function displayResponseMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messageElement.classList.add('response-message');
+      
+        document.body.appendChild(messageElement);
+      
+        // Automatically remove the message after a certain time (e.g., 5 seconds)
+        setTimeout(() => {
+            messageElement.remove();
+            location.reload(); // Reload the page after the message disappears
+        }, 5000); // Adjust the time as needed (in milliseconds)
+    }
+
 
 });
+
 //---------------------------------------------------------------------------------------------------------------------------------
-//--------------------------------------------------------------Banetype-------------------------------------------------------------------
+//--------------------------------------------------------------Banetype-------------------------------------------------------
