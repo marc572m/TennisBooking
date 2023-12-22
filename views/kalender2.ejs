@@ -74,6 +74,7 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
         <h1 data-current-day="<%= currentDay %>">Kalender: Den <%= formatDate(currentYear, currentMonth, currentDay) %></h1>
         <% if (user){%>
         <div id="userData" data-username="<%= user.Brugernavn %>"></div>
+        <div id="userDataID" data-userID="<%= user.id %>"></div>
         <% } %>
 
             <!-- <% if (user) { %>
@@ -114,6 +115,9 @@ const bookingDates = data.map(item => new Date(item.Dato).toISOString()); // Con
 
     <table class="calendar-table" id="calendar-table">
     </table>
+
+    <div id="messageContainer"></div>
+
 
     <!-- Modal -->
 <div id="popup" class="modal">

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Indkøbskurven</title>
+    <link rel="stylesheet" href="/styles/kurv.css">
+    <link rel="stylesheet" href="/style.css">
+    
+</head>
+
+<body>
+    <%- include('partials/navbar.ejs') %>
+    <div class="container">
+        <h1>Indkøbskurven</h1>
+        <p>Hej <%= user.Brugernavn %> </p>
+
+        <div id="bookingDetailsContainer">
+            <!-- Dette er, hvor dine bookingoplysninger vil blive vist -->
+        </div>
+    </div>
+
+    <script src="bookingFormatering.js"></script>
+    <script>
+
+            // Funktion til at fjerne en booking fra sessionStorage baseret på indeks
+        function removeBookingFromStorage(index) {
+            // Hent den nuværende bookingliste fra sessionStorage
+            const storedBookingsString = sessionStorage.getItem('bookings');
+            const storedBookings = JSON.parse(storedBookingsString) || [];
+
+            // Fjern bookingen med det angivne indeks
+            if (index >= 0 && index < storedBookings.length) {
+                storedBookings.splice(index, 1);
+
+                // Opdater sessionStorage med den nye bookingliste
+                sessionStorage.setItem('bookings', JSON.stringify(storedBookings));
+
+                // Opdater visningen
+                displayBookings();
+            }
+        }
+
+        function displayBookings(){
+        // Hent JSON-strengen fra sessionStorage
+        const storedBookingsString = sessionStorage.getItem('bookings');
+
+        // Konverter JSON-strengen til en liste
+        const storedBookings = JSON.parse(storedBookingsString) || [];
+
+        // Find det DOM-element, hvor du vil vise bookingdetaljer
+        const bookingDetailsContainer = document.getElementById('bookingDetailsContainer');
+
+        bookingDetailsContainer.innerHTML = '';
+
+        // Iterer over de konverterede data og opret HTML-elementer for hver booking
+        storedBookings.forEach((booking, index) => {
+            // Opret et div-element for hver booking
+            const bookingElement = document.createElement('div');
+            bookingElement.classList.add('booking-details');
+
+            // Opret et overskriftselement for bookingen
+            const headingElement = document.createElement('h2');
+            headingElement.textContent = `Booking`;
+            bookingElement.appendChild(headingElement);
+
+            // Opret et div-element til bookingdetaljer (Første kolonne)
+            const detailsContentElement1 = document.createElement('div');
+            detailsContentElement1.classList.add('booking-details-content');
+
+            // Opret et ul-element for de ønskede attributter
+            const ulElement1 = document.createElement('ul');
+            ulElement1.classList = 'booking-card1';
+
+            // Angiv de ønskede attributter til den første kolonne
+            const attributesToShow1 = ['Sport', 'Banetype', 'Tid'];
+
+            // Iterer over de ønskede attributter for den første kolonne
+            attributesToShow1.forEach((key) => {
+                // Tjek om attributten findes i bookingen
+                if (booking.hasOwnProperty(key)) {
+                    // Opret et li-element for hver attribut
+                    const liElement = document.createElement('li');
+
+                    liElement.innerHTML = `<strong>${key}:</strong> ${booking[key]}`;
+                    ulElement1.appendChild(liElement);
+                }
+            });
+
+            // Tilføj ul-elementet til detailsContentElement1
+            detailsContentElement1.appendChild(ulElement1);
+
+            // Tilføj detailsContentElement1 til bookingElement
+            bookingElement.appendChild(detailsContentElement1);
+
+            // Opret et div-element til bookingdetaljer (Anden kolonne)
+            const detailsContentElement2 = document.createElement('div');
+            detailsContentElement2.classList.add('booking-details-content');
+
+            // Opret et ul-element for de ønskede attributter
+            const ulElement2 = document.createElement('ul');
+            ulElement2.classList = 'booking-card2';
+
+            // Angiv de ønskede attributter til den anden kolonne
+            const attributesToShow2 = ['Dato', 'Bane', 'MedspillerNavne', 'AntalGæster'];
+
+            // Iterer over de ønskede attributter for den anden kolonne
+            attributesToShow2.forEach((key) => {
+                // Tjek om attributten findes i bookingen
+                if (booking.hasOwnProperty(key)) {
+                    // Opret et li-element for hver attribut
+                    const liElement = document.createElement('li');
+
+                    // Håndter specielt MedspillerID og AntalGæster, da det er arrays
+                    if (key === 'MedspillerNavne') {
+                        liElement.innerHTML = `<strong>Medspillere:</strong> ${booking[key].join(', ') || ''}`;
+                    } else if (key === 'AntalGæster') {
+                        liElement.innerHTML = `<strong>Antal Gæster:</strong> ${booking[key] || 'Ingen gæster'}`;
+                    } else {
+                        liElement.innerHTML = `<strong>${key}:</strong> ${booking[key]}`;
+                    }
+
+                    ulElement2.appendChild(liElement);
+                }
+            });
+
+            // Tilføj ul-elementet til detailsContentElement2
+            detailsContentElement2.appendChild(ulElement2);
+
+            // Tilføj detailsContentElement2 til bookingElement
+            bookingElement.appendChild(detailsContentElement2);
+
+            // Opret slet-knap her, hvis det ønskes
+            const deleteButtonContainer = document.createElement('div');
+            deleteButtonContainer.style.textAlign = 'right';
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Slet';
+            deleteButton.classList.add('delete-button');
+            deleteButton.onclick = () => removeBookingFromStorage(index);
+
+            // Tilføj slet-knap til deleteButtonContainer
+            deleteButtonContainer.appendChild(deleteButton);
+
+            // Tilføj deleteButtonContainer til bookingElement
+            bookingElement.appendChild(deleteButtonContainer);
+
+            // Tilføj div-elementet til containeren
+            bookingDetailsContainer.appendChild(bookingElement);
+        });
+    }
+
+    displayBookings();
+    </script>
+
+    <%- include('partials/footer.ejs') %>
+</body>
+
+</html>

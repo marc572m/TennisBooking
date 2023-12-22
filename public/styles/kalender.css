@@ -129,6 +129,23 @@ table {
     transform: translateX(-50%);
 }
 
+.response-message {
+    position: absolute;
+    top: 50%; /* Juster den ønskede afstand fra toppen */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 20px;
+    background-color: #1caf60c7;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    color: white;
+    font-size: xxx-large;
+    width: 60%; /* Juster bredden efter behov */
+    text-align: center; /* Juster teksten til midten */
+}
+
 
 /* Mobilformat */
 @media (max-width: 920px) {
