@@ -587,6 +587,7 @@ app.get('/hentbaner', (req, res) => {
     });
 });
 
+
 app.get('/hentBane/:id', (req, res) => {
 
     const id = req.params.id;
@@ -680,7 +681,28 @@ app.post('/redigerBane/:id', checkAdminAuth, (req, res) => {
   });
 });
 
+app.get('/getSpillerID/:username', (req, res) => {
+  const username = req.params.username;
 
+
+  const sql = `
+      SELECT id FROM brugere WHERE Brugernavn = ?;
+  `;
+
+  db.query(sql, [username], (err, result) => {
+      if (err) {
+          console.error(err);
+          res.status(500).json({ success: false, error: 'Fejl under hentning af brugerens id' });
+      } else {
+          if (result.length > 0) {
+              const medspillerID = result[0].id;
+              res.json({ success: true, medspillerID });
+          } else {
+              res.status(404).json({ success: false, error: 'Brugeren blev ikke fundet' });
+          }
+      }
+  });
+});
 
 // opdater oplysninger via redigerprofil
 
