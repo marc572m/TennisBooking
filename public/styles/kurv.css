@@ -1,0 +1,73 @@
+/* styles/kurv.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    font-size: larger;
+}
+
+.booking-details ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+h1 {
+    color: #333;
+}
+
+p {
+    color: #666;
+}
+
+#bookingDetailsContainer {
+    margin-top: 20px;
+}
+
+.booking-details {
+    border: 1px solid #ddd;
+    grid-template-columns: 1fr 1fr; /* Opdel i to kolonner */
+    gap: 20px; /* Tilføj lidt mellemrum mellem kolonnerne */
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 20px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #999;
+}
+
+.delete-button {
+    background-color: #ff3333;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: xx-large;
+    margin-left: auto;
+    height: fit-content;
+}
+

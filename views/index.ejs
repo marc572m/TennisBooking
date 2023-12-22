@@ -30,6 +30,14 @@
             <li>Vælg tidspunktet, der passer dig bedst.</li>
             <li>Bekræft din reservation, og glæd dig til at spille!</li>
         </ol>
+
+        <script>
+          const storedBookings = JSON.parse(sessionStorage.getItem('bookings')) || [];
+
+          storedBookings.forEach((booking, index) => {
+          console.log(`Booking ${index + 1}:`, booking);
+      });
+        </script>
     
         <p>Vi er dedikerede til at gøre din sportsoplevelse så gnidningsløs som mulig. Netbooker er din partner i at opdage glæden ved tennis og paddle tennis. Lad boldene rulle, og book din næste bane hos os!</p>
     

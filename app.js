@@ -13,6 +13,18 @@ app.use(session({ secret: 'hemmelig_nøgle', resave: true, saveUninitialized: tr
 
 app.use(express.static('public'));
 
+// Middleware for at rydde session storage ved opstart
+app.use((req, res, next) => {
+  // Tjek om brugeren er logget ind, før du rydder session storage
+  if (req.session.user) {
+      console.log('Ryd session storage for bruger med ID:', req.session.user.id);
+      req.session.bookings = [];
+  }
+  next();
+});
+
+
+
 //Database connection
 const db = mysql.createConnection({
     host: 'localhost', 
@@ -440,8 +452,6 @@ app.post('/redigerBane/:id', checkAdminAuth, (req, res) => {
 
 app.get('/getSpillerID/:username', (req, res) => {
   const username = req.params.username;
-
-
   const sql = `
       SELECT id FROM brugere WHERE Brugernavn = ?;
   `;
@@ -583,10 +593,11 @@ app.get('/login', (req, res) => {
     res.render('login');
   });
 
+
 app.get('/logout', (req, res) => {
- req.session.destroy((err) => {
+    req.session.destroy((err) => {
     res.redirect('/');
-});
+  });
 });
 
 app.get('/minprofil', checkAuth, (req, res) => {
@@ -608,20 +619,80 @@ app.get('/minprofil', checkAuth, (req, res) => {
     res.render('redigerprofil', { user: currentUser });
   });
 
-  app.get('/kalender', (req, res) => {
-    const user = req.session.user;
-    db.query('SELECT * FROM booking', (error, result) => {
-        if(error){
-            console.error('ingen bookinger fundet ' + error.message);
-            res.status(204).send('ingen data returneret');
+  app.get('/kurv', (req, res) => {
+    // Hent eksisterende bookinger fra sessionStorage
+    console.log('Data, der skal parses:', req.session.bookings);
+    let storedBookings;
+  
+    try {
+      // Tjek om req.session.bookings er en streng, før JSON-parsing
+      storedBookings = JSON.parse(req.session.bookings || '[]');
+    } catch (error) {
+      console.error('Fejl ved parsing af sessionstorage-data: ', error);
+      storedBookings = [];
+    }
+  
+    // Kontroller om bruger er logget ind og har en id
+    if (req.session.user && req.session.user.id) {
+      // Hent alle bookinger relateret til brugerens id fra databasen
+      db.query('SELECT * FROM booking WHERE BrugerID = ?', [req.session.user.id], (error, userBookings) => {
+        if (error) {
+          console.error('Fejl ved hentning af brugerens bookinger fra database: ' + error.message);
+          res.status(500).send('Fejl ved hentning af brugerens bookinger fra database');
+        } else {
+          res.render('kurv', {
+            user: req.session.user,
+            bookedData: storedBookings, // Send sessionstorage-dataene til visning
+            userBookings: userBookings, // Send brugerens bookinger til visning
+          });
         }
-        else{
-            res.render('kalender', { data: result,
-            user: user });
-            console.log(result);
-        }
-    })
-  })
+      });
+    } else {
+      // Bruger er ikke logget ind, håndter dette efter behov
+      res.redirect('/login'); // eller anden håndtering
+    }
+  });
+  
+
+app.post('/opretBooking', (req, res) => {
+  try {
+    const { bookingForm } = req.body;
+
+    // Log data for at følge med i, hvad der bliver modtaget
+    console.log('Modtaget bookingForm:', bookingForm);
+
+    // Tjek om der er en sessionsvariabel for bookinger, hvis ikke, opret en
+    req.session.bookings = req.session.bookings || [];
+
+    // Tilføj bookingForm til sessionsvariablen
+    req.session.bookings.push(bookingForm);
+
+    // Log sessiondata efter opdatering
+    console.log('Session data efter opdatering:', req.session);
+
+    // Send en bekræftelse til klienten
+    res.json({ success: true, message: 'BookingForm gemt i serverens session.' });
+  } catch (error) {
+    console.error('Fejl under håndtering af opretBooking-anmodning:', error);
+    res.status(500).json({ success: false, message: 'Serverfejl under håndtering af opretBooking-anmodning.' });
+  }
+});
+
+app.post('/OpretBooking/submit', async (req, res) => {
+  const successMessage = 'Booking tilføjet til Indkøbskurven.';
+  res.status(200).json({ message: successMessage });
+});
+
+
+
+// Serverroute for at fjerne bookinger fra serverens session
+app.post('/clearServerSessionBookings', (req, res) => {
+  // Fjern alle bookinger fra sessionsvariablen
+  req.session.bookings = [];
+
+  // Send en bekræftelse til klienten
+  res.json({ success: true, message: 'Bookinger fjernet fra serverens session.' });
+});
 
   app.get('/kalender2', (req, res) => {
     const user = req.session.user;

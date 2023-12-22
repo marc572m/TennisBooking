@@ -15,7 +15,7 @@
                 <% if (!user) { %>
                     <li><a href="/login">Login</a></li>
                 <% } else { %>
-                    <li><a href="/indkøbskurv">Indkøbskurv</a></li>
+                    <li><a href="/kurv">Indkøbskurv</a></li>
                     <li><a href="#" class="profile-icon material-symbols-outlined">account_circle</a></li>
                 <% } %>
                 <div class="dropdown-content">
@@ -29,7 +29,7 @@
                                 <li><a href="/sletBane">Rediger/Slet Bane</a></li>
                                 <li><a href="/OpretHoldSide">Opret hold side</a></li>
                                 <li><a href="/oversigtAfBookinger">Oversigt af bookinger</a></li>
-                                <li><a href="/logout">Logout</a></li>
+                                <li><a href="/logout" id="logoutLink">Logout</a></li>
                                 
                             </ul>
                             <%console.log('login ===Admin'); %>
@@ -38,7 +38,7 @@
                                 <li><a href="/minprofil">Profile</a></li>
                                 <li><a href="/minebooking">Mine Booking</a></li>
                                 <li><a href="/mineTilmeldinger">Mine tilmeldinger</a></li>
-                                <li><a href="/logout">Logout</a></li>
+                                <li><a href="/logout" id="logoutLink">Logout</a></li>
                             </ul>
                             <%console.log('login ===Normal'); %>
                         <% } else { console.log('unexpected Brugertype'); } %>
@@ -49,6 +49,17 @@
     </nav>
 
     <script>
+        document.getElementById('logoutLink').addEventListener('click', function (event) {
+            event.preventDefault(); // Forhindre standardadfærd (at følge href)
+
+            // Ryd sessionStorage
+            sessionStorage.clear();
+
+            // Udfør logud ved at navigere til logout-endpointet
+            window.location.href = '/logout';
+});
+
+
         const toggleButton = document.querySelector('.toggle-button');
         const navbarLinks = document.querySelector('.navbar-links');
         const dropdownContent = document.querySelector('.dropdown-content');
