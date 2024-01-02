@@ -15,13 +15,14 @@
                 <% if (!user) { %>
                     <li><a href="/login">Login</a></li>
                 <% } else { %>
-                    <li><a href="/indkøbskurv">Indkøbskurv</a></li>
+                    <li><a href="/kurv">Indkøbskurv</a></li>
                     <li><a href="#" class="profile-icon material-symbols-outlined">account_circle</a></li>
                 <% } %>
                 <div class="dropdown-content">
                     <% if (user) { %>
                         <% if (user.Brugertype === 'Admin') { %>
                             <ul>
+                            
                                 <li class="dropdownList"><a href="/minprofil">Profile</a></li>
                                 <li class="dropdownList"><a href="/registrer">Tilføj Bruger</a></li>
                                 <li class="dropdownList"><a href="/redigerogsletbruger">Søg efter brugere</a></li>
@@ -29,16 +30,18 @@
                                 <li class="dropdownList"><a href="/sletBane">Rediger/Slet Bane</a></li>
                                 <li class="dropdownList"><a href="/OpretHoldSide">Opret hold side</a></li>
                                 <li class="dropdownList"><a href="/oversigtAfBookinger">Oversigt af bookinger</a></li>
-                                <li class="dropdownList"><a href="/logout">Logout</a></li>
+                                <li class="dropdownList"><a href="/logout" id="logoutLink">Logout</a></li>
                                 
                             </ul>
                             <%console.log('login ===Admin'); %>
                         <% } else if (user.Brugertype === 'Normal') { %>
                             <ul>
+
                                 <li class="dropdownList"><a href="/minprofil">Profile</a></li>
                                 <li class="dropdownList"><a href="/minebooking">Mine Booking</a></li>
                                 <li class="dropdownList"><a href="/mineTilmeldinger">Mine tilmeldinger</a></li>
-                                <li class="dropdownList"><a href="/logout">Logout</a></li>
+                                <li class="dropdownList"><a href="/logout" id="logoutLink">Logout</a></li>
+
                             </ul>
                             <%console.log('login ===Normal'); %>
                         <% } else { console.log('unexpected Brugertype'); } %>
@@ -49,6 +52,17 @@
     </nav>
 
     <script>
+        document.getElementById('logoutLink').addEventListener('click', function (event) {
+            event.preventDefault(); // Forhindre standardadfærd (at følge href)
+
+            // Ryd sessionStorage
+            sessionStorage.clear();
+
+            // Udfør logud ved at navigere til logout-endpointet
+            window.location.href = '/logout';
+});
+
+
         const toggleButton = document.querySelector('.toggle-button');
         const navbarLinks = document.querySelector('.navbar-links');
         const dropdownContent = document.querySelector('.dropdown-content');

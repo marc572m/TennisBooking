@@ -33,7 +33,13 @@ function showModal(formattedCellDate, cellHour, bookingID, baneID, bookingType, 
     `;
 
     // Tjek om bookingtiden er passeret
-    if (cellDate < currentDate && cellHour < currentHour || cellDate.getDate() < currentDate.getDate()) {
+    if (
+        (cellDate.getFullYear() < currentDate.getFullYear()) ||
+        (cellDate.getFullYear() === currentDate.getFullYear() && cellDate < currentDate) ||
+        (cellDate.getFullYear() === currentDate.getFullYear() && cellDate.getMonth() === currentDate.getMonth() && cellDate.getDate() < currentDate.getDate()) ||
+        (cellDate.getFullYear() === currentDate.getFullYear() && cellDate.getMonth() === currentDate.getMonth() && cellDate.getDate() === currentDate.getDate() && cellHour < currentHour) 
+        )
+        {
         contentHTML += `<p>Den valgte tid er allerede passeret.</p>`;
     } else {
         if (bookingID !== null && username != null) {
@@ -102,18 +108,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const popup = document.getElementById('popup');
         const popupContent = document.getElementById('popup-content');
         const userDataElement = document.getElementById('userData');
-        console.log('Tid: ', cellHour);
-        console.log('Dato: ', formattedCellDate);
     
         const dateArray = formattedCellDate.split('.');
         const day = parseInt(dateArray[0], 10); // Konverter til heltal
         const month = dateArray[1]; // Lad måneden være som en streng
         const year = new Date().getFullYear();
-        console.log(year, month, day);
         const bookingDate = new Date(year, getMonthIndex(month), day);
     
         const formattedDate = formatDateForInput(bookingDate);
-        console.log(formattedDate);
     
         const bookingCourt = courtId;
         const bookingSport = document.getElementById('sportSelector').value;
@@ -164,6 +166,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     <label for="team-list">Medspillere:</label>
                     <ul id="team-list"></ul>
                 </div>
+
+                <div class="form-group">
+                    <button class="emptysession-button" onclick="emptySession()">Tøm SessionStorage</button>
+                </div>
     
                 <div class="form-group">
                     <button class="confirm-button" onclick="completeBooking()">Færdig</button>
@@ -181,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     
     teammateInput.addEventListener('input', function () {
-        console.log('Input event triggered');
         const searchQuery = teammateInput.value;
         if (searchQuery != null && searchQuery.length > 0) {
             fetch(`/search?query=${searchQuery}`)
@@ -270,68 +275,154 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     };
 
-    window.completeBooking = function () {
-        console.log('Completing booking', teamList);
+    var guestCount = 0;
 
+    window.completeBooking = async function () {
         var playerName = userDataElement.dataset.username;
         const teamListArray = Array.from(teamList.children);
         const medspillereIDs = [];
+        const userID = document.getElementById('userDataID');
+        
     
-        if (teamList.childElementCount > 0) {
-
-            teamListArray.forEach(liElement => {
-                const playerName = liElement.textContent;
-                if(playerName != "Gæst"){
-                    fetch(`/getSpillerID/${playerName}`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                const spillerID = data.medspillerID;
-                                console.log(`Medspiller ID for ${playerName} er: ${spillerID}`);
-                                medspillereIDs.push(spillerID);
-                            } else {
-                                console.error(`Fejl: ${data.error}`);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Fejl under hentning af brugerens id:', error);
-                        });
+        const storedBookingsString = sessionStorage.getItem('bookings');
+        const existingBookings = JSON.parse(storedBookingsString) || [];
+    
+        let hasExistingBooking = false;
+    
+        existingBookings.forEach(element => {
+            if (element.BaneID == bookingCourt && element.Dato == formattedDate && element.Klokkeslæt == cellHour + ':00:00') {
+                alert("Du har allerede en booking på denne bane på det valgte tidspunkt.");
+                hasExistingBooking = true;
+                return;
+            }
+            if (element.Dato == formattedDate && element.Klokkeslæt == cellHour + ':00:00') {
+                alert("Du har allerede en booking på en anden bane på det valgte tidspunkt.");
+                hasExistingBooking = true;
+                return;
+            }
+        });
+    
+        if (!hasExistingBooking) {
+            // Kontroller antallet af bookinger
+            if (existingBookings.length >= 2) {
+                console.log('Du har allerede to bookinger. Kan ikke oprette flere.');
+            } else if (teamList.childElementCount >= 0) {
+                const fetchPromises = [];
+    
+                teamListArray.forEach(liElement => {
+                    const playerName = liElement.textContent;
+                    if (playerName != "Gæst") {
+                        const fetchPromise = fetch(`/getSpillerID/${playerName}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    const spillerID = data.medspillerID;
+                                    medspillereIDs.push(spillerID);
+                                } else {
+                                    console.error(`Fejl: ${data.error}`);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Fejl under hentning af brugerens id:', error);
+                            });
+    
+                        fetchPromises.push(fetchPromise);
                     }
-            });
-            const popupContent = document.getElementById('popup-content');
-            console.log(teamListArray)
-        } 
-
-            playerName = userDataElement.dataset.username;
-            fetch(`/getSpillerID/${playerName}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const spillerID = data.medspillerID;
-                        console.log(`Medspiller ID for ${playerName} er: ${spillerID}`);
-                        medspillereIDs.push(spillerID);
-                    } else {
-                        console.error(`Fejl: ${data.error}`);
+                    else {
+                        guestCount++;
                     }
-                })
-                .catch(error => {
-                    console.error('Fejl under hentning af brugerens id:', error);
                 });
 
-        const bookingForm = {
-            BrugerID: playerName,
-            Sport: bookingSport,
-            Banetype: bookingCourtType,
-            Klokkeslæt: cellHour,
-            Dato: formattedDate,
-            BaneID: bookingCourt,
-            BookingType: "Træning",
-            MedspillerID: medspillereIDs
-        };
-        console.log(bookingForm);
+                const onlyPlayerName = teamListArray
+                .filter(liElement => liElement.textContent !== 'Gæst') // Filtrer gæster
+                .map(liElement => liElement.textContent);
+
+    
+                // Vent på, at alle fetch-anmodninger er færdige, før du fortsætter
+                Promise.all(fetchPromises)
+                    .then(() => {
+                        // Opret bookingForm og fortsæt med resten af koden
+                        const bookingForm = {
+                            Bruger: userID.dataset.userid,
+                            Sport: bookingSport,
+                            Banetype: bookingCourtType,
+                            Tid: cellHour + ':00:00',
+                            Dato: formattedDate,
+                            Bane: courtName,
+                            BaneID: bookingCourt,
+                            BookingType: "Træning",
+                            Gentagende: false,
+                            MedspillerNavne: onlyPlayerName,
+                            MedspillerID: medspillereIDs,
+                            AntalGæster: guestCount
+                        };
+    
+                        // Hent eksisterende bookinger fra sessionStorage
+    
+                        // Tilføj den nye booking til listen
+                        existingBookings.push(bookingForm);
+                        sessionStorage.setItem('bookings', JSON.stringify(existingBookings));
+    
+                        fetch('/opretBooking', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ bookingForm }),
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            hideModal();
+                            displayResponseMessage("Booking tilføjet til indkøbskurven.");
+                        })
+                        .catch(error => {
+                            console.error('Fejl ved håndtering af fetch-anmodning:', error);
+                            hideModal();
+                            const responseMessage = document.querySelector('.response-message');
+                            responseMessage.style.backgroundColor = 'f44336';
+                            displayResponseMessage("Fejl med booking. Prøv igen senere.");
+                            }
+                        );
+                          
+    
+                        console.log(existingBookings);
+                        console.log(sessionStorage.getItem('bookings'));
+                    })
+                    .catch(error => {
+                        console.error('Fejl under håndtering af fetch-anmodninger:', error);
+                    });
+            }
+        }
+    };
+
+    function displayResponseMessage(message) {
+        const messageContainer = document.getElementById('messageContainer');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messageElement.classList.add('response-message');
+    
+        // Tøm tidligere meddelelser, hvis der er nogen
+        messageContainer.innerHTML = '';
+    
+        // Tilføj det nye meddelelseselement til containeren
+        messageContainer.appendChild(messageElement);
+    
+        // Automatisk fjern meddelelsen efter en vis tid (f.eks. 5 sekunder)
+        setTimeout(() => {
+            messageElement.remove();
+            //location.reload(); // Genindlæs siden efter at meddelelsen er forsvundet
+        }, 5000); // Juster tiden efter behov (i millisekunder)
     }
+    
+
+    
 }
 
+    emptySession = function () {
+        sessionStorage.clear();
+        console.log("SessionStorage er tømt");
+    }
+  
     //Lav Kalender
 
     const table = document.getElementById('calendar-table');
@@ -385,9 +476,6 @@ document.addEventListener('DOMContentLoaded', function () {
         courtList.style.display = 'none';
         const selectedSport = document.getElementById('sportSelector').value;
         const selectedCourtType = document.getElementById('courtTypeSelector').value;
-    
-        console.log(baneData, "BaneData", selectedSport);
-        console.log(bookingData, "BookingData");
     
         courtList.innerHTML = '';
     
@@ -453,7 +541,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         const currentDate = new Date();
                         const currentHour = new Date().getHours();
 
-                        if ((cellDate < currentDate && cellHour < currentHour || cellDate.getDate() < currentDate.getDate())){
+                        if (
+                            (cellDate.getFullYear() < currentDate.getFullYear()) ||
+                            (cellDate.getFullYear() === currentDate.getFullYear() && cellDate < currentDate) ||
+                            (cellDate.getFullYear() === currentDate.getFullYear() && cellDate.getMonth() === currentDate.getMonth() && cellDate.getDate() < currentDate.getDate()) ||
+                            (cellDate.getFullYear() === currentDate.getFullYear() && cellDate.getMonth() === currentDate.getMonth() && cellDate.getDate() === currentDate.getDate() && cellHour < currentHour)
+                            )
+                            {
+                                tableData.innerHTML = `Ikke tilgængelig`;
                             tableData.style.backgroundColor = "#c7c7c7"
                         }
                         else{
